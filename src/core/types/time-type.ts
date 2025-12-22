@@ -1,0 +1,1 @@
+export type TimeType = 'hour' | 'minute' | 'second';
