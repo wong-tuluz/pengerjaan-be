@@ -1,35 +1,33 @@
-import { Inject, Injectable } from "@nestjs/common";
-import { NeonHttpDatabase } from "drizzle-orm/neon-http";
-import { WRITE_DB } from "src/core/constants/db.constants";
-import { IQuestion } from "../models/question";
-import { MultipleChoice } from "../models/multiple-choice";
-import { ComplexChoice } from "../models/complex-choice";
-import { questionAnswers, questionGroups, questions } from "src/modules/drizzle/schema";
+import { Inject, Injectable } from '@nestjs/common';
+import { NeonHttpDatabase } from 'drizzle-orm/neon-http';
+import { WRITE_DB } from '@/core/constants/db.constants';
+import { IQuestion } from '../models/question';
+import { MultipleChoice } from '../models/multiple-choice';
+import { ComplexChoice } from '../models/complex-choice';
+import { questionGroups, questions } from '@/modules/drizzle/schema';
 
 @Injectable()
 export class QuestionsWriteRepository {
-    constructor(
-        @Inject(WRITE_DB) private readonly db: NeonHttpDatabase
-    ) { }
+    constructor(@Inject(WRITE_DB) private readonly db: NeonHttpDatabase) {}
 
-    async upsertGroup(groupId: string, timeLimitSeconds: number = 0) {
+    async upsertGroup(groupId: string, timeLimit: number = 0) {
         await this.db
             .insert(questionGroups)
-            .values({ id: groupId, timeLimitSeconds })
+            .values({ id: groupId, timeLimit })
             .onConflictDoUpdate({
                 target: questionGroups.id,
-                set: { timeLimitSeconds }
+                set: { timeLimit },
             });
     }
 
     async upsertQuestion(groupId: string, question: IQuestion) {
         // Create correct runtime instance
         switch (question.type) {
-            case "multiple-choice":
+            case 'multiple-choice':
                 question = new MultipleChoice(question.id, question.number);
                 break;
 
-            case "complex-multiple-choice":
+            case 'complex-multiple-choice':
                 question = new ComplexChoice(question.id, question.number);
                 break;
 
@@ -78,8 +76,5 @@ export class QuestionsWriteRepository {
         // }
     }
 
-    async removeQuestion(questionId: string) {
-
-    }
-
+    async removeQuestion(questionId: string) {}
 }

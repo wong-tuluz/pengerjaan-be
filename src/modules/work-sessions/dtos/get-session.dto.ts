@@ -1,5 +1,5 @@
-import { IQuestion, TimeType } from "src/modules/questions/models/question";
-import { IWorkSessionAnswer } from "../models/session"
+import { IQuestion, TimeType } from '@/modules/questions/models/question';
+import { IWorkSessionAnswer } from '../models/session';
 
 export interface WorkSessionDto {
     id: string;
@@ -13,7 +13,7 @@ export interface WorkSessionDto {
 }
 
 export interface WorkSessionQuestionStateDto {
-    question: IQuestion
-    marked: boolean
-    answer?: IWorkSessionAnswer | null
+    question: IQuestion;
+    marked: boolean;
+    answer?: IWorkSessionAnswer | null;
 }

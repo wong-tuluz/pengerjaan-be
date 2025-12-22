@@ -1,4 +1,4 @@
-import { IWorkSessionAnswer } from "./session";
+import { IWorkSessionAnswer } from './session';
 
 class MultipleChoiceAnswer implements IWorkSessionAnswer {
     id: string;
@@ -8,4 +8,4 @@ class MultipleChoiceAnswer implements IWorkSessionAnswer {
     value: string;
 }
 
-export { MultipleChoiceAnswer }
+export { MultipleChoiceAnswer };

@@ -1,4 +1,4 @@
-import { IWorkSessionAnswer } from "./session";
+import { IWorkSessionAnswer } from './session';
 
 class ComplexChoiceAnswer implements IWorkSessionAnswer {
     id: string;
@@ -8,4 +8,4 @@ class ComplexChoiceAnswer implements IWorkSessionAnswer {
     value: string[];
 }
 
-export { ComplexChoiceAnswer }
+export { ComplexChoiceAnswer };

@@ -1,26 +1,42 @@
-import { Inject } from "@nestjs/common";
-import { IQueryHandler, Query, QueryHandler } from "@nestjs/cqrs";
-import { NeonHttpDatabase } from "drizzle-orm/neon-http";
-import { READ_DB, WRITE_DB } from "src/core/constants/db.constants";
+import { Controller, Get, Injectable, Param } from '@nestjs/common';
+import { IQueryHandler, Query, QueryBus, QueryHandler } from '@nestjs/cqrs';
+import { QuestionsReadRepository } from '../../repositories/question-read.repository';
+import { QuestionGroupDto } from '../../dtos/question.dto';
 
-class QuestionGroupResult {
+interface GetQuestionGroupResult {
+    data: QuestionGroupDto;
 }
 
-export class GetQuestionGroup extends Query<QuestionGroupResult> {
+export class GetQuestionGroup extends Query<GetQuestionGroupResult> {
     constructor(public readonly id: string) {
         super();
     }
 }
 
-
 @QueryHandler(GetQuestionGroup)
+@Injectable()
 export class GetQuestionGroupHandler implements IQueryHandler<GetQuestionGroup> {
-    constructor() 
-    { }
-    
-    execute(query: GetQuestionGroup): Promise<QuestionGroupResult> {
-        
+    constructor(private readonly readRepository: QuestionsReadRepository) {}
 
-        throw new Error("Method not implemented.");
+    async execute(query: GetQuestionGroup): Promise<GetQuestionGroupResult> {
+        const group = await this.readRepository.find(query.id);
+
+        if (!group) {
+            throw new Error(`QuestionGroup ${query.id} not found`);
+        }
+
+        return {
+            data: group,
+        };
+    }
+}
+
+@Controller('api/questions')
+export class GetQuestionGroupEndpoint {
+    constructor(private readonly queryBus: QueryBus) {}
+
+    @Get(':id')
+    async getGroup(@Param('id') id: string): Promise<GetQuestionGroupResult> {
+        return this.queryBus.execute(new GetQuestionGroup(id));
     }
 }

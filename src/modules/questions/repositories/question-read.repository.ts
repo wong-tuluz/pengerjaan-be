@@ -1,34 +1,51 @@
-import { Inject, Injectable } from "@nestjs/common";
-import { NeonHttpDatabase } from "drizzle-orm/neon-http";
-import { READ_DB } from "src/core/constants/db.constants";
-import { IQuestion, QuestionGroup } from "../models/question";
-import { questionAnswers, questionGroups, questions } from "src/modules/drizzle/schema";
-import { eq } from "drizzle-orm";
-import { QuestionAnswer } from "../models/question-answer";
-import { MultipleChoice } from "../models/multiple-choice";
-import { ComplexChoice } from "../models/complex-choice";
+import { Inject, Injectable } from '@nestjs/common';
+import { NeonHttpDatabase } from 'drizzle-orm/neon-http';
+import { READ_DB } from '@/core/constants/db.constants';
+import { IQuestion, QuestionGroup } from '../models/question';
+import {
+    questionAnswers,
+    questionGroups,
+    questions,
+} from '@/modules/drizzle/schema';
+import { eq } from 'drizzle-orm';
+import { QuestionAnswer } from '../models/question-answer';
+import { MultipleChoice } from '../models/multiple-choice';
+import { ComplexChoice } from '../models/complex-choice';
 
 @Injectable()
 export class QuestionsReadRepository {
-    constructor(
-        @Inject(READ_DB) private readonly readDb: NeonHttpDatabase
-    ) { }
+    constructor(@Inject(READ_DB) private readonly readDb: NeonHttpDatabase) {}
+
+    async findAll(): Promise<QuestionGroup[]> {
+        const groupRows = await this.readDb
+            .select()
+            .from(questionGroups)
+            .execute();
+
+        return groupRows.map((row) => {
+            const group = new QuestionGroup(row.id);
+            group.timeLimit = row.timeLimit;
+            return group;
+        });
+    }
 
     async find(groupId: string): Promise<QuestionGroup | null> {
         const [groupRow] = await this.readDb
             .select()
             .from(questionGroups)
-            .where(eq(questionGroups.id, groupId));
+            .where(eq(questionGroups.id, groupId))
+            .execute();
 
         if (!groupRow) return null;
 
         const group = new QuestionGroup(groupRow.id);
-        group.timeLimit = groupRow.timeLimitSeconds;
+        group.timeLimit = groupRow.timeLimit;
 
         const questionRows = await this.readDb
             .select()
             .from(questions)
-            .where(eq(questions.groupId, groupId));
+            .where(eq(questions.groupId, groupId))
+            .execute();
 
         for (const row of questionRows) {
             let question: IQuestion;
@@ -57,9 +74,10 @@ export class QuestionsReadRepository {
         const rows = await this.readDb
             .select()
             .from(questionAnswers)
-            .where(eq(questionAnswers.questionId, questionId));
+            .where(eq(questionAnswers.questionId, questionId))
+            .execute();
 
-        return rows.map(r => {
+        return rows.map((r) => {
             const ans = new QuestionAnswer();
             ans.id = r.id;
             ans.answer = r.answer;

@@ -4,10 +4,10 @@ import * as dotenv from 'dotenv';
 dotenv.config();
 
 export default {
-  schema: './src/modules/drizzle/schema.ts',
-  out: './migration',
-  dialect: 'postgresql',
-  dbCredentials: {
-    url: process.env.DATABASE_URL!,
-  },
+    schema: './src/modules/drizzle/schema',
+    out: './migration',
+    dialect: 'postgresql',
+    dbCredentials: {
+        url: process.env.WRITE_DATABASE_URL!,
+    },
 } satisfies Config;

@@ -1,5 +1,5 @@
-import { IQuestion, QuestionType } from "./question";
-import { QuestionAnswer } from "./question-answer";
+import { IQuestion, QuestionType } from './question';
+import { QuestionAnswer } from './question-answer';
 
 class MultipleChoice implements IQuestion {
     id: string;
@@ -7,7 +7,7 @@ class MultipleChoice implements IQuestion {
     number: number;
     question: string;
 
-    choices: QuestionAnswer[]
+    choices: QuestionAnswer[];
 
     constructor(id: string, number: number) {
         this.id = id;
@@ -16,4 +16,4 @@ class MultipleChoice implements IQuestion {
     }
 }
 
-export { MultipleChoice }
+export { MultipleChoice };

@@ -1,12 +1,12 @@
-import { TimeType } from "src/core/types/time-type"
+import { TimeType } from '@/core/types/time-type';
 
-type QuestionType = 'multiple-choice' | 'complex-multiple-choice'
+type QuestionType = 'multiple-choice' | 'complex-multiple-choice';
 
 interface IQuestion {
-    id: string
-    type: QuestionType
-    number: number
-    question: string
+    id: string;
+    type: QuestionType;
+    number: number;
+    question: string;
 }
 
 class QuestionGroup {
@@ -34,6 +34,5 @@ class QuestionGroup {
     }
 }
 
-
-export type { IQuestion, QuestionType, TimeType }
-export { QuestionGroup }
+export type { IQuestion, QuestionType, TimeType };
+export { QuestionGroup };

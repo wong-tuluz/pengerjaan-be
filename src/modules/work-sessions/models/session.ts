@@ -18,7 +18,5 @@ interface IWorkSessionAnswer {
     value: unknown;
 }
 
-
-
-export type { IWorkSessionAnswer }
-export { WorkSession }
+export type { IWorkSessionAnswer };
+export { WorkSession };
