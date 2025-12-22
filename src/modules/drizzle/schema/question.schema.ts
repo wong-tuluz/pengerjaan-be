@@ -18,6 +18,8 @@ export const questionTypeEnum = pgEnum('question_type', [
 export const questionGroups = pgTable('question_groups', {
     id: uuid('id').primaryKey().defaultRandom(),
     timeLimit: integer('time_limit').notNull().default(0),
+    randomizeAnswer: boolean().notNull().default(true),
+    randomizeQuestion: boolean().notNull().default(true),
 });
 
 // QUESTIONS TABLE

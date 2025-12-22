@@ -1,4 +1,5 @@
 import { TimeType } from '@/core/types/time-type';
+import { v7 } from 'uuid';
 
 type QuestionType = 'multiple-choice' | 'complex-multiple-choice';
 
@@ -10,13 +11,15 @@ interface IQuestion {
 }
 
 class QuestionGroup {
-    public id: string;
+    public readonly id: string;
     public questions: IQuestion[];
     public timeLimit: number = 0; // in seconds
 
+    public randomizeAnswer: boolean;
+    public randomizeQuestion: boolean;
+
     constructor(id: string) {
         this.id = id;
-        this.questions = [];
     }
 
     setTimeLimit(value: number, type: TimeType) {
@@ -32,6 +35,32 @@ class QuestionGroup {
                 break;
         }
     }
+
+    map(data: {
+        timeLimit: number;
+        randomizeAnswer: boolean;
+        randomizeQuestion: boolean;
+    }) {
+        this.timeLimit = data.timeLimit;
+        this.randomizeAnswer = data.randomizeAnswer;
+        this.randomizeQuestion = data.randomizeQuestion;
+    }
+}
+
+export function createQuestionGroup(
+    timeLimit: number = 0,
+    randomizeAnswer: boolean = true,
+    randomizeQuestion: boolean = true,
+): QuestionGroup {
+    const group = new QuestionGroup(v7());
+
+    group.map({
+        timeLimit,
+        randomizeAnswer,
+        randomizeQuestion,
+    });
+
+    return group;
 }
 
 export type { IQuestion, QuestionType, TimeType };

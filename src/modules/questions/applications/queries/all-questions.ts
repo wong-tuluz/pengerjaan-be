@@ -1,7 +1,8 @@
-import { Injectable, Controller, Get, Param } from '@nestjs/common';
+import { Injectable, Controller, Get } from '@nestjs/common';
 import { QueryHandler, IQueryHandler, QueryBus, Query } from '@nestjs/cqrs';
 import { QuestionsReadRepository } from '../../repositories/question-read.repository';
 import { QuestionGroupDto } from '../../dtos/question.dto';
+import { basePath } from '../../questions.constants';
 
 interface GetAllQuestionGroupResult {
     data: Omit<QuestionGroupDto, 'questions'>[];
@@ -32,7 +33,7 @@ export class GetAllQuestionGroupHandler implements IQueryHandler<GetAllQuestionG
     }
 }
 
-@Controller('api/questions')
+@Controller(basePath.questionGroups)
 export class GetAllQuestionGroupEndpoint {
     constructor(private readonly queryBus: QueryBus) {}
 

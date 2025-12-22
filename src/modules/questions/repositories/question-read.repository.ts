@@ -24,7 +24,9 @@ export class QuestionsReadRepository {
 
         return groupRows.map((row) => {
             const group = new QuestionGroup(row.id);
-            group.timeLimit = row.timeLimit;
+
+            group.map(row);
+
             return group;
         });
     }
@@ -39,7 +41,8 @@ export class QuestionsReadRepository {
         if (!groupRow) return null;
 
         const group = new QuestionGroup(groupRow.id);
-        group.timeLimit = groupRow.timeLimit;
+
+        group.map(groupRow);
 
         const questionRows = await this.readDb
             .select()
@@ -79,9 +82,11 @@ export class QuestionsReadRepository {
 
         return rows.map((r) => {
             const ans = new QuestionAnswer();
+
             ans.id = r.id;
             ans.answer = r.answer;
             ans.isCorrect = r.isCorrect;
+
             return ans;
         });
     }
