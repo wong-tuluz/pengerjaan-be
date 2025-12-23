@@ -1,24 +1,27 @@
-import { BaseQuestionAnswerDto, BaseQuestionDto } from "./question.dto";
+import { BaseQuestionAnswerSchema, BaseQuestionSchema } from "./question.dto";
 
+import { z } from 'zod';
 
-export type CreateQuestionAnswerDto = BaseQuestionAnswerDto
+export const CreateMultipleChoiceSchema = BaseQuestionSchema.extend({
+    type: z.literal('multiple-choice'),
+    choices: z.array(BaseQuestionAnswerSchema).min(1),
+});
 
-export type CreateMultipleChoiceDto = BaseQuestionDto & {
-    type: 'multiple-choice';
-    choices: CreateQuestionAnswerDto[];
-};
+export const CreateComplexChoiceSchema = BaseQuestionSchema.extend({
+    type: z.literal('complex-choice'),
+    choices: z.array(BaseQuestionAnswerSchema).min(1),
+});
 
-export type CreateComplexChoiceDto = BaseQuestionDto & {
-    type: 'complex-choice';
-    choices: CreateQuestionAnswerDto[];
-};
+export const CreateEssaySchema = BaseQuestionSchema.extend({
+    type: z.literal('essay'),
+    answer: BaseQuestionAnswerSchema,
+});
 
-export type CreateEssayDto = BaseQuestionDto & {
-    type: 'essay';
-    answer: CreateQuestionAnswerDto;
-};
+export const CreateQuestionSchema = z.discriminatedUnion('type', [
+    CreateMultipleChoiceSchema,
+    CreateComplexChoiceSchema,
+    CreateEssaySchema,
+]);
 
-export type CreateQuestionDto =
-    | CreateMultipleChoiceDto
-    | CreateComplexChoiceDto
-    | CreateEssayDto;
+export type CreateQuestionAnswerDto = z.infer<typeof BaseQuestionAnswerSchema>;
+export type CreateQuestionDto = z.infer<typeof CreateQuestionSchema>;

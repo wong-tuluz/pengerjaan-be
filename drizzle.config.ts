@@ -6,7 +6,7 @@ dotenv.config();
 export default {
     schema: './src/modules/drizzle/schema',
     out: './migration',
-    dialect: 'postgresql',
+    dialect: 'mysql',
     dbCredentials: {
         url: process.env.WRITE_DATABASE_URL!,
     },

@@ -10,6 +10,16 @@ export class MultipleChoice implements IQuestion {
 
     choices: QuestionAnswer[];
 
+    public map(data: {
+        number: number,
+        question: string,
+        choices: QuestionAnswer[]
+    }) {
+        this.number = data.number
+        this.question = data.question
+        this.choices = data.choices
+    }
+
     public assertSingleCorrectAnswer() {
         const correctCount = this.choices.filter(c => c.isCorrect).length;
 

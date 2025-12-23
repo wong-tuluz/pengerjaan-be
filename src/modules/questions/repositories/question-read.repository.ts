@@ -1,5 +1,4 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { NeonHttpDatabase } from 'drizzle-orm/neon-http';
 import { READ_DB } from '@/core/constants/db.constants';
 import { IQuestion, QuestionGroup } from '../models/question';
 import {
@@ -12,10 +11,11 @@ import { QuestionAnswer } from '../models/question-answer';
 import { MultipleChoice } from '../models/multiple-choice';
 import { ComplexChoice } from '../models/complex-choice';
 import { Essay } from '../models/essay';
+import { MySql2Database } from 'drizzle-orm/mysql2';
 
 @Injectable()
 export class QuestionsReadRepository {
-    constructor(@Inject(READ_DB) private readonly readDb: NeonHttpDatabase) { }
+    constructor(@Inject(READ_DB) private readonly readDb: MySql2Database) { }
 
     async findAll(): Promise<QuestionGroup[]> {
         const groupRows = await this.readDb

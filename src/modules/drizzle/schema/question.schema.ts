@@ -1,49 +1,75 @@
 import {
-    pgTable,
-    uuid,
-    integer,
+    mysqlTable,
+    varchar,
+    int,
     text,
-    pgEnum,
     boolean,
-} from 'drizzle-orm/pg-core';
+    mysqlEnum,
+} from "drizzle-orm/mysql-core";
 import { relations } from 'drizzle-orm';
 
 // ENUMS
-export const questionTypeEnum = pgEnum('question_type', [
-    'multiple-choice',
-    'complex-choice',
-    'essay'
+export const questionTypeEnum = mysqlEnum("question_type", [
+    "multiple-choice",
+    "complex-choice",
+    "essay",
 ]);
 
 // QUESTION GROUP TABLE
-export const questionGroups = pgTable('question_groups', {
-    id: uuid('id').primaryKey().defaultRandom(),
-    timeLimit: integer('time_limit').notNull().default(0),
-    randomizeAnswer: boolean().notNull().default(true),
-    randomizeQuestion: boolean().notNull().default(true),
+export const questionGroups = mysqlTable("question_groups", {
+    id: varchar("id", { length: 36 }).primaryKey(),
+    name: text("name").notNull(),
+
+    timeLimit: int("time_limit")
+        .notNull()
+        .default(0),
+
+    randomizeAnswer: boolean("randomize_answer")
+        .notNull()
+        .default(true),
+
+    randomizeQuestion: boolean("randomize_question")
+        .notNull()
+        .default(true),
 });
 
 // QUESTIONS TABLE
-export const questions = pgTable('questions', {
-    id: uuid('id').primaryKey().defaultRandom(),
-    groupId: uuid('group_id')
+export const questions = mysqlTable("questions", {
+    id: varchar("id", { length: 36 }).primaryKey(),
+
+    groupId: varchar("group_id", { length: 36 })
         .notNull()
-        .references(() => questionGroups.id, { onDelete: 'cascade' }),
-    type: questionTypeEnum('type').notNull(),
-    number: integer('number').notNull(),
-    question: text('text').notNull(),
+        .references(() => questionGroups.id, {
+            onDelete: "cascade",
+        }),
+
+    type: mysqlEnum("type", [
+        "multiple-choice",
+        "complex-choice",
+        "essay",
+    ]).notNull(),
+
+    number: int("number").notNull(),
+
+    question: text("text").notNull(),
 });
 
 // ANSWERS TABLE
-export const questionAnswers = pgTable('question_answers', {
-    id: uuid('id').primaryKey().defaultRandom(),
-    questionId: uuid('question_id')
-        .notNull()
-        .references(() => questions.id, { onDelete: 'cascade' }),
-    answer: text('text').notNull(),
+export const questionAnswers = mysqlTable("question_answers", {
+    id: varchar("id", { length: 36 }).primaryKey(),
 
-    isCorrect: boolean('is_correct').notNull().default(false),
-});
+    questionId: varchar("question_id", { length: 36 })
+        .notNull()
+        .references(() => questions.id, {
+            onDelete: "cascade",
+        }),
+
+    answer: text("text").notNull(),
+
+    isCorrect: boolean("is_correct")
+        .notNull()
+        .default(false),
+})
 
 export const questionGroupRelations = relations(questionGroups, ({ many }) => ({
     questions: many(questions),

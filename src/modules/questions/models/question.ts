@@ -14,6 +14,7 @@ class QuestionGroup {
     public readonly id: string;
     public questions: IQuestion[];
     public timeLimit: number = 0; // in seconds
+    public name: string
 
     public randomizeAnswer: boolean;
     public randomizeQuestion: boolean;
@@ -37,10 +38,12 @@ class QuestionGroup {
     }
 
     map(data: {
+        name: string;
         timeLimit: number;
         randomizeAnswer: boolean;
         randomizeQuestion: boolean;
     }) {
+        this.name = data.name;
         this.timeLimit = data.timeLimit;
         this.randomizeAnswer = data.randomizeAnswer;
         this.randomizeQuestion = data.randomizeQuestion;
@@ -48,6 +51,7 @@ class QuestionGroup {
 }
 
 export function createQuestionGroup(
+    name: string,
     timeLimit: number = 0,
     randomizeAnswer: boolean = true,
     randomizeQuestion: boolean = true,
@@ -55,6 +59,7 @@ export function createQuestionGroup(
     const group = new QuestionGroup(v7());
 
     group.map({
+        name,
         timeLimit,
         randomizeAnswer,
         randomizeQuestion,

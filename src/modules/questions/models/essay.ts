@@ -10,6 +10,16 @@ export class Essay implements IQuestion {
 
     answer: QuestionAnswer;
 
+        public map(data: {
+        number: number,
+        question: string,
+        answer: QuestionAnswer
+    }) {
+        this.number = data.number
+        this.question = data.question
+        this.answer = data.answer
+    }
+
     constructor(id: string) {
         this.id = id;
     }

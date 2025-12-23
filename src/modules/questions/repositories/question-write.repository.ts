@@ -1,7 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { NeonHttpDatabase } from 'drizzle-orm/neon-http';
 import { WRITE_DB } from '@/core/constants/db.constants';
-import { IQuestion } from '../models/question';
+import { IQuestion, QuestionGroup } from '../models/question';
 import {
     questionAnswers,
     questionGroups,
@@ -9,20 +9,25 @@ import {
 } from '@/modules/drizzle/schema';
 import { QuestionAnswer } from '../models/question-answer';
 import { eq, inArray, notInArray, sql, and } from 'drizzle-orm';
+import { MySql2Database } from 'drizzle-orm/mysql2';
 
 @Injectable()
 export class QuestionsWriteRepository {
-    constructor(@Inject(WRITE_DB) private readonly db: NeonHttpDatabase) {}
-
-    async upsertGroup(groupId: string, timeLimit: number = 0) {
+    constructor(@Inject(WRITE_DB) private readonly db: MySql2Database) { }
+    async upsertGroup(group: QuestionGroup) {
         await this.db
             .insert(questionGroups)
-            .values({ id: groupId, timeLimit })
-            .onConflictDoUpdate({
-                target: questionGroups.id,
-                set: { timeLimit },
+            .values(group)
+            .onDuplicateKeyUpdate({
+                set: {
+                    timeLimit: group.timeLimit,
+                    name: group.name,
+                    randomizeAnswer: group.randomizeAnswer,
+                    randomizeQuestion: group.randomizeQuestion
+                },
             });
     }
+
 
     async upsertQuestion(groupId: string, question: IQuestion) {
         await this.db
@@ -34,8 +39,7 @@ export class QuestionsWriteRepository {
                 number: question.number,
                 question: question.question,
             })
-            .onConflictDoUpdate({
-                target: questions.id,
+            .onDuplicateKeyUpdate({
                 set: {
                     number: question.number,
                     question: question.question,
@@ -44,7 +48,7 @@ export class QuestionsWriteRepository {
             });
     }
 
-    async removeQuestion(questionId: string) {}
+    async removeQuestion(questionId: string) { }
 
     async upsertQuestionAnswers(
         questionId: string,
@@ -70,8 +74,7 @@ export class QuestionsWriteRepository {
                     isCorrect: a.isCorrect,
                 })),
             )
-            .onConflictDoUpdate({
-                target: questionAnswers.id,
+            .onDuplicateKeyUpdate({
                 set: {
                     answer: sql`EXCLUDED.answer`,
                     isCorrect: sql`EXCLUDED.is_correct`,

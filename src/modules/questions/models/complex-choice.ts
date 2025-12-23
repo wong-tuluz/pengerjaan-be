@@ -10,6 +10,16 @@ export class ComplexChoice implements IQuestion {
 
     choices: QuestionAnswer[];
 
+    public map(data: {
+        number: number,
+        question: string,
+        choices: QuestionAnswer[]
+    }) {
+        this.number = data.number
+        this.question = data.question
+        this.choices = data.choices
+    }
+
     constructor(id: string) {
         this.id = id;
     }
