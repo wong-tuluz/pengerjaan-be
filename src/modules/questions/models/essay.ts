@@ -2,25 +2,25 @@ import { v7 } from 'uuid';
 import { IQuestion, QuestionType } from './question';
 import { QuestionAnswer } from './question-answer';
 
-export class ComplexChoice implements IQuestion {
+export class Essay implements IQuestion {
     id: string;
-    type: QuestionType = 'complex-choice';
+    type: QuestionType = 'essay';
     number: number;
     question: string;
 
-    choices: QuestionAnswer[];
+    answer: QuestionAnswer;
 
     constructor(id: string) {
         this.id = id;
     }
 }
 
-export function createComplexChoice(number: number, question: string, choices: QuestionAnswer[]): ComplexChoice {
-    const questions = new ComplexChoice(v7())
+export function createEssay(number: number, question: string, answer: QuestionAnswer): Essay {
+    const questions = new Essay(v7())
 
     questions.number = number
     questions.question = question
-    questions.choices = choices
+    questions.answer = answer
 
     return questions
 }

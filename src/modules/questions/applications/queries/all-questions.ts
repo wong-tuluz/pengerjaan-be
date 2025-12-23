@@ -28,6 +28,8 @@ export class GetAllQuestionGroupHandler implements IQueryHandler<GetAllQuestionG
             data: groups.map((g) => ({
                 id: g.id,
                 timeLimit: g.timeLimit,
+                randomizeAnswer: g.randomizeAnswer,
+                randomizeQuestion: g.randomizeQuestion
             })),
         };
     }

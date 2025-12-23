@@ -11,7 +11,8 @@ import { relations } from 'drizzle-orm';
 // ENUMS
 export const questionTypeEnum = pgEnum('question_type', [
     'multiple-choice',
-    'complex-multiple-choice',
+    'complex-choice',
+    'essay'
 ]);
 
 // QUESTION GROUP TABLE

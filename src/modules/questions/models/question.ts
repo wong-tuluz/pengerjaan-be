@@ -1,7 +1,7 @@
 import { TimeType } from '@/core/types/time-type';
 import { v7 } from 'uuid';
 
-type QuestionType = 'multiple-choice' | 'complex-multiple-choice';
+type QuestionType = 'multiple-choice' | 'complex-choice' | 'essay';
 
 interface IQuestion {
     id: string;
