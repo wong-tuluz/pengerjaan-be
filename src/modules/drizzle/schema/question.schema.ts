@@ -19,10 +19,7 @@ export const questionTypeEnum = mysqlEnum("question_type", [
 export const questionGroups = mysqlTable("question_groups", {
     id: varchar("id", { length: 36 }).primaryKey(),
     name: text("name").notNull(),
-
-    timeLimit: int("time_limit")
-        .notNull()
-        .default(0),
+    description: text("description").notNull().default(""),
 
     randomizeAnswer: boolean("randomize_answer")
         .notNull()
@@ -49,9 +46,7 @@ export const questions = mysqlTable("questions", {
         "essay",
     ]).notNull(),
 
-    number: int("number").notNull(),
-
-    question: text("text").notNull(),
+    prompt: text("prompt").notNull(),
 });
 
 // ANSWERS TABLE
@@ -64,7 +59,7 @@ export const questionAnswers = mysqlTable("question_answers", {
             onDelete: "cascade",
         }),
 
-    answer: text("text").notNull(),
+    value: text("text").notNull(),
 
     isCorrect: boolean("is_correct")
         .notNull()

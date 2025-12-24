@@ -1,14 +1,12 @@
 import { Module } from '@nestjs/common';
 import { DrizzleModule } from '@/modules/drizzle/drizzle.module';
-import { QuestionsModule } from '@/modules/questions/questions.module';
-import { WorkSessionsModule } from '@/modules/work-sessions/work-sessions.module';
 import { ConfigModule } from '@nestjs/config';
+import { QuestionModule } from './modules/questions/question.module';
 
 @Module({
     imports: [
         DrizzleModule,
-        QuestionsModule,
-        WorkSessionsModule,
+        QuestionModule,
         ConfigModule.forRoot({
             isGlobal: true,
         }),
