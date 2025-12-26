@@ -55,7 +55,7 @@ export class QuestionQueryController {
         }
 
         return this.questionRepo.find(group.id);
-    }
+    } 
 
     /**
      * GET /api/question-groups/:id/questions/:questionId

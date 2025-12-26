@@ -5,7 +5,6 @@ import { MySql2Database } from "drizzle-orm/mysql2";
 import { questionAnswers, questions } from "@/modules/drizzle/schema";
 import { UnitOfWork } from "@/core/uow/uow";
 import { eq, and } from "drizzle-orm";
-import { error } from "console";
 
 @Injectable()
 export class QuestionRepository {
