@@ -60,6 +60,10 @@ export class Question {
         return obj
     }
 
+    clearAnswers() {
+        this.answers = [];
+    }
+
     addAnswer(value: string, isCorrect: boolean) {
         this.answers.push(new QuestionAnswer(v7(), this.id, value, isCorrect))
     }

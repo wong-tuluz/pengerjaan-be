@@ -1,135 +1,127 @@
-import { Question } from "@/modules/questions/domain/question.entity";
-import { v7 } from "uuid";
+import { v7 as uuidv7 } from 'uuid';
+
+export type SessionStatus = 'in_progress' | 'finished';
 
 export class Session {
-    id: string
-    questionGroupId: string;
-    questions: Question[];
-    marks: SessionMarker[];
+    readonly id: string;
+    readonly timeLimit: number;
+    readonly startedAt: Date;
+    finishedAt?: Date | null;
+    status: SessionStatus;
     answers: SessionAnswer[];
+    marks: SessionMarker[];
 
-    // constructor(questions: Question[]) {
-    //     this.questions = questions;
-    //     this.marks = [];
-    //     this.answers = [];
-    // }
-
-    /**
-     * Submit answer for a question
-     * For:
-     *  - multiple-choice: answerId is required
-     *  - complex-choice : answerId is required (can later support array)
-     *  - essay:          value is required (text)
-     */
-    async submitAnswer(
-        questionId: string,
-        answerId?: string | null,
-        value?: string | null,
+    constructor(
+        id: string,
+        timeLimit: number,
+        startedAt: Date,
+        status: SessionStatus,
+        answers: SessionAnswer[],
+        marks: SessionMarker[],
+        finishedAt?: Date | null,
     ) {
-        const question = this.questions.find(q => q.id === questionId);
-        if (!question)
-            throw new Error(`Question ${questionId} not found`);
+        this.id = id;
+        this.timeLimit = timeLimit;
+        this.startedAt = startedAt;
+        this.status = status;
+        this.answers = answers;
+        this.marks = marks;
+        this.finishedAt = finishedAt;
+    }
 
-        switch (question.type) {
-            case "multiple-choice": {
-                if (!answerId)
-                    throw new Error("Multiple choice requires answerId");
+    static create(timeLimit: number): Session {
+        return new Session(
+            uuidv7(),
+            timeLimit,
+            new Date(),
+            'in_progress',
+            [],
+            [],
+            undefined,
+        );
+    }
 
-                const choice = question.answers.find(a => a.id === answerId);
-                if (!choice)
-                    throw new Error(`Answer ${answerId} not found in question ${questionId}`);
+    finish(): void {
+        if (this.status === 'finished') return;
 
-                break;
-            }
+        this.status = 'finished';
+        this.finishedAt = new Date();
+    }
 
-            case "complex-choice": {
-                if (!answerId)
-                    throw new Error("Complex choice requires answerId (TODO: support array)");
-                break;
-            }
+    submitAnswer(answers: SessionAnswer[]) {
+        this.ensureCanAnswer();
 
-            case "essay": {
-                if (!value || value.trim().length === 0)
-                    throw new Error("Essay requires written text");
-                break;
-            }
-        }
-
-        const existing = this.answers.find(a => a.questionId === questionId);
-        if (existing) {
-            existing.answerId = answerId ?? null;
-            existing.value = value ?? null;
-        } else {
-            this.answers.push(new SessionAnswer(
-                v7(),
-                questionId,
-                answerId ?? null,
-                value ?? null,
-            ));
+        for (const a of answers) {
+            this.answers.push(a);
         }
     }
 
-    /**
-     * Mark / unmark question as flagged by user
-     */
-    async markQuestion(questionId: string, isMarked: boolean) {
-        const question = this.questions.find(q => q.id === questionId);
-        if (!question)
-            throw new Error(`Question id ${questionId} not found`);
+    markQuestion(questionId: string, isMarked: boolean): void {
+        this.ensureInProgress();
 
-        const existing = this.marks.find(m => m.questionId === questionId);
+        const existing = this.marks.find((m) => m.questionId === questionId);
         if (existing) {
             existing.isMarked = isMarked;
-        } else {
-            this.marks.push(new SessionMarker(v7(), questionId, isMarked))
+            return;
+        }
+
+        this.marks.push(
+            new SessionMarker(uuidv7(), this.id, questionId, isMarked),
+        );
+    }
+
+    private ensureCanAnswer(): void {
+        this.ensureInProgress();
+        if (this.isExpired()) {
+            throw new Error('Session expired – cannot submit answers');
         }
     }
 
-    /**
-     * Helper – get single answer
-     */
-    getAnswer(questionId: string): SessionAnswer | undefined {
-        return this.answers.find(a => a.questionId === questionId);
+    private ensureInProgress(): void {
+        if (this.status !== 'in_progress') {
+            throw new Error('Session not active');
+        }
     }
 
-    /**
-     * Helper – Determine if student finished answering
-     */
-    isCompleted(): boolean {
-        return this.answers.length === this.questions.length;
-    }
-
-    /**
-     * Helper – Count unanswered
-     */
-    unanswered(): number {
-        return this.questions.length - this.answers.length;
+    private isExpired(): boolean {
+        if (!this.timeLimit) return false;
+        const expiresAt = new Date(
+            this.startedAt.getTime() + this.timeLimit * 60 * 1000,
+        );
+        return new Date() > expiresAt;
     }
 }
 
 export class SessionAnswer {
-    id: string
-    questionId: string;
-    answerId?: string | null;
-    value?: string | null;
+    constructor(
+        public id: string,
+        public sesionId: string,
+        public questionId: string,
+        public answerId: string | null,
+        public value: string | null,
+    ) {}
 
-
-    constructor(id: string, questionId: string, answerId: string | null, value: string | null) {
-        this.id = id
-        this.questionId = questionId
-        this.answerId = answerId
-        this.value = value
+    static create(
+        sessionId: string,
+        questionId: string,
+        answerId: string | null,
+        value: string | null,
+    ) {
+        return new SessionAnswer(
+            uuidv7(),
+            sessionId,
+            questionId,
+            answerId,
+            value,
+        );
     }
 }
 
 export class SessionMarker {
-    id: string
-    questionId: string;
-    isMarked: boolean;
-
-    constructor(id: string, questionId: string, isMarked: boolean) {
-        this.id = id
-        this.questionId = questionId
-        this.isMarked = isMarked
-    }
+    constructor(
+        public id: string,
+        public sessionId: string,
+        public questionId: string,
+        public isMarked: boolean,
+    ) {}
 }
