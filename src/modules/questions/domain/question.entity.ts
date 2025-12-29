@@ -34,6 +34,8 @@ export class Question {
     id: string
     groupId: string
 
+    bobotBenar: number
+    bobotSoal: number
     prompt: string
     type: QuestionType
     answers: QuestionAnswer[] = []
