@@ -15,7 +15,11 @@ export class WorkSession {
     answers: WorkSessionJawaban[];
     marks: WorkSessionMarker[];
 
-    static create(siswaId:string, jadwalId: string, timeLimit: number): WorkSession {
+    static create(
+        siswaId: string,
+        jadwalId: string,
+        timeLimit: number,
+    ): WorkSession {
         const obj = new WorkSession();
 
         obj.id = uuidv7();
