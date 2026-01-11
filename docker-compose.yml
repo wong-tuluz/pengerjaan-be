@@ -1,20 +1,46 @@
 services:
-  mariadb:
-    image: mariadb:11.4
-    container_name: pengerjaan-db
-    restart: unless-stopped
+    mariadb:
+        image: mariadb:11.4
+        container_name: pengerjaan-db
+        restart: unless-stopped
 
-    environment:
-      MARIADB_ROOT_PASSWORD: rootpassword
-      MARIADB_DATABASE: app_db
-      MARIADB_USER: app_user
-      MARIADB_PASSWORD: app_password
+        environment:
+            MARIADB_ROOT_PASSWORD: rootpassword
+            MARIADB_DATABASE: app_db
+            MARIADB_USER: app_user
+            MARIADB_PASSWORD: app_password
+        ports:
+            - '3306:3306'
+        volumes:
+            - pengerjaan_data:/var/lib/mysql
 
-    ports:
-      - "3306:3306"
+    redis:
+        image: redis:7.2
+        container_name: pengerjaan-redis
+        restart: unless-stopped
 
-    volumes:
-      - pengerjaan_data:/var/lib/mysql
+        ports:
+            - '6379:6379'
+
+        command: redis-server --appendonly yes
+        volumes:
+            - redis_data:/data
+
+    rabbitmq:
+        image: rabbitmq:3.13-management
+        container_name: pengerjaan-rabbitmq
+        restart: unless-stopped
+        environment:
+            RABBITMQ_DEFAULT_USER: app_user
+            RABBITMQ_DEFAULT_PASS: app_password
+            RABBITMQ_DEFAULT_VHOST: /
+        ports:
+            - '5672:5672'
+            - '15672:15672'
+        volumes:
+            - rabbitmq_data:/var/lib/rabbitmq
 
 volumes:
-  pengerjaan_data:
+    pengerjaan_data:
+    redis_data:
+    rabbitmq_data:
