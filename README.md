@@ -71,5 +71,5 @@ Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
 ## Database Migration
 
 ```sh
-drizzle-kit push
+bun drizzle-kit push
 ```

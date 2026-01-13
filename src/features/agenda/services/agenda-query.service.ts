@@ -18,7 +18,8 @@ export class AgendaQueryService {
         {
             id: string;
             title: string;
-            date: Date;
+            startTime: Date;
+            endTime: Date;
             description: string | null;
             createdAt: Date;
             updatedAt: Date | null;
@@ -45,7 +46,8 @@ export class AgendaQueryService {
     public async getById(agendaId: string): Promise<{
         id: string;
         title: string;
-        date: Date;
+        startTime: Date;
+        endTime: Date;
         description: string | null;
         createdAt: Date;
         updatedAt: Date | null;

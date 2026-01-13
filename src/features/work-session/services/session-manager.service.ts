@@ -25,10 +25,20 @@ export class SessionManagerService {
 
         const workSession = WorkSession.create(siswaId, jadwalId, paketSoal.timeLimit, paketSoal.id)
 
+        console.log(workSession)
+
         await this.txm.run(async ctx => {
-            ctx.tx.insert(workSessionTable).values(workSession)
+            await ctx.tx.insert(workSessionTable).values(workSession)
         })
 
         return { id: workSession.id }
+    }
+
+    public async getSessions(siswaId: string, jadwalId: string) {
+        const jadwal = await this.agendaQuery.getJadwal(jadwalId);
+        if (!jadwal)
+            throw new AppException(`Jadwal ${jadwalId} tidak ditemukan.`)
+
+
     }
 }

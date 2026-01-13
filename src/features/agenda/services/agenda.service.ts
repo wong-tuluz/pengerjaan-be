@@ -10,7 +10,8 @@ export class AgendaService {
 
     public async create(input: {
         title: string;
-        date: Date;
+        startTime: Date;
+        endTime: Date;
         description?: string | null;
         jadwal?: Array<{
             paketSoalId: string;
@@ -24,7 +25,8 @@ export class AgendaService {
             await ctx.tx.insert(agendaTable).values({
                 id: agendaId,
                 title: input.title,
-                date: input.date,
+                startTime: input.startTime,
+                endTime: input.endTime,
                 description: input.description ?? null,
             });
 
@@ -63,8 +65,8 @@ export class AgendaService {
                 .update(agendaTable)
                 .set({
                     ...(input.title && { title: input.title }),
-                    ...(input.startTime && { startTime: input.startTime}),
-                    ...(input.endTime && { endTime: input.endTime}),
+                    ...(input.startTime && { startTime: input.startTime }),
+                    ...(input.endTime && { endTime: input.endTime }),
                     ...(input.description !== undefined && {
                         description: input.description,
                     }),

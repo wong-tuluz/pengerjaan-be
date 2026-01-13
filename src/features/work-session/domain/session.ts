@@ -1,6 +1,7 @@
 import { v7 as uuidv7 } from 'uuid';
+import { runInThisContext } from 'vm';
 
-export type SessionStatus = 'in_progress' | 'finished';
+export type SessionStatus = 'active' | 'finished';
 
 export class WorkSession {
     id: string;
@@ -12,8 +13,8 @@ export class WorkSession {
     startedAt: Date;
     finishedAt?: Date | null;
     status: SessionStatus;
-    answers: WorkSessionJawaban[];
-    marks: WorkSessionMarker[];
+    answers: WorkSessionJawaban[] = [];
+    marks: WorkSessionMarker[] = [];
 
     static create(
         siswaId: string,
@@ -31,7 +32,7 @@ export class WorkSession {
         obj.materiSoalId = materiSoalId
         obj.timeLimit = timeLimit;
         obj.startedAt = new Date();
-        obj.status = 'in_progress';
+        obj.status = 'active';
         obj.answers = [];
         obj.marks = [];
 
@@ -40,7 +41,10 @@ export class WorkSession {
 
     public map(data: Partial<WorkSession>) {
         this.id = data.id ?? this.id;
+        this.siswaId = data.siswaId ?? this.siswaId;
         this.jadwalId = data.jadwalId ?? this.jadwalId;
+        this.paketSoalId = data.paketSoalId ?? this.paketSoalId;
+        this.materiSoalId = data.materiSoalId ?? this.materiSoalId;
         this.timeLimit = data.timeLimit ?? this.timeLimit;
         this.startedAt = data.startedAt ?? this.startedAt;
         this.status = data.status ?? this.status;
@@ -54,7 +58,7 @@ export class WorkSession {
         this.finishedAt = new Date();
     }
 
-    submitAnswer(answers: WorkSessionJawaban[]) {
+    submitAnswer(questionId: string, answers: WorkSessionJawaban[]) {
         this.ensureCanAnswer();
 
         for (const a of answers) {
@@ -84,9 +88,9 @@ export class WorkSession {
     }
 
     private ensureInProgress(): void {
-        if (this.status !== 'in_progress') {
-            throw new Error('Session not active');
-        }
+        // if (this.status !== 'active') {
+        //     throw new Error('Session not active');
+        // }
     }
 
     private isExpired(): boolean {
@@ -100,23 +104,23 @@ export class WorkSession {
 
 export class WorkSessionJawaban {
     public id: string;
-    public sesionId: string;
+    public workSessionId: string;
     public soalId: string;
-    public jawabanId: string | null;
+    public jawabanSoalId: string | null;
     public value: string | null;
 
     static create(
-        sessionId: string,
+        workSessionId: string,
         soalId: string,
-        jawabanId: string | null,
+        jawabanSoalId: string | null,
         value: string | null,
     ) {
         const obj = new WorkSessionJawaban();
 
         obj.id = uuidv7();
-        obj.sesionId = sessionId;
+        obj.workSessionId = workSessionId;
         obj.soalId = soalId;
-        obj.jawabanId = jawabanId;
+        obj.jawabanSoalId = jawabanSoalId;
         obj.value = value;
 
         return obj;
@@ -124,9 +128,9 @@ export class WorkSessionJawaban {
 
     map(data: Partial<WorkSessionJawaban>) {
         this.id = data.id ?? this.id;
-        this.sesionId = data.sesionId ?? this.sesionId;
+        this.workSessionId = data.workSessionId ?? this.workSessionId;
         this.soalId = data.soalId ?? this.soalId;
-        this.jawabanId = data.jawabanId ?? this.jawabanId;
+        this.jawabanSoalId = data.jawabanSoalId ?? this.jawabanSoalId;
         this.value = data.value ?? this.value;
     }
 }
@@ -134,7 +138,7 @@ export class WorkSessionJawaban {
 export class WorkSessionMarker {
     constructor(
         public id: string,
-        public sessionId: string,
+        public workSessionId: string,
         public soalId: string,
         public isMarked: boolean,
     ) { }

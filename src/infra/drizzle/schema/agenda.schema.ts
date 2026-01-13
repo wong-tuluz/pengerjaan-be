@@ -4,7 +4,8 @@ import { sql } from 'drizzle-orm';
 export const agendaTable = mysqlTable('agenda', {
     id: varchar('id', { length: 36 }).primaryKey(),
     title: varchar('title', { length: 255 }).notNull(),
-    date: datetime('date').notNull(),
+    startTime: datetime('start_time').notNull(),
+    endTime: datetime('end_time').notNull(),
     description: text('description'),
     createdAt: datetime('created_at')
         .notNull()

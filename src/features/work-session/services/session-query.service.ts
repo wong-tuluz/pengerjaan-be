@@ -10,7 +10,7 @@ import {
 
 @Injectable()
 export class SessionQueryService {
-    constructor(@Inject(READ_DB) private readonly db: MySql2Database) {}
+    constructor(@Inject(READ_DB) private readonly db: MySql2Database) { }
 
     async getSessions(
         siswaId: string,
@@ -37,20 +37,40 @@ export class SessionQueryService {
         }));
     }
 
+    async getSessionById(id: string): Promise<{
+        id: string;
+        siswaId: string;
+        jadwalId: string;
+        paketSoalId: string;
+        materiSoalId: string | null;
+        timeLimit: number;
+        startedAt: Date;
+        finishedAt: Date | null;
+        createdAt: Date;
+        updatedAt: Date | null;
+    } | null> {
+        const row = await this.db
+            .select()
+            .from(workSessionTable)
+            .where(eq(workSessionTable.id, id))
+            .then((rows) => rows[0]);
+
+        return row ?? null
+    }
 
     async getSessionAnswer(
         sessionId: string,
         questionId: string,
     ): Promise<
         | {
-              id: string;
-              workSessionId: string;
-              soalId: string;
-              jawabanSoalId: string | null;
-              value: string | null;
-              createdAt: Date;
-              updatedAt: Date | null;
-          }[]
+            id: string;
+            workSessionId: string;
+            soalId: string;
+            jawabanSoalId: string | null;
+            value: string | null;
+            createdAt: Date;
+            updatedAt: Date | null;
+        }[]
         | null
     > {
         const rows = await this.db
@@ -87,6 +107,6 @@ export class SessionQueryService {
             .limit(1)
             .then((rows) => rows[0]);
 
-        return row[0] ?? null;
+        return row ?? null;
     }
 }

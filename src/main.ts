@@ -3,6 +3,7 @@ import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { apiReference } from '@scalar/nestjs-api-reference';
 import { cleanupOpenApiDoc } from 'nestjs-zod';
+import { ApiResponseInterceptor } from './infra/responses/response.interceptor';
 
 async function bootstrap() {
     const app = await NestFactory.create(AppModule, {
@@ -18,9 +19,11 @@ async function bootstrap() {
         .build();
 
     const document = SwaggerModule.createDocument(app, config);
-
     SwaggerModule.setup('/openapi', app, document, {
-        raw: ['json']
+        jsonDocumentUrl: '/openapi.json',
+        swaggerOptions: {
+            docExpansion: 'none',
+        },
     });
 
     app.use(
@@ -30,7 +33,7 @@ async function bootstrap() {
         }),
     );
 
-    // app.useGlobalInterceptors(new ApiResponseInterceptor());
+    app.useGlobalInterceptors(new ApiResponseInterceptor());
 
     await app.listen(process.env.PORT ?? 3000);
 }

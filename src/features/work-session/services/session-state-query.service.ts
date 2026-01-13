@@ -3,12 +3,9 @@ import z from 'zod';
 import { READ_DB } from '../../../config/db.constants';
 import { MySql2Database } from 'drizzle-orm/mysql2';
 import {
-    jawabanSoalTable,
     materiSoalTable,
     paketSoalTable,
     soalTable,
-    workSessionAnswerTable,
-    workSessionMarkerTable,
     workSessionTable,
 } from '../../../infra/drizzle/schema';
 import { and, eq, or } from 'drizzle-orm';
@@ -25,9 +22,12 @@ const SessionQuestionAnswerSchema = z.object({
 });
 
 const SessionQuestionSchema = z.object({
+    index: z.number,
     soalId: z.uuid(),
     prompt: z.string(),
     type: z.enum(['multiple-choice', 'essay', 'complex-choice']),
+    isAnswered: z.boolean(),
+    isMarked: z.boolean(),
     options: z.array(SessionQuestionAnswerSchema).optional(),
 });
 
@@ -37,9 +37,9 @@ const SessionSchema = z.object({
     questions: z.array(SessionQuestionSchema),
 });
 
-class SessionQuestionState extends createZodDto(SessionQuestionSchema) {}
+class SessionQuestionState extends createZodDto(SessionQuestionSchema) { }
 
-class SessionDto extends createZodDto(SessionSchema) {}
+class SessionDto extends createZodDto(SessionSchema) { }
 
 @Injectable()
 export class SessionStateQueryService {
@@ -47,7 +47,7 @@ export class SessionStateQueryService {
         @Inject(READ_DB) private readonly db: MySql2Database,
         private readonly soalQuery: SoalQueryService,
         private readonly sessionQuery: SessionQueryService,
-    ) {}
+    ) { }
 
     async getSessionState(sessionId: string): Promise<SessionDto> {
         const sessionRow = await this.db
@@ -81,13 +81,19 @@ export class SessionStateQueryService {
                     : eq(paketSoalTable.id, session.paketSoalId),
             );
 
-        var questions = await Promise.all(
-            questionRows.map((q) =>
-                this.getSessionQuestionState(sessionId, q.soal),
-            ),
-        );
+        let questions = new Array<SessionQuestionState>
+
+        for (const row of questionRows) {
+            questions.push(await this.getSessionQuestionState(sessionId, row.soal))
+        }
 
         questions = shuffle(questions, session.siswaId);
+
+        let n = 1
+        for (const question of questions) {
+            question.index = n
+            n++
+        }
 
         const obj = new SessionDto();
         ((obj.id = session.id),
@@ -107,6 +113,7 @@ export class SessionStateQueryService {
     ): Promise<SessionQuestionState> {
         const state = new SessionQuestionState();
 
+        state.index = 0;
         state.soalId = soal.id;
         state.type = soal.type;
         state.prompt = soal.prompt;
@@ -138,6 +145,11 @@ export class SessionStateQueryService {
             (sessionAnswers ?? []).map((a) => a.jawabanSoalId).filter(Boolean),
         );
 
+        const marker = await this.sessionQuery.getSessionMarker(sessionId, soal.id)
+
+        state.isMarked = marker?.isMarked ?? false,
+            state.isAnswered = selectedAnswerIds.size > 0
+
         state.options = choices
             .sort((a, b) => a.order - b.order)
             .map((choice) => ({
@@ -145,6 +157,7 @@ export class SessionStateQueryService {
                 value: choice.value,
                 isSelected: selectedAnswerIds.has(choice.id),
             }));
+
 
         return state;
     }

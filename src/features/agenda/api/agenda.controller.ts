@@ -25,28 +25,30 @@ const JadwalInputSchema = z.object({
 
 const UpdateAgendaSchema = z.object({
     title: z.string().min(1).optional(),
-    date: ApiDate.optional(),
+    startTime: ApiDateTime,
+    endTime: ApiDateTime,
     description: z.string().nullable().optional(),
     jadwal: z.array(JadwalInputSchema).nullable().optional(),
 });
 
 const CreateAgendaSchema = z.object({
     title: z.string().min(1),
-    date: ApiDate,
+    startTime: ApiDateTime,
+    endTime: ApiDateTime,
     description: z.string().nullable().optional(),
     jadwal: z.array(JadwalInputSchema).optional(),
 });
 
-export class CreateAgendaDto extends createZodDto(CreateAgendaSchema) {}
+export class CreateAgendaDto extends createZodDto(CreateAgendaSchema) { }
 
-export class UpdateAgendaDto extends createZodDto(UpdateAgendaSchema) {}
+export class UpdateAgendaDto extends createZodDto(UpdateAgendaSchema) { }
 
 @Controller('agenda')
 export class AgendaController {
     constructor(
         private readonly agendaService: AgendaService,
         private readonly agendaQuery: AgendaQueryService,
-    ) {}
+    ) { }
 
     @Post()
     async create(@Body() body: CreateAgendaDto) {
@@ -68,10 +70,10 @@ export class AgendaController {
         return { success: true };
     }
 
-@Get()
-async getAll(@Query('siswaId') siswaId?: string) {
-    return this.agendaQuery.getAll(siswaId);
-}
+    @Get()
+    async getAll(@Query('siswaId') siswaId?: string) {
+        return this.agendaQuery.getAll(siswaId);
+    }
 
     @Get(':id')
     async getById(@Param('id') agendaId: string) {

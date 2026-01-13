@@ -18,6 +18,7 @@ export class Seeder {
 
     async seed() {
         await this.txm.run(async (ctx) => {
+
             /* =======================
                SISWA
             ======================= */
@@ -29,8 +30,7 @@ export class Seeder {
                 nis: '2024001',
                 kelas: 'X-A',
                 username: 'budi',
-                passwordHash:
-                    '$2b$10$yHqfJ9Q2sH3J8eJ3v0G3Ae6QK8n9X2b7KXlQzR0q7V7c8K',
+                passwordHash: 'budisantoso',
             });
 
             /* =======================
@@ -48,65 +48,142 @@ export class Seeder {
             /* =======================
                MATERI SOAL
             ======================= */
-            const materiId = uuidv7();
+            const materiAljabarId = uuidv7();
+            const materiGeometriId = uuidv7();
+            const materiAritmatikaId = uuidv7();
 
-            await ctx.tx.insert(materiSoalTable).values({
-                id: materiId,
-                paketSoalId,
-                title: 'Aljabar Dasar',
-                description: 'Penjumlahan dan pengurangan bilangan',
-                order: 1,
-                timeLimit: 30,
-            });
-
-            /* =======================
-               SOAL
-            ======================= */
-            const soalId = uuidv7();
-
-            await ctx.tx.insert(soalTable).values({
-                id: soalId,
-                materiSoalId: materiId,
-                type: 'multiple-choice',
-                prompt: 'Hasil dari 5 + 7 adalah?',
-                order: 1,
-                weightCorrect: 10,
-                weightWrong: 0,
-            });
-
-            /* =======================
-               JAWABAN SOAL
-            ======================= */
-            await ctx.tx.insert(jawabanSoalTable).values([
+            await ctx.tx.insert(materiSoalTable).values([
                 {
-                    id: uuidv7(),
-                    soalId,
-                    value: '10',
-                    isCorrect: false,
+                    id: materiAljabarId,
+                    paketSoalId,
+                    title: 'Aljabar Dasar',
+                    description: 'Penjumlahan dan pengurangan',
                     order: 1,
+                    timeLimit: 30,
                 },
                 {
-                    id: uuidv7(),
-                    soalId,
-                    value: '11',
-                    isCorrect: false,
+                    id: materiGeometriId,
+                    paketSoalId,
+                    title: 'Geometri Dasar',
+                    description: 'Keliling dan luas bangun datar',
                     order: 2,
+                    timeLimit: 30,
                 },
                 {
-                    id: uuidv7(),
-                    soalId,
-                    value: '12',
-                    isCorrect: true,
+                    id: materiAritmatikaId,
+                    paketSoalId,
+                    title: 'Aritmatika',
+                    description: 'Operasi bilangan bulat',
                     order: 3,
-                },
-                {
-                    id: uuidv7(),
-                    soalId,
-                    value: '13',
-                    isCorrect: false,
-                    order: 4,
+                    timeLimit: 30,
                 },
             ]);
+
+            /* =======================
+               HELPER: INSERT SOAL MC
+            ======================= */
+            const insertMC = async (
+                materiSoalId: string,
+                order: number,
+                prompt: string,
+                correct: string,
+                options: string[],
+            ) => {
+                const soalId = uuidv7();
+
+                await ctx.tx.insert(soalTable).values({
+                    id: soalId,
+                    materiSoalId,
+                    type: 'multiple-choice',
+                    prompt,
+                    order,
+                    weightCorrect: 10,
+                    weightWrong: 0,
+                });
+
+                await ctx.tx.insert(jawabanSoalTable).values(
+                    options.map((value, index) => ({
+                        id: uuidv7(),
+                        soalId,
+                        value,
+                        isCorrect: value === correct,
+                        order: index + 1,
+                    })),
+                );
+            };
+
+            /* =======================
+               SOAL – ALJABAR
+            ======================= */
+            await insertMC(
+                materiAljabarId,
+                1,
+                'Hasil dari 5 + 7 adalah?',
+                '12',
+                ['10', '11', '12', '13'],
+            );
+
+            await insertMC(
+                materiAljabarId,
+                2,
+                'Hasil dari 15 - 8 adalah?',
+                '7',
+                ['5', '6', '7', '8'],
+            );
+
+            await insertMC(
+                materiAljabarId,
+                3,
+                'Nilai x dari x + 4 = 10 adalah?',
+                '6',
+                ['4', '5', '6', '7'],
+            );
+
+            /* =======================
+               SOAL – GEOMETRI
+            ======================= */
+            await insertMC(
+                materiGeometriId,
+                1,
+                'Keliling persegi dengan sisi 4 cm adalah?',
+                '16',
+                ['8', '12', '16', '20'],
+            );
+
+            await insertMC(
+                materiGeometriId,
+                2,
+                'Luas persegi panjang 5 × 3 adalah?',
+                '15',
+                ['8', '10', '15', '20'],
+            );
+
+            /* =======================
+               SOAL – ARITMATIKA
+            ======================= */
+            await insertMC(
+                materiAritmatikaId,
+                1,
+                'Hasil dari 6 × 7 adalah?',
+                '42',
+                ['36', '40', '42', '48'],
+            );
+
+            await insertMC(
+                materiAritmatikaId,
+                2,
+                'Hasil dari 20 ÷ 4 adalah?',
+                '5',
+                ['4', '5', '6', '8'],
+            );
+
+            await insertMC(
+                materiAritmatikaId,
+                3,
+                'Hasil dari 9 + 6 ÷ 3 adalah?',
+                '11',
+                ['5', '7', '11', '15'],
+            );
 
             /* =======================
                AGENDA
@@ -116,7 +193,8 @@ export class Seeder {
             await ctx.tx.insert(agendaTable).values({
                 id: agendaId,
                 title: 'Ujian Tengah Semester',
-                date: new Date('2026-03-15 08:00:00'),
+                startTime: new Date('2026-03-15T08:00:00'),
+                endTime: new Date('2026-03-15T09:30:00'),
                 description: 'UTS Semester Genap',
             });
 
@@ -127,8 +205,8 @@ export class Seeder {
                 id: uuidv7(),
                 agendaId,
                 paketSoalId,
-                startTime: new Date('2026-03-15 08:00:00'),
-                endTime: new Date('2026-03-15 09:30:00'),
+                startTime: new Date('2026-03-15T08:00:00'),
+                endTime: new Date('2026-03-15T09:30:00'),
             });
 
             /* =======================
