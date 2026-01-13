@@ -3,6 +3,9 @@ import { Channel, ConsumeMessage } from 'amqplib';
 import { RabbitMQService } from '../../../infra/rabbitmq/rabbitmq.service';
 import { SubmitHandlerService } from '../services/submit-handler.service';
 
+const MAX_RETRIES = 5;
+const RETRY_DELAY_MS = 5000;
+
 @Injectable()
 export class SubmitConsumer implements OnModuleInit {
     private channel!: Channel;
@@ -23,11 +26,37 @@ export class SubmitConsumer implements OnModuleInit {
             durable: true,
         });
 
+        await this.channel.assertExchange('submit.retry.exchange', 'direct', {
+            durable: true,
+        });
+
+        await this.channel.assertExchange('submit.dlx', 'direct', {
+            durable: true,
+        });
+
         const { queue } = await this.channel.assertQueue('submit.queue', {
+            durable: true,
+            deadLetterExchange: 'submit.dlx',
+        });
+
+        await this.channel.assertQueue('submit.retry.queue', {
+            durable: true,
+            messageTtl: RETRY_DELAY_MS,
+            deadLetterExchange: 'submit.exchange',
+        });
+
+        await this.channel.assertQueue('submit.dlq', {
             durable: true,
         });
 
         await this.channel.bindQueue(queue, 'submit.exchange', 'submit');
+        await this.channel.bindQueue(
+            'submit.retry.queue',
+            'submit.retry.exchange',
+            'submit',
+        );
+        await this.channel.bindQueue('submit.dlq', 'submit.dlx', 'submit');
+
         await this.channel.prefetch(1);
     }
 
@@ -39,27 +68,48 @@ export class SubmitConsumer implements OnModuleInit {
         );
     }
 
-    private onCompleted(jobId?: string) {
-        console.log(`Job ${jobId} completed`);
-    }
-
-    private onFailed(jobId?: string, error?: Error) {
-        console.error(`Job ${jobId} failed: ${error?.message}`);
-    }
-
     private async handleMessage(msg: ConsumeMessage | null) {
         if (!msg) return;
 
         const jobId = msg.properties.messageId;
         const job = JSON.parse(msg.content.toString());
 
+        const headers = msg.properties.headers ?? {};
+        const retryCount = Number(headers['x-retry-count'] ?? 0);
+
         try {
             await this.handler.handle(job);
             this.channel.ack(msg);
-            this.onCompleted(jobId);
+            console.log(`Job ${jobId} completed`);
         } catch (err) {
-            this.channel.nack(msg, false, true);
-            this.onFailed(jobId, err as Error);
+            if (retryCount >= MAX_RETRIES) {
+                // Send to DLQ
+                this.channel.nack(msg, false, false);
+                console.error(
+                    `Job ${jobId} failed permanently after ${retryCount} retries`,
+                );
+                return;
+            }
+
+            // Publish to retry queue with incremented retry count
+            this.channel.publish(
+                'submit.retry.exchange',
+                'submit',
+                msg.content,
+                {
+                    ...msg.properties,
+                    headers: {
+                        ...headers,
+                        'x-retry-count': retryCount + 1,
+                    },
+                },
+            );
+
+            this.channel.ack(msg);
+
+            console.warn(
+                `Job ${jobId} failed, retry ${retryCount + 1}/${MAX_RETRIES}`,
+            );
         }
     }
 }

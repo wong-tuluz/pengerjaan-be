@@ -1,12 +1,12 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { SubmitContract } from '../jobs/submit.contract';
-import { READ_DB } from '@/config/db.constants';
+import { READ_DB } from '../../../config/db.constants';
 import { MySql2Database } from 'drizzle-orm/mysql2';
-import { TransactionManager } from '@/infra/drizzle/transaction-manager';
+import { TransactionManager } from '../../../infra/drizzle/transaction-manager';
 import { SessionManagerService } from './session-manager.service';
-import { workSessionAnswerTable, workSessionMarkerTable, workSessionTable } from '@/infra/drizzle/schema';
+import { workSessionAnswerTable, workSessionMarkerTable, workSessionTable } from '../../../infra/drizzle/schema';
 import { eq } from 'drizzle-orm';
-import { AppException } from '@/infra/exceptions/app-exception';
+import { AppException } from '../../../infra/exceptions/app-exception';
 import { WorkSession, WorkSessionJawaban } from '../domain/session';
 
 @Injectable()

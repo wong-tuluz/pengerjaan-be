@@ -1,10 +1,11 @@
-import { workSessionTable } from "@/infra/drizzle/schema";
-import { TransactionManager } from "@/infra/drizzle/transaction-manager";
+import { workSessionTable } from "../../../infra/drizzle/schema";
+import { TransactionManager } from "../../../infra/drizzle/transaction-manager";
 import { Injectable } from "@nestjs/common";
 import { WorkSession } from "../domain/session";
-import { AgendaQueryService } from "@/features/agenda/services/agenda-query.service";
-import { PaketSoalQueryService } from "@/features/soal/services/paket-soal-query.service";
-import { AppException } from "@/infra/exceptions/app-exception";
+import { AgendaQueryService } from "../../../features/agenda/services/agenda-query.service";
+import { PaketSoalQueryService } from "../../../features/soal/services/paket-soal-query.service";
+import { AppException } from "../../../infra/exceptions/app-exception";
+import { SessionQueryService } from "./session-query.service";
 
 @Injectable()
 export class SessionManagerService {
@@ -34,11 +35,11 @@ export class SessionManagerService {
         return { id: workSession.id }
     }
 
-    public async getSessions(siswaId: string, jadwalId: string) {
-        const jadwal = await this.agendaQuery.getJadwal(jadwalId);
-        if (!jadwal)
-            throw new AppException(`Jadwal ${jadwalId} tidak ditemukan.`)
+    public async finishSession(sessionId: string) {
+        // const sessionRow = await this.sessionQuery.getSessionById(sessionId)
+        
 
-
+        // const session = new WorkSession()
+        // session.map(sessionRow)
     }
 }

@@ -6,7 +6,7 @@ import { SessionManagerService } from '../services/session-manager.service';
 import z from 'zod';
 import { v7 as uuidv7 } from 'uuid';
 import { createZodDto } from 'nestjs-zod';
-import { JwtAuthGuard } from '@/features/auth/strategies/jwt.guard';
+import { JwtAuthGuard } from '../../../features/auth/strategies/jwt.guard';
 import { SessionStateQueryService } from '../services/session-state-query.service';
 
 const CreateSessionSchema = z.object({

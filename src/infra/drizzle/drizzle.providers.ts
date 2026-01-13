@@ -7,13 +7,13 @@ export const drizzleProviders: Provider[] = [
   {
     provide: WRITE_DB,
     useFactory: () => {
-      return drizzle(process.env.WRITE_DATABASE_URL!, { logger: true });
+      return drizzle(process.env.WRITE_DATABASE_URL!);
     },
   },
   {
     provide: READ_DB,
     useFactory: () => {
-      const db = drizzle(process.env.READ_DATABASE_URL!, { logger: true });
+      const db = drizzle(process.env.READ_DATABASE_URL!);
       return db;
     },
   },

@@ -13,7 +13,7 @@ import { WorkSession } from '../domain/session';
 import { createZodDto } from 'nestjs-zod';
 import { SoalQueryService } from '../../soal/services/soal-query.service';
 import { SessionQueryService } from './session-query.service';
-import { shuffle } from '@/infra/rng/seedrand';
+import { shuffle } from '../../../infra/rng/seedrand';
 
 const SessionQuestionAnswerSchema = z.object({
     jawabanSoalId: z.uuid().optional(),
