@@ -21,5 +21,9 @@ import { SoalQueryService } from './services/soal-query.service';
         MateriSoalQueryService,
         MateriSoalService,
     ],
+    exports: [
+        PaketSoalQueryService,
+        SoalQueryService,
+    ]
 })
 export class SoalModule {}

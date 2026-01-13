@@ -6,7 +6,7 @@ import { eq } from 'drizzle-orm';
 
 @Injectable()
 export class SiswaQueryService {
-    constructor(@Inject(READ_DB) private readonly db: MySql2Database) {}
+    constructor(@Inject(READ_DB) private readonly db: MySql2Database) { }
 
     async getAll(): Promise<
         {
@@ -37,6 +37,26 @@ export class SiswaQueryService {
             .select()
             .from(siswaTable)
             .where(eq(siswaTable.id, siswaId))
+            .limit(1)
+            .then((rows) => rows[0]);
+
+        return siswa || null;
+    }
+
+    async getByUsername(username: string): Promise<{
+        id: string;
+        nama: string;
+        nis: string;
+        kelas: string;
+        username: string;
+        passwordHash: string;
+        createdAt: Date;
+        updatedAt: Date | null;
+    } | null> {
+        const siswa = await this.db
+            .select()
+            .from(siswaTable)
+            .where(eq(siswaTable.username, username))
             .limit(1)
             .then((rows) => rows[0]);
 

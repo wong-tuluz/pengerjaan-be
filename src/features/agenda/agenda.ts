@@ -1,8 +1,9 @@
 export class Agenda {
     public id: string;
     public title: string;
-    public date: Date;
     public description: string;
+    public startTime: Date;
+    public endTime: Date;s
 }
 
 export class Jadwal {

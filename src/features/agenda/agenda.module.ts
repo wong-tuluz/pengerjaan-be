@@ -8,5 +8,6 @@ import { DrizzleModule } from '../../infra/drizzle/drizzle.module';
     imports: [DrizzleModule],
     providers: [AgendaQueryService, AgendaService],
     controllers: [AgendaController],
+    exports: [AgendaQueryService],
 })
 export class AgendaModule {}

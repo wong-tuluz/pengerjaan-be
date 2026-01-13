@@ -19,12 +19,16 @@ export class WorkSession {
         siswaId: string,
         jadwalId: string,
         timeLimit: number,
+        paketSoalId: string,
+        materiSoalId?: string | null,
     ): WorkSession {
         const obj = new WorkSession();
 
         obj.id = uuidv7();
         obj.siswaId = siswaId;
         obj.jadwalId = jadwalId;
+        obj.paketSoalId = paketSoalId;
+        obj.materiSoalId = materiSoalId
         obj.timeLimit = timeLimit;
         obj.startedAt = new Date();
         obj.status = 'in_progress';
@@ -133,5 +137,5 @@ export class WorkSessionMarker {
         public sessionId: string,
         public soalId: string,
         public isMarked: boolean,
-    ) {}
+    ) { }
 }

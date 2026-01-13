@@ -6,7 +6,7 @@ import { eq } from 'drizzle-orm';
 
 @Injectable()
 export class AgendaService {
-    constructor(private readonly txm: TransactionManager) {}
+    constructor(private readonly txm: TransactionManager) { }
 
     public async create(input: {
         title: string;
@@ -48,7 +48,8 @@ export class AgendaService {
         agendaId: string,
         input: {
             title?: string;
-            date?: Date;
+            startTime?: Date;
+            endTime?: Date;
             description?: string | null;
             jadwal?: Array<{
                 paketSoalId: string;
@@ -62,7 +63,8 @@ export class AgendaService {
                 .update(agendaTable)
                 .set({
                     ...(input.title && { title: input.title }),
-                    ...(input.date && { date: input.date }),
+                    ...(input.startTime && { startTime: input.startTime}),
+                    ...(input.endTime && { endTime: input.endTime}),
                     ...(input.description !== undefined && {
                         description: input.description,
                     }),

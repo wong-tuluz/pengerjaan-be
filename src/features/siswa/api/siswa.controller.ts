@@ -13,6 +13,8 @@ import { SiswaService } from '../services/siswa.service';
 import z from 'zod';
 import { createZodDto } from 'nestjs-zod';
 
+import type { Response } from 'express';
+
 const CreateSiswaSchema = z.object({
     nama: z.string().min(1),
     nis: z.string().min(1),
@@ -29,16 +31,16 @@ export const UpdateSiswaSchema = z.object({
     passwordHash: z.string().min(1).optional(),
 });
 
-export class CreateSiswaDto extends createZodDto(CreateSiswaSchema) {}
+export class CreateSiswaDto extends createZodDto(CreateSiswaSchema) { }
 
-export class UpdateSiswaDto extends createZodDto(UpdateSiswaSchema) {}
+export class UpdateSiswaDto extends createZodDto(UpdateSiswaSchema) { }
 
 @Controller('siswa')
 export class SiswaController {
     constructor(
         private readonly siswaQuery: SiswaQueryService,
         private readonly siswaService: SiswaService,
-    ) {}
+    ) { }
 
     @Post()
     async create(@Body() body: CreateSiswaDto) {
@@ -58,7 +60,11 @@ export class SiswaController {
     }
 
     @Get()
-    async getAll() {
+    async getAll(res: Response) {
+        // res.locals.metadata = {
+        //     hello: 'world'
+        // }
+
         return this.siswaQuery.getAll();
     }
 

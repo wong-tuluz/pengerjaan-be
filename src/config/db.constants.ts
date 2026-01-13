@@ -2,3 +2,4 @@ export const NEST_DRIZZLE_OPTIONS = 'NEST_DRIZZLE_OPTIONS';
 export const DRIZZLE_ORM = 'DRIZZLE_ORM';
 export const WRITE_DB = 'WRITE_DB';
 export const READ_DB = 'READ_DB';
+export const JWT_KEY = 'pfsERt6ruYNiGcrlXIaK6PR1Psgyr8XJdjzZfmGFV8VTDG4HY2qzmSTTJrS65sktLzHMtt1KUt8WN84QnWm812Q95ziD0nIxddWIDl2EWgAUs48l4Jq2p2wsvmdWOk13'

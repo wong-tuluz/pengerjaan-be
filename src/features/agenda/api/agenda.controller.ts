@@ -68,14 +68,10 @@ export class AgendaController {
         return { success: true };
     }
 
-    @Get()
-    async getAll(@Query('siswaId') siswaId: string) {
-        if (!siswaId) {
-            throw new NotFoundException('siswaId is required');
-        }
-
-        return this.agendaQuery.getAll(siswaId);
-    }
+@Get()
+async getAll(@Query('siswaId') siswaId?: string) {
+    return this.agendaQuery.getAll(siswaId);
+}
 
     @Get(':id')
     async getById(@Param('id') agendaId: string) {
@@ -86,5 +82,12 @@ export class AgendaController {
         }
 
         return agenda;
+    }
+
+    @Get(':id/peserta')
+    async getPeserta(@Param('id') agendaId: string) {
+        const peserta = await this.agendaQuery.getPeserta(agendaId)
+
+        return peserta
     }
 }

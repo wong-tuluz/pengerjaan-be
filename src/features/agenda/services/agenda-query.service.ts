@@ -6,15 +6,15 @@ import {
     agendaTable,
     jadwalTable,
 } from '../../../infra/drizzle/schema';
-import { eq } from 'drizzle-orm';
+import { eq, and } from 'drizzle-orm';
 
 @Injectable()
 export class AgendaQueryService {
     constructor(
         @Inject(READ_DB) private readonly db: MySql2Database,
-    ) {}
+    ) { }
 
-    public async getAll(siswaId: string): Promise<
+    public async getAll(siswaId?: string): Promise<
         {
             id: string;
             title: string;
@@ -34,7 +34,9 @@ export class AgendaQueryService {
                 agendaTable,
                 eq(agendaTable.id, agendaSiswaTable.agendaId),
             )
-            .where(eq(agendaSiswaTable.siswaId, siswaId));
+            .where(and(
+                siswaId ? eq(agendaSiswaTable.siswaId, siswaId) : undefined
+            ));
 
         const agendaSiswa = rows.map((r) => r.agenda);
         return agendaSiswa;
@@ -74,5 +76,34 @@ export class AgendaQueryService {
             ...agenda,
             jadwal: rows.filter((r) => r.jadwal !== null).map((r) => r.jadwal!),
         };
+    }
+
+    public async getJadwal(jadwalId: string): Promise<{
+        id: string;
+        agendaId: string;
+        paketSoalId: string;
+        startTime: Date;
+        endTime: Date;
+        createdAt: Date;
+        updatedAt: Date | null;
+    } | null> {
+        const row = await this.db
+            .select()
+            .from(jadwalTable)
+            .where(eq(jadwalTable.id, jadwalId))
+            .then((rows) => rows[0]);
+
+        return row ?? null;
+    }
+
+    public async getPeserta(agendaId: string): Promise<{
+        id: string;
+        agendaId: string;
+        siswaId: string;
+        createdAt: Date;
+        updatedAt: Date | null;
+    }[]> {
+        const rows = await this.db.select().from(agendaSiswaTable).where(eq(agendaSiswaTable.agendaId, agendaId))
+        return rows
     }
 }

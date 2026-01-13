@@ -89,7 +89,7 @@ export class SoalController {
 
     @Get(':id')
     async getById(@Param('id') id: string) {
-        const soal = await this.soalQuery.getById(id);
+        const soal = await this.soalQuery.getWithJawaban(id);
 
         if (!soal) {
             throw new NotFoundException('Soal not found');

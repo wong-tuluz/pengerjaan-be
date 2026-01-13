@@ -27,8 +27,8 @@ const SessionQuestionAnswerSchema = z.object({
 const SessionQuestionSchema = z.object({
     soalId: z.uuid(),
     prompt: z.string(),
-    type: z.enum(['multiple-choice', 'essay', 'true-false', 'complex-choice']),
-    jawaban: z.array(SessionQuestionAnswerSchema).optional(),
+    type: z.enum(['multiple-choice', 'essay', 'complex-choice']),
+    options: z.array(SessionQuestionAnswerSchema).optional(),
 });
 
 const SessionSchema = z.object({
@@ -118,7 +118,7 @@ export class SessionStateQueryService {
             );
 
             if (answers && answers.length > 0) {
-                state.jawaban = [
+                state.options = [
                     {
                         value: answers[0].value ?? '',
                         isSelected: true,
@@ -138,7 +138,7 @@ export class SessionStateQueryService {
             (sessionAnswers ?? []).map((a) => a.jawabanSoalId).filter(Boolean),
         );
 
-        state.jawaban = choices
+        state.options = choices
             .sort((a, b) => a.order - b.order)
             .map((choice) => ({
                 jawabanSoalId: choice.id,
