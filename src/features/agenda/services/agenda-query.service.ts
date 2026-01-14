@@ -6,6 +6,8 @@ import {
     agendaTable,
     jadwalTable,
     paketSoalTable,
+    siswaTable,
+    workSessionTable,
 } from '../../../infra/drizzle/schema';
 import { eq, and } from 'drizzle-orm';
 import { title } from 'process';
@@ -106,31 +108,52 @@ export class AgendaQueryService {
         return row ?? null;
     }
 
-    public async getAllJadwal() {
+    public async getAllJadwal(siswaId?: string) {
+        const filters = [
+            siswaId ? eq(agendaSiswaTable.siswaId, siswaId) : undefined,
+            siswaId ? eq(workSessionTable.siswaId, siswaId) : undefined,
+        ].filter(Boolean);
+
         const row = await this.db
-            .select({agenda: agendaTable, jadwal: jadwalTable, paketSoal: paketSoalTable})
+            .select({ agenda: agendaTable, jadwal: jadwalTable, paketSoal: paketSoalTable, workSession: workSessionTable })
             .from(jadwalTable)
             .leftJoin(agendaTable, eq(agendaTable.id, jadwalTable.agendaId))
             .leftJoin(paketSoalTable, eq(paketSoalTable.id, jadwalTable.paketSoalId))
-            .then((rows) => rows.map(row => {
-                jadwal:  {
-                    id: row.jadwal.id
-                    startTime: row.jadwal.startTime
-                    endTime: row.jadwal.endTime
-                    timeLimit: row.jadwal.timeLimit
-                    attempts: row.jadwal.attempts
-                }
-                agenda: {
-                    id: row.agenda?.id
-                    title: row.agenda?.title
-                    startTime: row.agenda?.startTime
-                    endTime: row.agenda?.endTime
-                }
-                paketSoal: {
-                    id: row.paketSoal?.id
-                    title: row.paketSoal?.title
-                }
-            }));
+            .leftJoin(workSessionTable, and(
+                eq(workSessionTable.paketSoalId, jadwalTable.paketSoalId),
+                siswaId ? eq(workSessionTable.siswaId, siswaId) : undefined
+            ))
+            .leftJoin(agendaSiswaTable, and(
+                eq(agendaSiswaTable.agendaId, agendaTable.id),
+                siswaId ? eq(agendaSiswaTable.siswaId, siswaId) : undefined
+            ))
+            .where(and(
+                ...filters
+            ))
+            .then((rows) =>
+                rows.map((row) => ({
+                    jadwalId: row.jadwal.id,
+                    startTime: row.jadwal.startTime,
+                    endTime: row.jadwal.endTime,
+                    timeLimit: row.jadwal.timeLimit,
+                    attempts: row.jadwal.attempts,
+                    status: row.workSession ? 'attempted' : 'no-attempts',
+                    agenda: row.agenda
+                        ? {
+                            id: row.agenda.id,
+                            title: row.agenda.title,
+                            startTime: row.agenda.startTime,
+                            endTime: row.agenda.endTime,
+                        }
+                        : null,
+                    paketSoal: row.paketSoal
+                        ? {
+                            id: row.paketSoal.id,
+                            title: row.paketSoal.title,
+                        }
+                        : null,
+                }))
+            );
 
         return row ?? null;
     }

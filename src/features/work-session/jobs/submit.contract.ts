@@ -2,7 +2,6 @@ import { createZodDto } from "nestjs-zod";
 import z from "zod";
 
 const SubmitContractSchema = z.object({
-    id: z.uuid(),
     workSessionId: z.uuid(),
     soalId: z.uuid(),
     marked: z.boolean().optional(),
@@ -12,4 +11,14 @@ const SubmitContractSchema = z.object({
     }))
 });
 
-export class SubmitContract extends createZodDto(SubmitContractSchema) { }
+// export class SubmitContract extends createZodDto(SubmitContractSchema) { }
+
+export type SubmitContract = {
+    workSessionId: string,
+    soalId: string,
+    marked?: boolean | null,
+    jawaban: Array<{
+        jawabanSoalId: string | null,
+        value: string | null
+    }>
+}

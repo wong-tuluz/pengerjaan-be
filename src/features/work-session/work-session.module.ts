@@ -8,11 +8,14 @@ import { DrizzleModule } from '../../infra/drizzle/drizzle.module';
 import { SoalModule } from '../soal/soal.module';
 import { AgendaModule } from '../agenda/agenda.module';
 import { SessionStateQueryService } from './services/session-state-query.service';
-import { SessionQueryService } from './services/session-query.service';
+import { WorkSessionQueryModule } from './work-session-query.module';
 
 @Module({
-    imports: [RabbitMQModule, DrizzleModule, SoalModule, AgendaModule],
+    imports: [RabbitMQModule, DrizzleModule, SoalModule, AgendaModule, WorkSessionQueryModule],
     controllers: [WorkSessionController],
-    providers: [SubmitConsumer, SessionManagerService, SubmitHandlerService, SessionStateQueryService, SessionQueryService],
+    providers: [SubmitConsumer, SessionManagerService, SubmitHandlerService, SessionStateQueryService],
+
 })
-export class WorkSessionModule {}
+export class WorkSessionModule { }
+
+

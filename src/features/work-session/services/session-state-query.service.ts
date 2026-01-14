@@ -14,6 +14,7 @@ import { createZodDto } from 'nestjs-zod';
 import { SoalQueryService } from '../../soal/services/soal-query.service';
 import { SessionQueryService } from './session-query.service';
 import { shuffle } from '../../../infra/rng/seedrand';
+import { AppException } from '../../../infra/exceptions/app-exception';
 
 const SessionQuestionAnswerSchema = z.object({
     jawabanSoalId: z.uuid().optional(),
@@ -49,7 +50,8 @@ export class SessionStateQueryService {
         private readonly sessionQuery: SessionQueryService,
     ) { }
 
-    async getSessionState(sessionId: string): Promise<SessionDto> {
+    async getSessionState(sessionId: string, siswaId?: string): Promise<SessionDto> {
+        console.log(siswaId)
         const sessionRow = await this.db
             .select()
             .from(workSessionTable)
@@ -63,6 +65,10 @@ export class SessionStateQueryService {
 
         const session = new WorkSession();
         session.map(sessionRow);
+
+        if (session.siswaId != siswaId) {
+            throw new AppException("Bukan siswa yang mengerjakan")
+        }
 
         const questionRows = await this.db
             .select({ soal: soalTable })

@@ -6,18 +6,19 @@ import { AgendaQueryService } from "../../../features/agenda/services/agenda-que
 import { PaketSoalQueryService } from "../../../features/soal/services/paket-soal-query.service";
 import { AppException } from "../../../infra/exceptions/app-exception";
 import { SessionQueryService } from "./session-query.service";
+import { JadwalQueryService } from "../../agenda/services/jadwal-query.service";
 
 @Injectable()
 export class SessionManagerService {
     constructor(
         private readonly txm: TransactionManager,
-        private readonly agendaQuery: AgendaQueryService,
+        private readonly jadwalQuery: JadwalQueryService,
         private readonly paketSoalQuery: PaketSoalQueryService,
         private readonly sessionQuery: SessionQueryService
     ) { }
 
     public async createSession(siswaId: string, jadwalId: string): Promise<{ id: string }> {
-        const jadwal = await this.agendaQuery.getJadwal(jadwalId);
+        const jadwal = await this.jadwalQuery.getById(jadwalId);
         if (!jadwal) {
             throw new AppException(`Jadwal ${jadwalId} tidak ditemukan.`)
         }
@@ -28,7 +29,7 @@ export class SessionManagerService {
         }
 
         const sessions = await this.sessionQuery.getSessions(siswaId, jadwal.id)
-        if (sessions.length > jadwal.attempts) {
+        if (sessions.length >= jadwal.attempts) {
             throw new AppException(`Semua percobaan telah dipakai`)
         }
 

@@ -1,14 +1,14 @@
 services:
-    app:
-        build: .
-        env_file:
-            - .env
-        ports:
-            - "3000:3000"
-        depends_on:
-            - mariadb
-            - redis
-            - rabbitmq
+    # app:
+    #     build: .
+    #     env_file:
+    #         - .env
+    #     ports:
+    #         - "3000:3000"
+    #     depends_on:
+    #         - mariadb
+    #         - redis
+    #         - rabbitmq
 
 
     mariadb:
@@ -51,6 +51,7 @@ services:
             - '15672:15672'
         volumes:
             - rabbitmq_data:/var/lib/rabbitmq
+            - ./enabled_plugins:/etc/rabbitmq/enabled_plugins
 
 volumes:
     pengerjaan_data:

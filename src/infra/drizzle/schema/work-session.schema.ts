@@ -1,4 +1,4 @@
-import { mysqlTable, varchar, datetime, boolean } from 'drizzle-orm/mysql-core';
+import { mysqlTable, varchar, datetime, boolean, mysqlEnum } from 'drizzle-orm/mysql-core';
 import { sql } from 'drizzle-orm';
 import { int } from 'drizzle-orm/mysql-core';
 
@@ -9,6 +9,10 @@ export const workSessionTable = mysqlTable('work_sessions', {
 
     paketSoalId: varchar('paket_soal_id', { length: 36 }).notNull(),
     materiSoalId: varchar('materi_soal_id', { length: 36 }),
+    status: mysqlEnum('status', [
+        'in_progress',
+        'finished',
+    ]).notNull(),
 
     timeLimit: int('time_limit').notNull(),
     startedAt: datetime('started_at').notNull(),

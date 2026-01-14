@@ -1,6 +1,6 @@
 import { v7 as uuidv7 } from 'uuid';
 
-export type SessionStatus = 'active' | 'finished';
+export type SessionStatus = 'in_progress' | 'finished';
 
 export class WorkSession {
     id: string;
@@ -32,7 +32,7 @@ export class WorkSession {
         obj.materiSoalId = materiSoalId
         obj.timeLimit = timeLimit;
         obj.startedAt = new Date();
-        obj.status = 'active';
+        obj.status = 'in_progress';
         obj.answers = [];
         obj.marks = [];
 
@@ -83,13 +83,17 @@ export class WorkSession {
     private ensureCanAnswer(): void {
         this.ensureInProgress();
         if (this.isExpired()) {
-            throw new Error('Session expired. cannot submit answers');
+            const msg = 'Session expired. cannot submit answers'
+            console.log(msg)
+            throw new Error(msg);
         }
     }
 
     private ensureInProgress(): void {
-        if (this.status !== 'active') {
-            throw new Error('Session not active');
+        if (this.status !== 'in_progress') {
+            const msg = 'Session not active'
+            console.log(msg)
+            throw new Error(msg);
         }
     }
 

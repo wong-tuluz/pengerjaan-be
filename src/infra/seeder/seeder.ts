@@ -10,7 +10,7 @@ import {
     soalTable,
     jawabanSoalTable,
 } from '../drizzle/schema';
-import { v7 as uuidv7 } from 'uuid';
+import { v7 as uuidv7, v4 as uuidv4 } from 'uuid';
 
 @Injectable()
 export class Seeder {
@@ -22,15 +22,27 @@ export class Seeder {
             /* =======================
                SISWA
             ======================= */
-            const siswaId = uuidv7();
+            const siswaIds = [
+                uuidv4(),
+                uuidv4()
+            ];
 
             await ctx.tx.insert(siswaTable).values({
-                id: siswaId,
+                id: siswaIds[0],
                 nama: 'Budi Santoso',
                 nis: '2024001',
                 kelas: 'X-A',
                 username: 'budi',
                 passwordHash: 'budisantoso',
+            });
+
+            await ctx.tx.insert(siswaTable).values({
+                id: siswaIds[1],
+                nama: 'Agus Pleret',
+                nis: '2024002',
+                kelas: 'X-A',
+                username: 'agus',
+                passwordHash: 'aguspleret',
             });
 
             /* =======================
@@ -214,11 +226,15 @@ export class Seeder {
             /* =======================
                AGENDA ↔ SISWA
             ======================= */
-            await ctx.tx.insert(agendaSiswaTable).values({
+            await ctx.tx.insert(agendaSiswaTable).values([{
                 id: uuidv7(),
                 agendaId,
-                siswaId,
-            });
+                siswaId: siswaIds[0],
+            }, {
+                id: uuidv7(),
+                agendaId,
+                siswaId: siswaIds[1],
+            }]);
         });
     }
 }

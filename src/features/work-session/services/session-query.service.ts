@@ -15,12 +15,20 @@ export class SessionQueryService {
     async getSessions(
         siswaId?: string | null,
         jadwalId?: string | null,
-    ): Promise<
-        {
-            id: string;
-            status: 'active' | 'completed';
-        }[]
-    > {
+    ): Promise<{
+        id: string;
+        siswaId: string;
+        jadwalId: string;
+        paketSoalId: string;
+        materiSoalId: string | null;
+        timeLimit: number;
+        startedAt: Date;
+        finishedAt: Date | null;
+        createdAt: Date;
+        updatedAt: Date | null;
+    }[]> {
+        console.log(siswaId)
+
         const filters = [
             siswaId ? eq(workSessionTable.siswaId, siswaId) : undefined,
             jadwalId ? eq(workSessionTable.jadwalId, jadwalId) : undefined,
@@ -31,13 +39,10 @@ export class SessionQueryService {
             .from(workSessionTable)
             .where(and(...filters));
 
-        return sessions.map((session) => ({
-            id: session.id,
-            status: session.finishedAt ? 'completed' : 'active',
-        }));
+        return sessions
     }
 
-    async getSessionById(id: string): Promise<{
+    async getSessionById(id: string, siswaId?: string): Promise<{
         id: string;
         siswaId: string;
         jadwalId: string;

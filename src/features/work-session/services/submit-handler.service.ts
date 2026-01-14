@@ -22,14 +22,13 @@ export class SubmitHandlerService {
             .where(eq(workSessionTable.id, data.workSessionId))
             .then((rows) => rows[0])
 
-        if (!sessionRow)
+        if (!sessionRow) {
+            console.log(`Session not found.`)
             throw new AppException(`Session not found.`)
+        }
 
         const session = new WorkSession()
         session.map(sessionRow)
-        
-        console.log(data)
-        
 
         session.submitAnswer(data.soalId, data.jawaban.map(x => WorkSessionJawaban.create(session.id, data.soalId, x.jawabanSoalId, x.value)))
 

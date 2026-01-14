@@ -22,7 +22,7 @@ export class SubmitConsumer implements OnModuleInit {
     }
 
     private async setupTopology() {
-        await this.channel.assertExchange('submit.exchange', 'direct', {
+        await this.channel.assertExchange('submit.exchange', 'x-consistent-hash', {
             durable: true,
         });
 
