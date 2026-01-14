@@ -13,23 +13,23 @@ export class SessionQueryService {
     constructor(@Inject(READ_DB) private readonly db: MySql2Database) { }
 
     async getSessions(
-        siswaId: string,
-        jadwalId: string,
+        siswaId?: string | null,
+        jadwalId?: string | null,
     ): Promise<
         {
             id: string;
             status: 'active' | 'completed';
         }[]
     > {
+        const filters = [
+            siswaId ? eq(workSessionTable.siswaId, siswaId) : undefined,
+            jadwalId ? eq(workSessionTable.jadwalId, jadwalId) : undefined,
+        ].filter(Boolean);
+
         const sessions = await this.db
             .select()
             .from(workSessionTable)
-            .where(
-                and(
-                    eq(workSessionTable.siswaId, siswaId),
-                    eq(workSessionTable.jadwalId, jadwalId),
-                ),
-            );
+            .where(and(...filters));
 
         return sessions.map((session) => ({
             id: session.id,

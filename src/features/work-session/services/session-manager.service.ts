@@ -12,21 +12,27 @@ export class SessionManagerService {
     constructor(
         private readonly txm: TransactionManager,
         private readonly agendaQuery: AgendaQueryService,
-        private readonly paketSoalQuery: PaketSoalQueryService
+        private readonly paketSoalQuery: PaketSoalQueryService,
+        private readonly sessionQuery: SessionQueryService
     ) { }
 
     public async createSession(siswaId: string, jadwalId: string): Promise<{ id: string }> {
         const jadwal = await this.agendaQuery.getJadwal(jadwalId);
-        if (!jadwal)
+        if (!jadwal) {
             throw new AppException(`Jadwal ${jadwalId} tidak ditemukan.`)
+        }
 
         const paketSoal = await this.paketSoalQuery.getById(jadwal.paketSoalId)
-        if (!paketSoal)
+        if (!paketSoal) {
             throw new AppException(`Paket soal ${jadwal.paketSoalId} tidak ditemukan.`)
+        }
 
-        const workSession = WorkSession.create(siswaId, jadwalId, paketSoal.timeLimit, paketSoal.id)
+        const sessions = await this.sessionQuery.getSessions(siswaId, jadwal.id)
+        if (sessions.length > jadwal.attempts) {
+            throw new AppException(`Semua percobaan telah dipakai`)
+        }
 
-        console.log(workSession)
+        const workSession = WorkSession.create(siswaId, jadwalId, jadwal.timeLimit, paketSoal.id)
 
         await this.txm.run(async ctx => {
             await ctx.tx.insert(workSessionTable).values(workSession)
@@ -37,7 +43,7 @@ export class SessionManagerService {
 
     public async finishSession(sessionId: string) {
         // const sessionRow = await this.sessionQuery.getSessionById(sessionId)
-        
+
 
         // const session = new WorkSession()
         // session.map(sessionRow)

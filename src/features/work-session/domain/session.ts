@@ -1,5 +1,4 @@
 import { v7 as uuidv7 } from 'uuid';
-import { runInThisContext } from 'vm';
 
 export type SessionStatus = 'active' | 'finished';
 
@@ -13,6 +12,7 @@ export class WorkSession {
     startedAt: Date;
     finishedAt?: Date | null;
     status: SessionStatus;
+
     answers: WorkSessionJawaban[] = [];
     marks: WorkSessionMarker[] = [];
 
@@ -83,14 +83,14 @@ export class WorkSession {
     private ensureCanAnswer(): void {
         this.ensureInProgress();
         if (this.isExpired()) {
-            throw new Error('Session expired – cannot submit answers');
+            throw new Error('Session expired. cannot submit answers');
         }
     }
 
     private ensureInProgress(): void {
-        // if (this.status !== 'active') {
-        //     throw new Error('Session not active');
-        // }
+        if (this.status !== 'active') {
+            throw new Error('Session not active');
+        }
     }
 
     private isExpired(): boolean {

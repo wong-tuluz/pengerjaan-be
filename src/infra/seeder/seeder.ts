@@ -14,7 +14,7 @@ import { v7 as uuidv7 } from 'uuid';
 
 @Injectable()
 export class Seeder {
-    constructor(private readonly txm: TransactionManager) {}
+    constructor(private readonly txm: TransactionManager) { }
 
     async seed() {
         await this.txm.run(async (ctx) => {
@@ -42,7 +42,6 @@ export class Seeder {
                 id: paketSoalId,
                 title: 'Ujian Matematika Dasar',
                 description: 'Ujian untuk mengukur pemahaman dasar matematika',
-                timeLimit: 90,
             });
 
             /* =======================
@@ -205,8 +204,11 @@ export class Seeder {
                 id: uuidv7(),
                 agendaId,
                 paketSoalId,
+                attempts: 1,
+                timeLimit: 90,
                 startTime: new Date('2026-03-15T08:00:00'),
                 endTime: new Date('2026-03-15T09:30:00'),
+
             });
 
             /* =======================

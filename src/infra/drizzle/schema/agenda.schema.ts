@@ -1,5 +1,6 @@
 import { mysqlTable, varchar, datetime, text } from 'drizzle-orm/mysql-core';
 import { sql } from 'drizzle-orm';
+import { int } from 'drizzle-orm/mysql-core';
 
 export const agendaTable = mysqlTable('agenda', {
     id: varchar('id', { length: 36 }).primaryKey(),
@@ -29,6 +30,8 @@ export const jadwalTable = mysqlTable('jadwal', {
     paketSoalId: varchar('paket_soal_id', { length: 36 }).notNull(),
     startTime: datetime('start_time').notNull(),
     endTime: datetime('end_time').notNull(),
+    timeLimit: int().notNull(),
+    attempts: int().notNull(),
     createdAt: datetime('created_at')
         .notNull()
         .default(sql`now()`),

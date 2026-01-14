@@ -17,6 +17,8 @@ export class AgendaService {
             paketSoalId: string;
             startTime: Date;
             endTime: Date;
+            timeLimit: number
+            attempts: number
         }>;
     }): Promise<{ id: string }> {
         const agendaId = uuidv7();
@@ -38,6 +40,8 @@ export class AgendaService {
                         paketSoalId: j.paketSoalId,
                         startTime: j.startTime,
                         endTime: j.endTime,
+                        timeLimit: j.timeLimit,
+                        attempts: j.attempts
                     })),
                 );
             }
@@ -57,6 +61,8 @@ export class AgendaService {
                 paketSoalId: string;
                 startTime: Date;
                 endTime: Date;
+                timeLimit: number
+                attempts: number;
             }> | null;
         },
     ): Promise<void> {
@@ -86,6 +92,8 @@ export class AgendaService {
                             paketSoalId: j.paketSoalId,
                             startTime: j.startTime,
                             endTime: j.endTime,
+                            timeLimit: j.timeLimit,
+                            attempts: j.attempts
                         })),
                     );
                 }

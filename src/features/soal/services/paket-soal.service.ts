@@ -11,7 +11,6 @@ export class PaketSoalService {
     public async create(input: {
         title: string;
         description?: string | null;
-        timeLimit: number;
     }): Promise<{ id: string }> {
         const id = randomUUID();
 
@@ -20,7 +19,6 @@ export class PaketSoalService {
                 id,
                 title: input.title,
                 description: input.description ?? null,
-                timeLimit: input.timeLimit,
             });
         });
 

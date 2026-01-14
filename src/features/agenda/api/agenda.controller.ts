@@ -11,7 +11,7 @@ import {
 } from '@nestjs/common';
 import { AgendaService } from '../services/agenda.service';
 import { AgendaQueryService } from '../services/agenda-query.service';
-import { z } from 'zod';
+import { number, z } from 'zod';
 import { createZodDto } from 'nestjs-zod';
 
 const ApiDate = z.iso.date().transform((v) => new Date(v));
@@ -21,6 +21,8 @@ const JadwalInputSchema = z.object({
     paketSoalId: z.uuid(),
     startTime: ApiDateTime,
     endTime: ApiDateTime,
+    timeLimit: z.int(),
+    attempts: z.int()
 });
 
 const UpdateAgendaSchema = z.object({

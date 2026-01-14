@@ -5,8 +5,10 @@ import {
     agendaSiswaTable,
     agendaTable,
     jadwalTable,
+    paketSoalTable,
 } from '../../../infra/drizzle/schema';
 import { eq, and } from 'drizzle-orm';
+import { title } from 'process';
 
 @Injectable()
 export class AgendaQueryService {
@@ -29,17 +31,20 @@ export class AgendaQueryService {
             .select({
                 agenda: agendaTable,
                 agendaSiswa: agendaSiswaTable,
+                jadwal: jadwalTable,
             })
             .from(agendaSiswaTable)
             .innerJoin(
                 agendaTable,
                 eq(agendaTable.id, agendaSiswaTable.agendaId),
             )
+            .leftJoin(jadwalTable, eq(jadwalTable.agendaId, agendaTable.id))
             .where(and(
                 siswaId ? eq(agendaSiswaTable.siswaId, siswaId) : undefined
             ));
 
         const agendaSiswa = rows.map((r) => r.agenda);
+
         return agendaSiswa;
     }
 
@@ -57,6 +62,7 @@ export class AgendaQueryService {
             paketSoalId: string;
             startTime: Date;
             endTime: Date;
+            attempts: number;
             createdAt: Date;
             updatedAt: Date | null;
         }>;
@@ -86,6 +92,8 @@ export class AgendaQueryService {
         paketSoalId: string;
         startTime: Date;
         endTime: Date;
+        attempts: number;
+        timeLimit: number
         createdAt: Date;
         updatedAt: Date | null;
     } | null> {
@@ -94,6 +102,35 @@ export class AgendaQueryService {
             .from(jadwalTable)
             .where(eq(jadwalTable.id, jadwalId))
             .then((rows) => rows[0]);
+
+        return row ?? null;
+    }
+
+    public async getAllJadwal() {
+        const row = await this.db
+            .select({agenda: agendaTable, jadwal: jadwalTable, paketSoal: paketSoalTable})
+            .from(jadwalTable)
+            .leftJoin(agendaTable, eq(agendaTable.id, jadwalTable.agendaId))
+            .leftJoin(paketSoalTable, eq(paketSoalTable.id, jadwalTable.paketSoalId))
+            .then((rows) => rows.map(row => {
+                jadwal:  {
+                    id: row.jadwal.id
+                    startTime: row.jadwal.startTime
+                    endTime: row.jadwal.endTime
+                    timeLimit: row.jadwal.timeLimit
+                    attempts: row.jadwal.attempts
+                }
+                agenda: {
+                    id: row.agenda?.id
+                    title: row.agenda?.title
+                    startTime: row.agenda?.startTime
+                    endTime: row.agenda?.endTime
+                }
+                paketSoal: {
+                    id: row.paketSoal?.id
+                    title: row.paketSoal?.title
+                }
+            }));
 
         return row ?? null;
     }

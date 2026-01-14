@@ -12,4 +12,5 @@ export class Jadwal {
     public paketSoalId: string;
     public startTime: Date;
     public endTime: Date;
+    public attempts: number;
 }

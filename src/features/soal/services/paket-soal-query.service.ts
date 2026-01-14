@@ -13,7 +13,6 @@ export class PaketSoalQueryService {
             id: string;
             title: string;
             description: string | null;
-            timeLimit: number;
             createdAt: Date;
             updatedAt: Date | null;
         }[]
@@ -25,7 +24,6 @@ export class PaketSoalQueryService {
         id: string;
         title: string;
         description: string | null;
-        timeLimit: number;
         createdAt: Date;
         updatedAt: Date | null;
     } | null> {

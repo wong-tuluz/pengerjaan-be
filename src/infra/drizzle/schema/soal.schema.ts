@@ -16,7 +16,6 @@ export const paketSoalTable = mysqlTable('paket_soal', {
     id: varchar('id', { length: 36 }).primaryKey(),
     title: varchar('title', { length: 255 }).notNull(),
     description: text('description'),
-    timeLimit: int('time_limit').notNull(), // minutes
     createdAt: datetime('created_at')
         .notNull()
         .default(sql`now()`),
