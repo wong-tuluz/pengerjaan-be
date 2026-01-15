@@ -13,7 +13,7 @@ export class SubmitConsumer implements OnModuleInit {
     constructor(
         private readonly rabbit: RabbitMQService,
         private readonly handler: SubmitHandlerService,
-    ) {}
+    ) { }
 
     async onModuleInit() {
         this.channel = await this.rabbit.createChannel();
@@ -22,7 +22,7 @@ export class SubmitConsumer implements OnModuleInit {
     }
 
     private async setupTopology() {
-        await this.channel.assertExchange('submit.exchange', 'x-consistent-hash', {
+        await this.channel.assertExchange('submit.exchange', 'direct', {
             durable: true,
         });
 
@@ -59,6 +59,7 @@ export class SubmitConsumer implements OnModuleInit {
 
         await this.channel.prefetch(1);
     }
+
 
     private async startConsuming() {
         await this.channel.consume(

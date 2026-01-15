@@ -95,16 +95,17 @@ export class WorkSessionController {
 
         channel.publish(
             'submit.exchange',
-            sessionId,
+            'submit',
             Buffer.from(JSON.stringify(payload)),
             {
                 messageId: uuidv7(),
                 persistent: true,
                 headers: {
-                    sessionId: sessionId,
+                    sessionId,
                 },
             },
         );
+
 
         await channel.close();
 
