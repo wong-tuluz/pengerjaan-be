@@ -1,17 +1,33 @@
-export class DomainException extends Error {
+import { HttpException, HttpStatus } from '@nestjs/common';
+
+export class DomainException extends HttpException {
     constructor(
         message: string,
-        public readonly details?: unknown,
+        details?: unknown,
+        status: HttpStatus = HttpStatus.BAD_REQUEST,
     ) {
-        super(message);
+        super(
+            {
+                message,
+                errors: details,
+            },
+            status,
+        );
     }
 }
 
-export class AppException extends Error {
+export class AppException extends HttpException {
     constructor(
         message = 'Something went wrong.',
-        public readonly details?: unknown,
+        details?: unknown,
+        status: HttpStatus = HttpStatus.BAD_REQUEST,
     ) {
-        super(message);
+        super(
+            {
+                message,
+                errors: details,
+            },
+            status,
+        );
     }
 }
