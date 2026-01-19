@@ -44,13 +44,11 @@ export class JadwalQueryService {
             .leftJoin(agendaSiswaTable, eq(agendaSiswaTable.agendaId, agendaTable.id))
             .where(siswaId ? eq(agendaSiswaTable.siswaId, siswaId) : undefined)
 
-
-
-
         const res = new Array<any>
         for (const row of rows) {
             const sessions = await this.sessionQuery.getSessions(siswaId, row.jadwal.id)
             const paketSoal = await this.paketSoalQuery.getById(row.jadwal.paketSoalId)
+            const questionCount = await this.paketSoalQuery.getQuestionCount(row.jadwal.paketSoalId)
 
             const agenda = row.agenda
 
@@ -63,6 +61,7 @@ export class JadwalQueryService {
                 attempts: row.jadwal.attempts,
                 attemptsRemaining: row.jadwal.attempts - sessions.length,
                 status: sessions.length > 0 ? 'attempted' : 'no-attempts',
+                questionCount,
                 agenda,
                 paketSoal
 
