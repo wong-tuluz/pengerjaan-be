@@ -45,6 +45,8 @@ export class JadwalQueryService {
             .where(siswaId ? eq(agendaSiswaTable.siswaId, siswaId) : undefined)
 
 
+
+
         const res = new Array<any>
         for (const row of rows) {
             const sessions = await this.sessionQuery.getSessions(siswaId, row.jadwal.id)
@@ -65,9 +67,9 @@ export class JadwalQueryService {
                 paketSoal
 
             })
-
-            return res
         }
+
+        return res
     }
 
 }
