@@ -44,9 +44,9 @@ export class AgendaService {
                         attempts: j.attempts
                     })),
                 );
-            }
+            }                        
         });
-
+        
         return { id: agendaId };
     }
 

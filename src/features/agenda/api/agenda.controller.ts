@@ -8,11 +8,16 @@ import {
     Patch,
     Post,
     Query,
+    Req,
+    UseGuards,
 } from '@nestjs/common';
 import { AgendaService } from '../services/agenda.service';
 import { AgendaQueryService } from '../services/agenda-query.service';
 import { number, z } from 'zod';
 import { createZodDto } from 'nestjs-zod';
+import { JwtAuthGuard } from '../../auth/strategies/jwt.guard';
+import type { Request } from 'express';
+import { AppException } from '../../../infra/exceptions/app-exception';
 
 const ApiDate = z.iso.date().transform((v) => new Date(v));
 const ApiDateTime = z.iso.datetime().transform((v) => new Date(v));
@@ -73,8 +78,17 @@ export class AgendaController {
     }
 
     @Get()
-    async getAll(@Query('siswaId') siswaId?: string) {
-        return this.agendaQuery.getAll(siswaId);
+    @UseGuards(JwtAuthGuard)
+    async getAll(@Req() req: Request) {
+        const user = req.user
+        if (!user) {
+            throw new AppException("no user")
+        }
+
+        if (user.proktor) {
+            return this.agendaQuery.getAll()
+        }
+        return this.agendaQuery.getAll(user.userId);
     }
 
     @Get(':id')

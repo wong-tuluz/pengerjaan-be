@@ -35,17 +35,20 @@ export class AgendaQueryService {
                 agendaSiswa: agendaSiswaTable,
                 jadwal: jadwalTable,
             })
-            .from(agendaSiswaTable)
-            .innerJoin(
-                agendaTable,
-                eq(agendaTable.id, agendaSiswaTable.agendaId),
-            )
+            .from(agendaTable)
+            .leftJoin(agendaSiswaTable, eq(agendaSiswaTable.agendaId, agendaTable.id))
             .leftJoin(jadwalTable, eq(jadwalTable.agendaId, agendaTable.id))
             .where(and(
                 siswaId ? eq(agendaSiswaTable.siswaId, siswaId) : undefined
             ));
 
-        const agendaSiswa = rows.map((r) => r.agenda);
+        const agendaSiswa = Array.from(
+            new Map(
+                rows
+                    .filter(r => r.agenda !== null)
+                    .map(r => [r.agenda!.id, r.agenda!])
+            ).values()
+        );
 
         return agendaSiswa;
     }
