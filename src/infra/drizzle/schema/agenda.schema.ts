@@ -1,4 +1,4 @@
-import { mysqlTable, varchar, datetime, text } from 'drizzle-orm/mysql-core';
+import { mysqlTable, varchar, datetime, text, index } from 'drizzle-orm/mysql-core';
 import { sql } from 'drizzle-orm';
 import { int } from 'drizzle-orm/mysql-core';
 
@@ -22,7 +22,10 @@ export const agendaSiswaTable = mysqlTable('agenda_siswa', {
         .notNull()
         .default(sql`now()`),
     updatedAt: datetime('updated_at').$onUpdate(() => new Date()),
-});
+}, (table) => [
+    index('agenda_idx').on(table.agendaId),
+    index('siswa_idx').on(table.siswaId),
+]);
 
 export const jadwalTable = mysqlTable('jadwal', {
     id: varchar('id', { length: 36 }).primaryKey(),
@@ -36,4 +39,6 @@ export const jadwalTable = mysqlTable('jadwal', {
         .notNull()
         .default(sql`now()`),
     updatedAt: datetime('updated_at').$onUpdate(() => new Date()),
-});
+}, (table) => [
+    index('agenda_idx').on(table.agendaId),
+]);

@@ -27,7 +27,6 @@ export class SessionQueryService {
         createdAt: Date;
         updatedAt: Date | null;
     }[]> {
-        console.log(siswaId)
 
         const filters = [
             siswaId ? eq(workSessionTable.siswaId, siswaId) : undefined,

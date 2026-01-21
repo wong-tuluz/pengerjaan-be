@@ -3,12 +3,15 @@ import z from 'zod';
 import { READ_DB } from '../../../config/db.constants';
 import { MySql2Database } from 'drizzle-orm/mysql2';
 import {
+    jawabanSoalTable,
     materiSoalTable,
     paketSoalTable,
     soalTable,
+    workSessionAnswerTable,
+    workSessionMarkerTable,
     workSessionTable,
 } from '../../../infra/drizzle/schema';
-import { and, eq, or } from 'drizzle-orm';
+import { and, eq, inArray } from 'drizzle-orm';
 import { WorkSession } from '../domain/session';
 import { createZodDto } from 'nestjs-zod';
 import { SoalQueryService } from '../../soal/services/soal-query.service';
@@ -23,10 +26,10 @@ const SessionQuestionAnswerSchema = z.object({
 });
 
 const SessionQuestionSchema = z.object({
-    index: z.number,
+    index: z.number(),
     soalId: z.uuid(),
     prompt: z.string(),
-    type: z.enum(['multiple-choice', 'essay', 'complex-choice']),
+    type: z.enum(['multiple-choice', 'essay', 'single-choice']),
     isAnswered: z.boolean(),
     isMarked: z.boolean(),
     options: z.array(SessionQuestionAnswerSchema).optional(),
@@ -51,7 +54,6 @@ export class SessionStateQueryService {
     ) { }
 
     async getSessionState(sessionId: string, siswaId?: string): Promise<SessionDto> {
-        console.log(siswaId)
         const sessionRow = await this.db
             .select()
             .from(workSessionTable)
@@ -60,14 +62,14 @@ export class SessionStateQueryService {
             .then((rows) => rows[0]);
 
         if (!sessionRow) {
-            throw new Error('Session not found');
+            throw new AppException('Session not found', 404);
         }
 
         const session = new WorkSession();
         session.map(sessionRow);
 
-        if (session.siswaId != siswaId) {
-            throw new AppException("Bukan siswa yang mengerjakan")
+        if (session.siswaId !== siswaId) {
+            throw new AppException("Bukan siswa yang mengerjakan", 403);
         }
 
         const questionRows = await this.db
@@ -87,84 +89,99 @@ export class SessionStateQueryService {
                     : eq(paketSoalTable.id, session.paketSoalId),
             );
 
-        let questions = new Array<SessionQuestionState>
+        const soalIds = questionRows.map(r => r.soal.id);
 
-        for (const row of questionRows) {
-            questions.push(await this.getSessionQuestionState(sessionId, row.soal))
+        if (soalIds.length === 0) {
+            const obj = new SessionDto();
+            obj.id = session.id;
+            obj.status = session.finishedAt ? 'completed' : 'active';
+            obj.questions = [];
+            return obj;
         }
 
-        questions = shuffle(questions, session.siswaId);
+        const [allOptions, allSessionAnswers, allMarkers] = await Promise.all([
+            this.db.select().from(jawabanSoalTable).where(inArray(jawabanSoalTable.soalId, soalIds)),
+            this.db.select().from(workSessionAnswerTable).where(and(
+                eq(workSessionAnswerTable.workSessionId, sessionId),
+                inArray(workSessionAnswerTable.soalId, soalIds)
+            )),
+            this.db.select().from(workSessionMarkerTable).where(and(
+                eq(workSessionMarkerTable.workSessionId, sessionId),
+                inArray(workSessionMarkerTable.soalId, soalIds)
+            ))
+        ]);
 
-        let n = 1
-        for (const question of questions) {
-            question.index = n
-            n++
+        const optionsBySoal = new Map<string, typeof allOptions>();
+        for (const opt of allOptions) {
+            const list = optionsBySoal.get(opt.soalId) || [];
+            list.push(opt);
+            optionsBySoal.set(opt.soalId, list);
         }
 
-        const obj = new SessionDto();
-        ((obj.id = session.id),
-            (obj.status = session.finishedAt ? 'completed' : 'active'));
-        obj.questions = questions;
+        const answersBySoal = new Map<string, typeof allSessionAnswers>();
+        for (const ans of allSessionAnswers) {
+            const list = answersBySoal.get(ans.soalId) || [];
+            list.push(ans);
+            answersBySoal.set(ans.soalId, list);
+        }
 
-        return obj;
-    }
+        const markersBySoal = new Map<string, typeof allMarkers[0]>();
+        for (const marker of allMarkers) {
+            markersBySoal.set(marker.soalId, marker);
+        }
 
-    private async getSessionQuestionState(
-        sessionId: string,
-        soal: {
-            id: string;
-            type: 'multiple-choice' | 'essay' | 'complex-choice';
-            prompt: string;
-        },
-    ): Promise<SessionQuestionState> {
-        const state = new SessionQuestionState();
+        let questions: SessionQuestionState[] = questionRows.map((row) => {
+            const soal = row.soal;
+            const state = new SessionQuestionState();
+            state.index = 0;
+            state.soalId = soal.id;
+            state.type = soal.type;
+            state.prompt = soal.prompt;
 
-        state.index = 0;
-        state.soalId = soal.id;
-        state.type = soal.type;
-        state.prompt = soal.prompt;
+            const sessionAnswers = answersBySoal.get(soal.id) || [];
+            const marker = markersBySoal.get(soal.id);
 
-        if (soal.type === 'essay') {
-            const answers = await this.sessionQuery.getSessionAnswer(
-                sessionId,
-                soal.id,
-            );
+            state.isMarked = marker?.isMarked ?? false;
+            state.isAnswered = sessionAnswers.length > 0;
 
-            if (answers && answers.length > 0) {
-                state.options = [
-                    {
-                        value: answers[0].value ?? '',
-                        isSelected: true,
-                    },
-                ];
+            if (soal.type === 'essay') {
+                if (sessionAnswers.length > 0) {
+                    state.options = [
+                        {
+                            value: sessionAnswers[0].value ?? '',
+                            isSelected: true,
+                        },
+                    ];
+                }
+            } else {
+                const choices = optionsBySoal.get(soal.id) || [];
+                const selectedAnswerIds = new Set(
+                    sessionAnswers.map((a) => a.jawabanSoalId).filter(Boolean),
+                );
+
+                state.options = shuffle(choices
+                    .sort((a, b) => a.order - b.order)
+                    .map((choice) => ({
+                        jawabanSoalId: choice.id,
+                        value: choice.value,
+                        isSelected: selectedAnswerIds.has(choice.id),
+                    })), session.siswaId);
             }
 
             return state;
-        }
+        });
 
-        const [choices, sessionAnswers] = await Promise.all([
-            this.soalQuery.getJawaban(soal.id),
-            this.sessionQuery.getSessionAnswer(sessionId, soal.id),
-        ]);
+        questions = shuffle(questions, session.siswaId);
 
-        const selectedAnswerIds = new Set(
-            (sessionAnswers ?? []).map((a) => a.jawabanSoalId).filter(Boolean),
-        );
+        questions.forEach((q, i) => {
+            q.index = i + 1;
+        });
 
-        const marker = await this.sessionQuery.getSessionMarker(sessionId, soal.id)
+        const obj = new SessionDto();
+        obj.id = session.id;
+        obj.status = session.finishedAt ? 'completed' : 'active';
+        obj.questions = questions;
 
-        state.isMarked = marker?.isMarked ?? false,
-            state.isAnswered = selectedAnswerIds.size > 0
-
-        state.options = choices
-            .sort((a, b) => a.order - b.order)
-            .map((choice) => ({
-                jawabanSoalId: choice.id,
-                value: choice.value,
-                isSelected: selectedAnswerIds.has(choice.id),
-            }));
-
-
-        return state;
+        return obj;
     }
 }

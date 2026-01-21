@@ -29,28 +29,23 @@ export class AgendaQueryService {
             updatedAt: Date | null;
         }[]
     > {
-        const rows = await this.db
-            .select({
-                agenda: agendaTable,
-                agendaSiswa: agendaSiswaTable,
-                jadwal: jadwalTable,
-            })
-            .from(agendaTable)
-            .leftJoin(agendaSiswaTable, eq(agendaSiswaTable.agendaId, agendaTable.id))
-            .leftJoin(jadwalTable, eq(jadwalTable.agendaId, agendaTable.id))
-            .where(and(
-                siswaId ? eq(agendaSiswaTable.siswaId, siswaId) : undefined
-            ));
+        if (siswaId) {
+            return this.db
+                .select({
+                    id: agendaTable.id,
+                    title: agendaTable.title,
+                    startTime: agendaTable.startTime,
+                    endTime: agendaTable.endTime,
+                    description: agendaTable.description,
+                    createdAt: agendaTable.createdAt,
+                    updatedAt: agendaTable.updatedAt,
+                })
+                .from(agendaTable)
+                .innerJoin(agendaSiswaTable, eq(agendaSiswaTable.agendaId, agendaTable.id))
+                .where(eq(agendaSiswaTable.siswaId, siswaId));
+        }
 
-        const agendaSiswa = Array.from(
-            new Map(
-                rows
-                    .filter(r => r.agenda !== null)
-                    .map(r => [r.agenda!.id, r.agenda!])
-            ).values()
-        );
-
-        return agendaSiswa;
+        return this.db.select().from(agendaTable);
     }
 
     public async getById(agendaId: string): Promise<{

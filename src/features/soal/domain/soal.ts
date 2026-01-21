@@ -1,4 +1,4 @@
-export type SoalType = 'multiple-choice' | 'essay' | 'complex-choice';
+export type SoalType = 'multiple-choice' | 'essay' | 'single-choice';
 
 export class Soal {
     public id: string;

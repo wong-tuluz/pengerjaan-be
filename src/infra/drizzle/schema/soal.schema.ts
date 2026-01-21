@@ -6,6 +6,7 @@ import {
     int,
     boolean,
     mysqlEnum,
+    index,
 } from 'drizzle-orm/mysql-core';
 import { sql } from 'drizzle-orm';
 
@@ -36,7 +37,9 @@ export const materiSoalTable = mysqlTable('materi_soal', {
         .notNull()
         .default(sql`now()`),
     updatedAt: datetime('updated_at').$onUpdate(() => new Date()),
-});
+}, (table) => [
+    index('paket_soal_idx').on(table.paketSoalId),
+]);
 
 /* =======================
    Soal
@@ -45,9 +48,9 @@ export const soalTable = mysqlTable('soal', {
     id: varchar('id', { length: 36 }).primaryKey(),
     materiSoalId: varchar('materi_soal_id', { length: 36 }).notNull(),
     type: mysqlEnum('type', [
+        'single-choice',
         'multiple-choice',
         'essay',
-        'complex-choice',
     ]).notNull(),
     prompt: text('prompt').notNull(),
     order: int('order').notNull(),
@@ -57,7 +60,9 @@ export const soalTable = mysqlTable('soal', {
         .notNull()
         .default(sql`now()`),
     updatedAt: datetime('updated_at').$onUpdate(() => new Date()),
-});
+}, (table) => [
+    index('materi_soal_idx').on(table.materiSoalId),
+]);
 
 /* =======================
    Jawaban Soal
@@ -72,4 +77,6 @@ export const jawabanSoalTable = mysqlTable('jawaban_soal', {
         .notNull()
         .default(sql`now()`),
     updatedAt: datetime('updated_at').$onUpdate(() => new Date()),
-});
+}, (table) => [
+    index('soal_idx').on(table.soalId),
+]);

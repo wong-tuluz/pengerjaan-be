@@ -9,12 +9,12 @@ import { SoalModule } from '../soal/soal.module';
 import { AgendaModule } from '../agenda/agenda.module';
 import { SessionStateQueryService } from './services/session-state-query.service';
 import { WorkSessionQueryModule } from './work-session-query.module';
+import { SubmitService } from './services/submit.service';
 
 @Module({
     imports: [RabbitMQModule, DrizzleModule, SoalModule, AgendaModule, WorkSessionQueryModule],
     controllers: [WorkSessionController],
-    providers: [SubmitConsumer, SessionManagerService, SubmitHandlerService, SessionStateQueryService],
-
+    providers: [SubmitConsumer, SessionManagerService, SubmitHandlerService, SessionStateQueryService, SubmitService],
 })
 export class WorkSessionModule { }
 

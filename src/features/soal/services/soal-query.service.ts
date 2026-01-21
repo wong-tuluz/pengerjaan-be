@@ -12,7 +12,7 @@ export class SoalQueryService {
         {
             id: string;
             materiSoalId: string;
-            type: 'multiple-choice' | 'essay' | 'complex-choice';
+            type: 'multiple-choice' | 'essay' | 'single-choice';
             prompt: string;
             order: number;
             weightCorrect: number;
@@ -31,7 +31,7 @@ export class SoalQueryService {
     async getById(id: string): Promise<{
         id: string;
         materiSoalId: string;
-        type: 'multiple-choice' | 'essay' | 'complex-choice';
+        type: 'multiple-choice' | 'essay' | 'single-choice';
         prompt: string;
         order: number;
         weightCorrect: number;
@@ -52,7 +52,7 @@ export class SoalQueryService {
         | ({
               id: string;
               materiSoalId: string;
-              type: 'multiple-choice' | 'essay' | 'complex-choice';
+              type: 'multiple-choice' | 'essay' | 'single-choice';
               prompt: string;
               order: number;
               weightCorrect: number;

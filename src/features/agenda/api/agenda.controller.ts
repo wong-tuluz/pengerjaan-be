@@ -7,19 +7,17 @@ import {
     Param,
     Patch,
     Post,
-    Query,
     Req,
     UseGuards,
 } from '@nestjs/common';
 import { AgendaService } from '../services/agenda.service';
 import { AgendaQueryService } from '../services/agenda-query.service';
-import { number, z } from 'zod';
+import { z } from 'zod';
 import { createZodDto } from 'nestjs-zod';
 import { JwtAuthGuard } from '../../auth/strategies/jwt.guard';
 import type { Request } from 'express';
 import { AppException } from '../../../infra/exceptions/app-exception';
 
-const ApiDate = z.iso.date().transform((v) => new Date(v));
 const ApiDateTime = z.iso.datetime().transform((v) => new Date(v));
 
 const JadwalInputSchema = z.object({
@@ -80,10 +78,7 @@ export class AgendaController {
     @Get()
     @UseGuards(JwtAuthGuard)
     async getAll(@Req() req: Request) {
-        const user = req.user
-        if (!user) {
-            throw new AppException("no user")
-        }
+        const user = this.validateUser(req);
 
         if (user.proktor) {
             return this.agendaQuery.getAll()
@@ -107,5 +102,12 @@ export class AgendaController {
         const peserta = await this.agendaQuery.getPeserta(agendaId)
 
         return peserta
+    }
+
+    private validateUser(req: Request): { userId: string, proktor: boolean } {
+        if (!req.user)
+            throw new AppException("User not specified")
+
+        return req.user as { userId: string, proktor: boolean }
     }
 }

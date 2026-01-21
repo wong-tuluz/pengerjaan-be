@@ -13,11 +13,15 @@ export class JadwalController {
     @Get()
     @UseGuards(JwtAuthGuard)
     async getAll(@Req() req: Request) {
-        const user = req.user
-        if (!user) {
-            throw new AppException("no user")
-        }
+        const user = this.validateUser(req);
 
-        return this.jadwalQuery.getAllJadwal(user.proktor ? undefined : user?.userId);
+        return this.jadwalQuery.getAllJadwal(user.proktor ? undefined : user.userId);
+    }
+
+    private validateUser(req: Request): { userId: string, proktor: boolean } {
+        if (!req.user)
+            throw new AppException("User not specified")
+
+        return req.user as { userId: string, proktor: boolean }
     }
 }

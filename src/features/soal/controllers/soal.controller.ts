@@ -15,9 +15,9 @@ import { SoalService } from '../services/soal.service';
 import { SoalQueryService } from '../services/soal-query.service';
 
 export const SoalTypeSchema = z.enum([
+    'single-choice',
     'multiple-choice',
     'essay',
-    'complex-choice',
 ]);
 
 export const JawabanInputSchema = z.object({

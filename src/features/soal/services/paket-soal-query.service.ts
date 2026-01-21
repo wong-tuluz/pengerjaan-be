@@ -2,7 +2,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { READ_DB } from '../../../config/db.constants';
 import { MySql2Database } from 'drizzle-orm/mysql2';
 import { materiSoalTable, paketSoalTable, soalTable } from '../../../infra/drizzle/schema';
-import { eq } from 'drizzle-orm';
+import { count, eq } from 'drizzle-orm';
 
 @Injectable()
 export class PaketSoalQueryService {
@@ -38,13 +38,12 @@ export class PaketSoalQueryService {
     }
 
     async getQuestionCount(id: string): Promise<number> {
-        const count = await this.db
-            .select()
+        const [result] = await this.db
+            .select({ count: count() })
             .from(soalTable)
-            .leftJoin(materiSoalTable, eq(soalTable.materiSoalId, materiSoalTable.id))
-            .where(eq(materiSoalTable.paketSoalId, id))
-            .then((rows) => rows.length);
+            .innerJoin(materiSoalTable, eq(soalTable.materiSoalId, materiSoalTable.id))
+            .where(eq(materiSoalTable.paketSoalId, id));
 
-        return count;
+        return result.count;
     }
 }
