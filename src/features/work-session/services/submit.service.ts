@@ -2,33 +2,36 @@ import { Injectable } from '@nestjs/common';
 import { RabbitMQService } from '../../../infra/rabbitmq/rabbitmq.service';
 import { SubmitContract } from '../jobs/submit.contract';
 import { v7 as uuidv7 } from 'uuid';
+import { SubmitHandlerService } from './submit-handler.service';
 
 @Injectable()
 export class SubmitService {
-    constructor(private readonly rabbit: RabbitMQService) { }
+    constructor(private readonly rabbit: RabbitMQService, private readonly handler: SubmitHandlerService) { }
 
     async publishSubmit(payload: SubmitContract) {
-        const channel = await this.rabbit.createChannel();
+        this.handler.handle(payload)
 
-        try {
-            await channel.assertExchange('submit.exchange', 'direct', {
-                durable: true,
-            });
+        // const channel = await this.rabbit.createChannel();
 
-            channel.publish(
-                'submit.exchange',
-                'submit',
-                Buffer.from(JSON.stringify(payload)),
-                {
-                    messageId: uuidv7(),
-                    persistent: true,
-                    headers: {
-                        sessionId: payload.workSessionId,
-                    },
-                },
-            );
-        } finally {
-            await channel.close();
-        }
+        // try {
+        //     await channel.assertExchange('submit.exchange', 'direct', {
+        //         durable: true,
+        //     });
+
+        //     channel.publish(
+        //         'submit.exchange',
+        //         'submit',
+        //         Buffer.from(JSON.stringify(payload)),
+        //         {
+        //             messageId: uuidv7(),
+        //             persistent: true,
+        //             headers: {
+        //                 sessionId: payload.workSessionId,
+        //             },
+        //         },
+        //     );
+        // } finally {
+        //     await channel.close();
+        // }
     }
 }
