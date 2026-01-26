@@ -32,9 +32,13 @@ export class SubmitHandlerService {
 
         session.submitAnswer(data.soalId, data.jawaban.map(x => WorkSessionJawaban.create(session.id, data.soalId, x.jawabanSoalId, x.value)))
 
+        console.log(data)
+
         if (data.marked) {
             session.markQuestion(data.soalId, data.marked)
         }
+
+        console.log(session)
 
         this.txm.run(async ctx => {
             await ctx.tx.delete(workSessionAnswerTable).where(eq(workSessionAnswerTable.soalId, data.soalId))

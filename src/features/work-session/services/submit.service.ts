@@ -9,7 +9,7 @@ export class SubmitService {
     constructor(private readonly rabbit: RabbitMQService, private readonly handler: SubmitHandlerService) { }
 
     async publishSubmit(payload: SubmitContract) {
-        this.handler.handle(payload)
+        return await this.handler.handle(payload)
 
         // const channel = await this.rabbit.createChannel();
 

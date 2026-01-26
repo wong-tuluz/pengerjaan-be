@@ -96,13 +96,12 @@ export class WorkSessionController {
             throw new NotFoundException("Session not found.")
         }
 
-        await this.submitService.publishSubmit({
+        return await this.submitService.publishSubmit({
             workSessionId: sessionId,
+            marked: body.marked,
             soalId: body.soalId,
             jawaban: body.jawaban
         });
-
-        return { message: 'Submit job published' };
     }
 
     private validateUser(req: Request): { userId: string, proktor: boolean } {
