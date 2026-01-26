@@ -99,6 +99,7 @@ export class WorkSession {
 
     private isExpired(): boolean {
         if (!this.timeLimit) return false;
+        this.status = 'finished'
         const expiresAt = new Date(
             this.startedAt.getTime() + this.timeLimit * 60 * 1000,
         );

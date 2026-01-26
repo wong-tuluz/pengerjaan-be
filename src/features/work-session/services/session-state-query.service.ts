@@ -41,9 +41,36 @@ const SessionSchema = z.object({
     questions: z.array(SessionQuestionSchema),
 });
 
+const SessionResultQuestionAnswerSchema = z.object({
+    jawabanSoalId: z.uuid().optional(),
+    value: z.string(),
+    isSelected: z.boolean(),
+    isCorrect: z.boolean(),
+});
+
+const SessionResultQuestionSchema = z.object({
+    index: z.number(),
+    soalId: z.uuid(),
+    prompt: z.string(),
+    type: z.enum(['multiple-choice', 'essay', 'single-choice']),
+    isAnswered: z.boolean(),
+    isMarked: z.boolean(),
+    options: z.array(SessionResultQuestionAnswerSchema).optional(),
+});
+
+const SessionResultSchema = z.object({
+    id: z.uuid(),
+    status: z.enum(['active', 'completed', 'expired']),
+    questions: z.array(SessionResultQuestionSchema),
+});
+
 class SessionQuestionState extends createZodDto(SessionQuestionSchema) { }
 
 class SessionDto extends createZodDto(SessionSchema) { }
+
+class SessionResultQuestionState extends createZodDto(SessionResultQuestionSchema) { }
+
+class SessionResultDto extends createZodDto(SessionResultSchema) { }
 
 @Injectable()
 export class SessionStateQueryService {
@@ -178,6 +205,136 @@ export class SessionStateQueryService {
         });
 
         const obj = new SessionDto();
+        obj.id = session.id;
+        obj.status = session.finishedAt ? 'completed' : 'active';
+        obj.questions = questions;
+
+        return obj;
+    }
+
+    async getSessionResult(sessionId: string, siswaId?: string): Promise<SessionResultDto> {
+        const sessionRow = await this.db
+            .select()
+            .from(workSessionTable)
+            .where(eq(workSessionTable.id, sessionId))
+            .limit(1)
+            .then((rows) => rows[0]);
+
+        if (!sessionRow) {
+            throw new AppException('Session not found', 404);
+        }
+
+        const session = new WorkSession();
+        session.map(sessionRow);
+
+        const questionRows = await this.db
+            .select({ soal: soalTable })
+            .from(soalTable)
+            .innerJoin(
+                materiSoalTable,
+                eq(soalTable.materiSoalId, materiSoalTable.id),
+            )
+            .leftJoin(
+                paketSoalTable,
+                eq(materiSoalTable.paketSoalId, paketSoalTable.id),
+            )
+            .where(
+                session.materiSoalId
+                    ? eq(materiSoalTable.id, session.materiSoalId)
+                    : eq(paketSoalTable.id, session.paketSoalId),
+            );
+
+        const soalIds = questionRows.map(r => r.soal.id);
+
+        if (soalIds.length === 0) {
+            const obj = new SessionResultDto();
+            obj.id = session.id;
+            obj.status = session.finishedAt ? 'completed' : 'active';
+            obj.questions = [];
+            return obj;
+        }
+
+        const [allOptions, allSessionAnswers, allMarkers] = await Promise.all([
+            this.db.select().from(jawabanSoalTable).where(inArray(jawabanSoalTable.soalId, soalIds)),
+            this.db.select().from(workSessionAnswerTable).where(and(
+                eq(workSessionAnswerTable.workSessionId, sessionId),
+                inArray(workSessionAnswerTable.soalId, soalIds)
+            )),
+            this.db.select().from(workSessionMarkerTable).where(and(
+                eq(workSessionMarkerTable.workSessionId, sessionId),
+                inArray(workSessionMarkerTable.soalId, soalIds)
+            ))
+        ]);
+
+        const optionsBySoal = new Map<string, typeof allOptions>();
+        for (const opt of allOptions) {
+            const list = optionsBySoal.get(opt.soalId) || [];
+            list.push(opt);
+            optionsBySoal.set(opt.soalId, list);
+        }
+
+        const answersBySoal = new Map<string, typeof allSessionAnswers>();
+        for (const ans of allSessionAnswers) {
+            const list = answersBySoal.get(ans.soalId) || [];
+            list.push(ans);
+            answersBySoal.set(ans.soalId, list);
+        }
+
+        const markersBySoal = new Map<string, typeof allMarkers[0]>();
+        for (const marker of allMarkers) {
+            markersBySoal.set(marker.soalId, marker);
+        }
+
+        let questions: SessionResultQuestionState[] = questionRows.map((row) => {
+            const soal = row.soal;
+            const state = new SessionResultQuestionState();
+            state.index = 0;
+            state.soalId = soal.id;
+            state.type = soal.type;
+            state.prompt = soal.prompt;
+
+            const sessionAnswers = answersBySoal.get(soal.id) || [];
+            const marker = markersBySoal.get(soal.id);
+
+            state.isMarked = marker?.isMarked ?? false;
+            state.isAnswered = sessionAnswers.length > 0;
+
+            if (soal.type === 'essay') {
+                if (sessionAnswers.length > 0) {
+                    state.options = [
+                        {
+                            value: sessionAnswers[0].value ?? '',
+                            isSelected: true,
+                            isCorrect: false,
+                        },
+                    ];
+                }
+            } else {
+                const choices = optionsBySoal.get(soal.id) || [];
+                const selectedAnswerIds = new Set(
+                    sessionAnswers.map((a) => a.jawabanSoalId).filter(Boolean),
+                );
+
+                state.options = shuffle(choices
+                    .sort((a, b) => a.order - b.order)
+                    .map((choice) => ({
+                        jawabanSoalId: choice.id,
+                        value: choice.value,
+                        isSelected: selectedAnswerIds.has(choice.id),
+                        isCorrect: choice.isCorrect,
+                    })), session.siswaId);
+            }
+
+            return state;
+        });
+
+        questions = shuffle(questions, session.siswaId);
+
+        questions.forEach((q, i) => {
+            q.index = i + 1;
+        });
+
+        const obj = new SessionResultDto();
         obj.id = session.id;
         obj.status = session.finishedAt ? 'completed' : 'active';
         obj.questions = questions;

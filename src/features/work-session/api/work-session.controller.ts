@@ -57,6 +57,23 @@ export class WorkSessionController {
         return await this.sessionStateQuery.getSessionState(sessionId, !user.proktor ? user.userId : undefined)
     }
 
+    @Get(':id/result')
+    @UseGuards(JwtAuthGuard)
+    async getSessionResult(@Req() req: Request, @Param('id') sessionId: string) {
+        const user = this.validateUser(req)
+
+        return await this.sessionStateQuery.getSessionResult(sessionId, !user.proktor ? user.userId : undefined)
+    }
+
+    @Post(':id/finish')
+    @UseGuards(JwtAuthGuard)
+    async finishSession(@Req() req: Request, @Param('id') sessionId: string) {
+        const user = this.validateUser(req)
+
+        return await this.sessionManager.finishSession(sessionId)
+    }
+
+
     @Post()
     @UseGuards(JwtAuthGuard)
     async createSession(@Req() req: Request, @Body() body: CreateSessionDto) {
