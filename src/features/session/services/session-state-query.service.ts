@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import z from 'zod';
-import { READ_DB } from '../../../config/db.constants';
+import { READ_DB } from '../../../common/config/db.constants';
 import { MySql2Database } from 'drizzle-orm/mysql2';
 import {
     jawabanSoalTable,
@@ -16,8 +16,8 @@ import { WorkSession } from '../domain/session';
 import { createZodDto } from 'nestjs-zod';
 import { SoalQueryService } from '../../persoalan/soal/soal-query.service';
 import { SessionQueryService } from './session-query.service';
-import { shuffle } from '../../../infra/rng/seedrand';
-import { AppException } from '../../../infra/exceptions/app-exception';
+import { shuffle } from '../../../common/rng/seedrand';
+import { AppException } from '../../../common/exceptions/application.exception';
 
 const SessionQuestionAnswerSchema = z.object({
     jawabanSoalId: z.uuid().optional(),

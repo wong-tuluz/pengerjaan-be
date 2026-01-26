@@ -3,14 +3,14 @@ import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { apiReference } from '@scalar/nestjs-api-reference';
 import { cleanupOpenApiDoc } from 'nestjs-zod';
-import { ApiResponseInterceptor } from './infra/responses/response.interceptor';
+import { ApiResponseInterceptor } from './common/responses/response.interceptor';
 import { HttpExceptionFilter } from './exception-filter';
 
 async function bootstrap() {
     const app = await NestFactory.create(AppModule, {
         cors: {
-            origin: '*'
-        }
+            origin: '*',
+        },
     });
 
     const config = new DocumentBuilder()
@@ -35,7 +35,7 @@ async function bootstrap() {
     );
 
     app.useGlobalInterceptors(new ApiResponseInterceptor());
-    app.useGlobalFilters(new HttpExceptionFilter())
+    app.useGlobalFilters(new HttpExceptionFilter());
 
     await app.listen(process.env.PORT ?? 3000);
 }

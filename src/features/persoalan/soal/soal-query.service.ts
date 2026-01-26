@@ -1,5 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { READ_DB } from '../../../config/db.constants';
+import { READ_DB } from '../../../common/config/db.constants';
 import { MySql2Database } from 'drizzle-orm/mysql2';
 import { soalTable, jawabanSoalTable } from '../../../infra/drizzle/schema';
 import { eq, asc } from 'drizzle-orm';

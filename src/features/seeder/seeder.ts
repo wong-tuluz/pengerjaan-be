@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { TransactionManager } from '../drizzle/transaction-manager';
+import { TransactionManager } from '../../infra/drizzle/transaction-manager';
 import {
     siswaTable,
     agendaTable,
@@ -9,7 +9,7 @@ import {
     materiSoalTable,
     soalTable,
     jawabanSoalTable,
-} from '../drizzle/schema';
+} from '../../infra/drizzle/schema';
 import { v7 as uuidv7, v4 as uuidv4 } from 'uuid';
 
 @Injectable()

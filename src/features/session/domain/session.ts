@@ -1,5 +1,5 @@
 import { v7 as uuidv7 } from 'uuid';
-import { DomainException } from '../../../infra/exceptions/app-exception';
+import { DomainException } from '../../../common/exceptions';
 
 export type SessionStatus = 'in_progress' | 'finished';
 
@@ -30,7 +30,7 @@ export class WorkSession {
         obj.siswaId = siswaId;
         obj.jadwalId = jadwalId;
         obj.paketSoalId = paketSoalId;
-        obj.materiSoalId = materiSoalId
+        obj.materiSoalId = materiSoalId;
         obj.timeLimit = timeLimit;
         obj.startedAt = new Date();
         obj.status = 'in_progress';
@@ -84,16 +84,16 @@ export class WorkSession {
     private ensureCanAnswer(): void {
         this.ensureInProgress();
         if (this.isExpired()) {
-            const msg = 'Session expired. cannot submit answers'
-            console.log(msg)
+            const msg = 'Session expired. cannot submit answers';
+            console.log(msg);
             throw new DomainException(msg);
         }
     }
 
     private ensureInProgress(): void {
         if (this.status !== 'in_progress') {
-            const msg = 'Session not active'
-            console.log(msg)
+            const msg = 'Session not active';
+            console.log(msg);
             throw new DomainException(msg);
         }
     }
@@ -146,5 +146,5 @@ export class WorkSessionMarker {
         public workSessionId: string,
         public soalId: string,
         public isMarked: boolean,
-    ) { }
+    ) {}
 }

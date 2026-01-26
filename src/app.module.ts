@@ -7,8 +7,8 @@ import { DrizzleModule } from './infra/drizzle/drizzle.module';
 import { AgendaModule } from './features/event/agenda/agenda.module';
 import { SiswaModule } from './features/siswa/siswa.module';
 import { SoalModule } from './features/persoalan/soal/soal.module';
-import { SeederController } from './infra/seeder/seeder.controller';
-import { Seeder } from './infra/seeder/seeder';
+import { SeederController } from './features/seeder/seeder.controller';
+import { Seeder } from './features/seeder/seeder';
 import { AuthModule } from './features/auth/auth.module';
 import { ZodError } from 'zod';
 

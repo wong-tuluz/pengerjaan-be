@@ -2,7 +2,7 @@ import { Inject, Injectable } from "@nestjs/common";
 import { MySql2Database } from "drizzle-orm/mysql2";
 import { MySqlTransactionConfig } from "drizzle-orm/mysql-core";
 import { TransactionContext } from "./transaction-context";
-import { WRITE_DB } from "../../config/db.constants";
+import { WRITE_DB } from "../../common/config/db.constants";
 
 @Injectable()
 export class TransactionManager {

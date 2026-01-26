@@ -8,6 +8,6 @@ import { SiswaQueryService } from './siswa-query.service';
     imports: [DrizzleModule],
     controllers: [SiswaController],
     providers: [SiswaService, SiswaQueryService],
-    exports: [SiswaQueryService]
+    exports: [SiswaQueryService],
 })
 export class SiswaModule {}

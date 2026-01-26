@@ -15,7 +15,7 @@ import { AgendaQueryService } from './agenda-query.service';
 
 import { JwtAuthGuard } from '../../auth/strategies/jwt.guard';
 import type { Request } from 'express';
-import { AppException } from '../../../infra/exceptions/app-exception';
+import { AppException } from '../../../common/exceptions/application.exception';
 import { CreateAgendaDto, UpdateAgendaDto } from './agenda.dto';
 
 @Controller('agenda')

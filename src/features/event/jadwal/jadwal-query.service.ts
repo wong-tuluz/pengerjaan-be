@@ -1,7 +1,7 @@
 import { Inject, Injectable } from "@nestjs/common";
 import { eq, inArray, count, and } from "drizzle-orm";
 import { agendaSiswaTable, workSessionTable, agendaTable, jadwalTable, paketSoalTable, soalTable, materiSoalTable } from "../../../infra/drizzle/schema";
-import { READ_DB } from "../../../config/db.constants";
+import { READ_DB } from "../../../common/config/db.constants";
 import { MySql2Database } from "drizzle-orm/mysql2";
 
 @Injectable()

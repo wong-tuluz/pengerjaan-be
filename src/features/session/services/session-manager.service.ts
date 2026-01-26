@@ -3,7 +3,7 @@ import { TransactionManager } from "../../../infra/drizzle/transaction-manager";
 import { Injectable } from "@nestjs/common";
 import { WorkSession } from "../domain/session";
 import { PaketSoalQueryService } from "../../persoalan/paket/paket-soal-query.service";
-import { AppException } from "../../../infra/exceptions/app-exception";
+import { AppException } from "../../../common/exceptions/application.exception";
 import { SessionQueryService } from "./session-query.service";
 import { JadwalQueryService } from "../../event/jadwal/jadwal-query.service";
 
