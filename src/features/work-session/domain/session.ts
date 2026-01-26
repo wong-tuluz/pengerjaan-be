@@ -1,4 +1,5 @@
 import { v7 as uuidv7 } from 'uuid';
+import { DomainException } from '../../../infra/exceptions/app-exception';
 
 export type SessionStatus = 'in_progress' | 'finished';
 
@@ -85,7 +86,7 @@ export class WorkSession {
         if (this.isExpired()) {
             const msg = 'Session expired. cannot submit answers'
             console.log(msg)
-            throw new Error(msg);
+            throw new DomainException(msg);
         }
     }
 
@@ -93,13 +94,12 @@ export class WorkSession {
         if (this.status !== 'in_progress') {
             const msg = 'Session not active'
             console.log(msg)
-            throw new Error(msg);
+            throw new DomainException(msg);
         }
     }
 
     private isExpired(): boolean {
         if (!this.timeLimit) return false;
-        this.status = 'finished'
         const expiresAt = new Date(
             this.startedAt.getTime() + this.timeLimit * 60 * 1000,
         );
