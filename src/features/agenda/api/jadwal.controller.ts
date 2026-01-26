@@ -1,4 +1,4 @@
-import { Controller, Get, Req, UseGuards } from "@nestjs/common";
+import { Controller, Get, Param, Query, Req, UseGuards } from "@nestjs/common";
 import { JwtAuthGuard } from "../../auth/strategies/jwt.guard";
 import type { Request } from 'express';
 import { JadwalQueryService } from "../services/jadwal-query.service";
@@ -23,5 +23,11 @@ export class JadwalController {
             throw new AppException("User not specified")
 
         return req.user as { userId: string, proktor: boolean }
+    }
+
+    @Get(':id')
+    @UseGuards(JwtAuthGuard)
+    async getById(@Param('id') agendaId: string) {
+        return await this.jadwalQuery.getById(agendaId)
     }
 }

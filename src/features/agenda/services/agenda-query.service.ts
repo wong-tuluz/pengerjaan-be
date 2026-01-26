@@ -10,7 +10,6 @@ import {
     workSessionTable,
 } from '../../../infra/drizzle/schema';
 import { eq, and } from 'drizzle-orm';
-import { title } from 'process';
 
 @Injectable()
 export class AgendaQueryService {

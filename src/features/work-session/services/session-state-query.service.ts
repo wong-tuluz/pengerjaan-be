@@ -60,6 +60,8 @@ const SessionResultQuestionSchema = z.object({
 
 const SessionResultSchema = z.object({
     id: z.uuid(),
+    jadwalId: z.string(),
+    paketSoalId: z.string(),
     status: z.enum(['active', 'completed', 'expired']),
     questions: z.array(SessionResultQuestionSchema),
 });
@@ -338,6 +340,8 @@ export class SessionStateQueryService {
         obj.id = session.id;
         obj.status = session.finishedAt ? 'completed' : 'active';
         obj.questions = questions;
+        obj.jadwalId = session.jadwalId;
+        obj.paketSoalId = session.paketSoalId;
 
         return obj;
     }
