@@ -2,6 +2,11 @@
 import { Provider } from '@nestjs/common';
 import { drizzle } from "drizzle-orm/mysql2";
 import { WRITE_DB, READ_DB } from '../../config/db.constants';
+import * as dotenv from 'dotenv';
+
+dotenv.config();
+
+export const dbAuth = drizzle(process.env.WRITE_DATABASE_URL!);
 
 export const drizzleProviders: Provider[] = [
   {
