@@ -2,11 +2,10 @@ import { workSessionTable } from "../../../infra/drizzle/schema";
 import { TransactionManager } from "../../../infra/drizzle/transaction-manager";
 import { Injectable } from "@nestjs/common";
 import { WorkSession } from "../domain/session";
-import { AgendaQueryService } from "../../../features/agenda/services/agenda-query.service";
-import { PaketSoalQueryService } from "../../../features/soal/services/paket-soal-query.service";
+import { PaketSoalQueryService } from "../../persoalan/paket/paket-soal-query.service";
 import { AppException } from "../../../infra/exceptions/app-exception";
 import { SessionQueryService } from "./session-query.service";
-import { JadwalQueryService } from "../../agenda/services/jadwal-query.service";
+import { JadwalQueryService } from "../../event/jadwal/jadwal-query.service";
 
 @Injectable()
 export class SessionManagerService {

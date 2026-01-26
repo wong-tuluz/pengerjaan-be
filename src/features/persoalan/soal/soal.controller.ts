@@ -11,8 +11,8 @@ import {
 } from '@nestjs/common';
 import { createZodDto } from 'nestjs-zod';
 import z from 'zod';
-import { SoalService } from '../services/soal.service';
-import { SoalQueryService } from '../services/soal-query.service';
+import { SoalService } from './soal.service';
+import { SoalQueryService } from './soal-query.service';
 
 export const SoalTypeSchema = z.enum([
     'single-choice',

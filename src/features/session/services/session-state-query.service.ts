@@ -14,7 +14,7 @@ import {
 import { and, eq, inArray } from 'drizzle-orm';
 import { WorkSession } from '../domain/session';
 import { createZodDto } from 'nestjs-zod';
-import { SoalQueryService } from '../../soal/services/soal-query.service';
+import { SoalQueryService } from '../../persoalan/soal/soal-query.service';
 import { SessionQueryService } from './session-query.service';
 import { shuffle } from '../../../infra/rng/seedrand';
 import { AppException } from '../../../infra/exceptions/app-exception';

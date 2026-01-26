@@ -1,12 +1,12 @@
 import { BadRequestException, Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { WorkSessionModule } from './features/work-session/work-session.module';
+import { WorkSessionModule } from './features/session/work-session.module';
 import { APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
 import { createZodValidationPipe, ZodSerializerInterceptor, ZodValidationPipe } from 'nestjs-zod';
 import { DrizzleModule } from './infra/drizzle/drizzle.module';
-import { AgendaModule } from './features/agenda/agenda.module';
+import { AgendaModule } from './features/event/agenda/agenda.module';
 import { SiswaModule } from './features/siswa/siswa.module';
-import { SoalModule } from './features/soal/soal.module';
+import { SoalModule } from './features/persoalan/soal/soal.module';
 import { SeederController } from './infra/seeder/seeder.controller';
 import { Seeder } from './infra/seeder/seeder';
 import { AuthModule } from './features/auth/auth.module';

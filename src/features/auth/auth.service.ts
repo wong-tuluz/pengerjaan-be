@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { SiswaQueryService } from "../siswa/services/siswa-query.service";
+import { SiswaQueryService } from "../siswa/siswa-query.service";
 import { JwtService } from "@nestjs/jwt";
 
 @Injectable()

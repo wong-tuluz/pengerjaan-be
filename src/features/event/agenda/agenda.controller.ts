@@ -10,50 +10,20 @@ import {
     Req,
     UseGuards,
 } from '@nestjs/common';
-import { AgendaService } from '../services/agenda.service';
-import { AgendaQueryService } from '../services/agenda-query.service';
-import { z } from 'zod';
-import { createZodDto } from 'nestjs-zod';
+import { AgendaService } from './agenda-command.service';
+import { AgendaQueryService } from './agenda-query.service';
+
 import { JwtAuthGuard } from '../../auth/strategies/jwt.guard';
 import type { Request } from 'express';
 import { AppException } from '../../../infra/exceptions/app-exception';
-
-const ApiDateTime = z.iso.datetime().transform((v) => new Date(v));
-
-const JadwalInputSchema = z.object({
-    paketSoalId: z.uuid(),
-    startTime: ApiDateTime,
-    endTime: ApiDateTime,
-    timeLimit: z.int(),
-    attempts: z.int()
-});
-
-const UpdateAgendaSchema = z.object({
-    title: z.string().min(1).optional(),
-    startTime: ApiDateTime,
-    endTime: ApiDateTime,
-    description: z.string().nullable().optional(),
-    jadwal: z.array(JadwalInputSchema).nullable().optional(),
-});
-
-const CreateAgendaSchema = z.object({
-    title: z.string().min(1),
-    startTime: ApiDateTime,
-    endTime: ApiDateTime,
-    description: z.string().nullable().optional(),
-    jadwal: z.array(JadwalInputSchema).optional(),
-});
-
-export class CreateAgendaDto extends createZodDto(CreateAgendaSchema) { }
-
-export class UpdateAgendaDto extends createZodDto(UpdateAgendaSchema) { }
+import { CreateAgendaDto, UpdateAgendaDto } from './agenda.dto';
 
 @Controller('agenda')
 export class AgendaController {
     constructor(
         private readonly agendaService: AgendaService,
         private readonly agendaQuery: AgendaQueryService,
-    ) { }
+    ) {}
 
     @Post()
     async create(@Body() body: CreateAgendaDto) {
@@ -81,7 +51,7 @@ export class AgendaController {
         const user = this.validateUser(req);
 
         if (user.proktor) {
-            return this.agendaQuery.getAll()
+            return this.agendaQuery.getAll();
         }
         return this.agendaQuery.getAll(user.userId);
     }
@@ -99,15 +69,14 @@ export class AgendaController {
 
     @Get(':id/peserta')
     async getPeserta(@Param('id') agendaId: string) {
-        const peserta = await this.agendaQuery.getPeserta(agendaId)
+        const peserta = await this.agendaQuery.getPeserta(agendaId);
 
-        return peserta
+        return peserta;
     }
 
-    private validateUser(req: Request): { userId: string, proktor: boolean } {
-        if (!req.user)
-            throw new AppException("User not specified")
+    private validateUser(req: Request): { userId: string; proktor: boolean } {
+        if (!req.user) throw new AppException('User not specified');
 
-        return req.user as { userId: string, proktor: boolean }
+        return req.user as { userId: string; proktor: boolean };
     }
 }

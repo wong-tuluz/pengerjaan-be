@@ -1,7 +1,7 @@
-import { Controller, Get, Param, Query, Req, UseGuards } from "@nestjs/common";
+import { Controller, Get, Param, Req, UseGuards } from "@nestjs/common";
 import { JwtAuthGuard } from "../../auth/strategies/jwt.guard";
 import type { Request } from 'express';
-import { JadwalQueryService } from "../services/jadwal-query.service";
+import { JadwalQueryService } from "./jadwal-query.service";
 import { AppException } from "../../../infra/exceptions/app-exception";
 
 @Controller('jadwal')

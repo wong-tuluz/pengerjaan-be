@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { TransactionManager } from '../../../infra/drizzle/transaction-manager';
+import { TransactionManager } from '../../infra/drizzle/transaction-manager';
 import { v7 as uuidv7 } from 'uuid';
-import { siswaTable } from '../../../infra/drizzle/schema';
+import { siswaTable } from '../../infra/drizzle/schema';
 import { eq } from 'drizzle-orm/sql';
 
 @Injectable()

@@ -10,8 +10,8 @@ import {
     Query,
 } from '@nestjs/common';
 import z from 'zod';
-import { MateriSoalQueryService } from '../services/materi-soal-query.service';
-import { MateriSoalService } from '../services/materi-soal.service';
+import { MateriSoalQueryService } from './materi-soal-query.service';
+import { MateriSoalService } from './materi-soal.service';
 import { createZodDto } from 'nestjs-zod';
 
 export const CreateMateriSoalSchema = z.object({

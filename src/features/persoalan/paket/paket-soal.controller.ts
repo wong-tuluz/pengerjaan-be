@@ -8,8 +8,8 @@ import {
     Patch,
     Post,
 } from '@nestjs/common';
-import { PaketSoalQueryService } from '../services/paket-soal-query.service';
-import { PaketSoalService } from '../services/paket-soal.service';
+import { PaketSoalQueryService } from './paket-soal-query.service';
+import { PaketSoalService } from './paket-soal.service';
 import z from 'zod';
 import { createZodDto } from 'nestjs-zod';
 

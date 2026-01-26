@@ -44,16 +44,12 @@ export class JadwalQueryService {
         const jadwalIds = queryRows.map(r => r.jadwal.id);
         const paketSoalIds = [...new Set(queryRows.map(r => r.jadwal.paketSoalId))];
 
-        // Fetch all necessary data in bulk
         const [allSessions, allPaketSoal, allCounts] = await Promise.all([
-            // Sessions for these jadwals
             this.db.select().from(workSessionTable).where(and(
                 inArray(workSessionTable.jadwalId, jadwalIds),
                 siswaId ? eq(workSessionTable.siswaId, siswaId) : undefined
             )),
-            // Paket soal details
             this.db.select().from(paketSoalTable).where(inArray(paketSoalTable.id, paketSoalIds)),
-            // Question counts per paket soal
             this.db.select({
                 paketSoalId: materiSoalTable.paketSoalId,
                 cnt: count()

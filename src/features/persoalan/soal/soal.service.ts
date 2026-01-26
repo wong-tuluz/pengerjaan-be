@@ -2,7 +2,7 @@ import { Injectable, BadRequestException } from '@nestjs/common';
 import { soalTable, jawabanSoalTable } from '../../../infra/drizzle/schema';
 import { v7 as uuidv7 } from 'uuid';
 import { TransactionManager } from '../../../infra/drizzle/transaction-manager';
-import { SoalType } from '../domain/soal';
+import { SoalType } from './soal';
 import { eq } from 'drizzle-orm';
 
 @Injectable()

@@ -8,8 +8,8 @@ import {
     Patch,
     Post,
 } from '@nestjs/common';
-import { SiswaQueryService } from '../services/siswa-query.service';
-import { SiswaService } from '../services/siswa.service';
+import { SiswaQueryService } from './siswa-query.service';
+import { SiswaService } from './siswa-command.service';
 import z from 'zod';
 import { createZodDto } from 'nestjs-zod';
 
@@ -31,16 +31,16 @@ export const UpdateSiswaSchema = z.object({
     passwordHash: z.string().min(1).optional(),
 });
 
-export class CreateSiswaDto extends createZodDto(CreateSiswaSchema) { }
+export class CreateSiswaDto extends createZodDto(CreateSiswaSchema) {}
 
-export class UpdateSiswaDto extends createZodDto(UpdateSiswaSchema) { }
+export class UpdateSiswaDto extends createZodDto(UpdateSiswaSchema) {}
 
 @Controller('siswa')
 export class SiswaController {
     constructor(
         private readonly siswaQuery: SiswaQueryService,
         private readonly siswaService: SiswaService,
-    ) { }
+    ) {}
 
     @Post()
     async create(@Body() body: CreateSiswaDto) {
