@@ -218,6 +218,7 @@ export class Seeder {
                 paketSoalId,
                 attempts: 1,
                 timeLimit: 90,
+                token: "ABCD",
                 startTime: new Date('2026-03-15T08:00:00'),
                 endTime: new Date('2026-03-15T09:30:00'),
 

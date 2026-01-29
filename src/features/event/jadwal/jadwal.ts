@@ -6,4 +6,5 @@ export class Jadwal {
     public startTime: Date;
     public endTime: Date;
     public attempts: number;
+    public token: string;
 }

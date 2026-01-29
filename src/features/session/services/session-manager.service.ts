@@ -16,10 +16,13 @@ export class SessionManagerService {
         private readonly sessionQuery: SessionQueryService
     ) { }
 
-    public async createSession(siswaId: string, jadwalId: string): Promise<{ id: string }> {
+    public async createSession(siswaId: string, jadwalId: string, token: string): Promise<{ id: string }> {
         const jadwal = await this.jadwalQuery.getById(jadwalId);
         if (!jadwal) {
             throw new AppException(`Jadwal ${jadwalId} tidak ditemukan.`)
+        }
+        if (jadwal.token != token) {
+            throw new AppException('Invalid entry token')
         }
 
         const paketSoal = await this.paketSoalQuery.getById(jadwal.paketSoalId)

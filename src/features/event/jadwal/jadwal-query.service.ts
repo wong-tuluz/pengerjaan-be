@@ -17,7 +17,8 @@ export class JadwalQueryService {
         startTime: Date;
         endTime: Date;
         attempts: number;
-        timeLimit: number
+        timeLimit: number;
+        token: string;
         createdAt: Date;
         updatedAt: Date | null;
     } | null> {
