@@ -8,7 +8,8 @@ const JadwalInputSchema = z.object({
     startTime: ApiDateTime,
     endTime: ApiDateTime,
     timeLimit: z.int(),
-    attempts: z.int()
+    attempts: z.int(),
+    token: z.string()
 });
 
 const UpdateAgendaSchema = z.object({

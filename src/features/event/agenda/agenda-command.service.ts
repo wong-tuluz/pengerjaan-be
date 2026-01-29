@@ -18,7 +18,8 @@ export class AgendaService {
             startTime: Date;
             endTime: Date;
             timeLimit: number
-            attempts: number
+            attempts: number,
+            token: string
         }>;
     }): Promise<{ id: string }> {
         const agendaId = uuidv7();
@@ -41,12 +42,13 @@ export class AgendaService {
                         startTime: j.startTime,
                         endTime: j.endTime,
                         timeLimit: j.timeLimit,
-                        attempts: j.attempts
+                        attempts: j.attempts,
+                        token: j.token
                     })),
                 );
-            }                        
+            }
         });
-        
+
         return { id: agendaId };
     }
 
@@ -63,6 +65,7 @@ export class AgendaService {
                 endTime: Date;
                 timeLimit: number
                 attempts: number;
+                token: string
             }> | null;
         },
     ): Promise<void> {
@@ -93,7 +96,8 @@ export class AgendaService {
                             startTime: j.startTime,
                             endTime: j.endTime,
                             timeLimit: j.timeLimit,
-                            attempts: j.attempts
+                            attempts: j.attempts,
+                            token: j.token
                         })),
                     );
                 }

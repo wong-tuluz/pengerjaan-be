@@ -97,6 +97,7 @@ export class WorkSessionController {
         return await this.sessionManager.createSession(
             req.user!.userId,
             body.jadwalId,
+            body.token
         );
     }
 

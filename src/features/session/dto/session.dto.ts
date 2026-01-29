@@ -3,6 +3,7 @@ import { createZodDto } from 'nestjs-zod';
 
 const CreateSessionSchema = z.object({
     jadwalId: z.uuid(),
+    token: z.string()
 });
 
 const SessionActionSchema = z.object({

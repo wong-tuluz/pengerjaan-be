@@ -35,7 +35,7 @@ export const jadwalTable = mysqlTable('jadwal', {
     endTime: datetime('end_time').notNull(),
     timeLimit: int('time_limit').notNull(),
     attempts: int('attempts').notNull(),
-    token: varchar('token').notNull(),
+    token: varchar('token', { length: 36 }).notNull(),
     createdAt: datetime('created_at')
         .notNull()
         .default(sql`now()`),
