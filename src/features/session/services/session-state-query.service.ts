@@ -62,7 +62,9 @@ const SessionResultSchema = z.object({
     id: z.uuid(),
     jadwalId: z.string(),
     paketSoalId: z.string(),
-    status: z.enum(['active', 'completed', 'expired']),
+    status: z.enum(['in_progress', 'finished']),
+    startedAt: z.date(),
+    finishedAt: z.date().nullable(),
     questions: z.array(SessionResultQuestionSchema),
 });
 
@@ -251,7 +253,7 @@ export class SessionStateQueryService {
         if (soalIds.length === 0) {
             const obj = new SessionResultDto();
             obj.id = session.id;
-            obj.status = session.finishedAt ? 'completed' : 'active';
+            obj.status = session.status;
             obj.questions = [];
             return obj;
         }
@@ -338,10 +340,12 @@ export class SessionStateQueryService {
 
         const obj = new SessionResultDto();
         obj.id = session.id;
-        obj.status = session.finishedAt ? 'completed' : 'active';
+        obj.status = session.status;
         obj.questions = questions;
         obj.jadwalId = session.jadwalId;
         obj.paketSoalId = session.paketSoalId;
+        obj.startedAt = session.startedAt;
+        obj.finishedAt = session.finishedAt ?? null;
 
         return obj;
     }
