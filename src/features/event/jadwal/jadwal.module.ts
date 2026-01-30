@@ -1,14 +1,14 @@
 import { Module } from '@nestjs/common';
 import { DrizzleModule } from '../../../infra/drizzle/drizzle.module';
-import { JadwalController } from './jadwal.controller';
-import { WorkSessionQueryModule } from '../../session/work-session-query.module';
-import { SoalModule } from '../../persoalan/soal/soal.module';
-import { JadwalQueryService } from './jadwal-query.service';
+import { JadwalController } from './api/jadwal.controller';
+import { JadwalService } from './services/jadwal.service';
+import { SiswaModule } from '../../siswa/siswa.module';
+import { AgendaModule } from '../agenda/agenda.module';
 
 @Module({
-    imports: [DrizzleModule, WorkSessionQueryModule, SoalModule],
-    providers: [JadwalQueryService],
+    imports: [DrizzleModule, SiswaModule, AgendaModule],
+    providers: [JadwalService],
     controllers: [JadwalController],
-    exports: [JadwalQueryService],
+    exports: [JadwalService],
 })
-export class AgendaModule {}
+export class JadwalModule { }

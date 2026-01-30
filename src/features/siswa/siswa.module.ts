@@ -1,13 +1,13 @@
 import { Module } from '@nestjs/common';
 import { DrizzleModule } from '../../infra/drizzle/drizzle.module';
-import { SiswaController } from './siswa.controller';
-import { SiswaService } from './siswa-command.service';
-import { SiswaQueryService } from './siswa-query.service';
+import { SiswaController } from './api/siswa.controller';
+import { SiswaService } from './services/siswa.service';
+import { AuthModule } from '../auth/auth.module';
 
 @Module({
     imports: [DrizzleModule],
     controllers: [SiswaController],
-    providers: [SiswaService, SiswaQueryService],
-    exports: [SiswaQueryService],
+    providers: [SiswaService],
+    exports: [SiswaService],
 })
-export class SiswaModule {}
+export class SiswaModule { }

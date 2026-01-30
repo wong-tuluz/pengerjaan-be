@@ -1,5 +1,6 @@
 import { Controller, Post } from "@nestjs/common";
 import { Seeder } from "./seeder";
+import { Session, UserSession, AllowAnonymous, OptionalAuth } from '@thallesp/nestjs-better-auth';
 
 @Controller('seed')
 export class SeederController {
@@ -8,6 +9,7 @@ export class SeederController {
     ) { }
 
     @Post()
+    @AllowAnonymous()
     async seed() {
         return this.seederService.seed();
     }

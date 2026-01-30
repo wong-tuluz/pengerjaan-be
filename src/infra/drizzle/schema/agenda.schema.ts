@@ -7,7 +7,7 @@ export const agendaTable = mysqlTable('agenda', {
     title: varchar('title', { length: 255 }).notNull(),
     startTime: datetime('start_time').notNull(),
     endTime: datetime('end_time').notNull(),
-    description: text('description'),
+    description: text('description').default('').notNull(),
     createdAt: datetime('created_at')
         .notNull()
         .default(sql`now()`),

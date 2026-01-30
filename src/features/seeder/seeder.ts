@@ -9,59 +9,122 @@ import {
     materiSoalTable,
     soalTable,
     jawabanSoalTable,
+    user
 } from '../../infra/drizzle/schema';
 import { v7 as uuidv7, v4 as uuidv4 } from 'uuid';
+import { auth, authClient } from '../auth/auth';
+import { eq, not } from 'drizzle-orm';
 
 @Injectable()
 export class Seeder {
     constructor(private readonly txm: TransactionManager) { }
 
     async seed() {
-        await this.txm.run(async (ctx) => {
+        await this.seedProktor()
+        await this.seedSiswa()
 
-            /* =======================
-               SISWA
-            ======================= */
-            const siswaIds = [
-                uuidv4(),
-                uuidv4()
-            ];
+        const soalId = await this.seedSoal()
+        this.seedEvent(soalId)
+    }
 
-            await ctx.tx.insert(siswaTable).values({
-                id: siswaIds[0],
-                nama: 'Budi Santoso',
-                nis: '2024001',
-                kelas: 'X-A',
-                username: 'budi',
-                passwordHash: 'budisantoso',
+    private async seedProktor() {
+        const user = await authClient.signUp.email({
+            username: "superproktor",
+            email: "superproktor@acme.com",
+            password: "superproktor",
+            name: "Super Proktor"
+        })
+
+        const ctx = await (auth.$context)
+        ctx.internalAdapter.updateUser(user.data!.user.id, {
+            role: "admin"
+        })
+    }
+
+    private async seedSiswa() {
+        const userSeeds = ["Agus Pleret", "Budi Santoso"]
+        let index = 0
+
+        for (const name of userSeeds) {
+            index++
+
+            const res = await authClient.signUp.email({
+                username: name.split(' ')[0],
+                email: name.replaceAll(' ', '').toLowerCase() + "@acme.com",
+                password: name.replaceAll(' ', '').toLowerCase(),
+                name
+            })
+
+            if (!res.data?.user) {
+                console.error('Signup failed for', name, res.error)
+                continue
+            }
+
+            await this.txm.run(async ctx => {
+                await ctx.tx.insert(siswaTable).values({
+                    id: uuidv4(),
+                    accountId: res.data.user.id,
+                    nama: name,
+                    nis: (20250 + index).toString(),
+                    username: name.split(' ')[0],
+                    password: name.replaceAll(' ', '').toLowerCase(),
+                    kelas: "IX"
+                })
+            })
+        }
+    }
+
+    private async seedEvent(paketSoalId: string) {
+        await this.txm.run(async ctx => {
+            const agendaId = uuidv7();
+
+            await ctx.tx.insert(agendaTable).values({
+                id: agendaId,
+                title: 'Ujian Tengah Semester',
+                startTime: new Date('2026-03-15T08:00:00'),
+                endTime: new Date('2026-03-15T09:30:00'),
+                description: 'UTS Semester Genap',
             });
 
-            await ctx.tx.insert(siswaTable).values({
-                id: siswaIds[1],
-                nama: 'Agus Pleret',
-                nis: '2024002',
-                kelas: 'X-A',
-                username: 'agus',
-                passwordHash: 'aguspleret',
+            await ctx.tx.insert(jadwalTable).values({
+                id: uuidv7(),
+                agendaId,
+                paketSoalId,
+                attempts: 1,
+                timeLimit: 90,
+                token: "ABCD",
+                startTime: new Date('2026-03-15T08:00:00'),
+                endTime: new Date('2026-03-15T09:30:00'),
             });
 
-            /* =======================
-               PAKET SOAL
-            ======================= */
-            const paketSoalId = uuidv7();
+            var users = await ctx.tx.select().from(user).where(not(eq(user.role, 'admin')))
 
+            for (const u of users) {
+                const siswa = await ctx.tx.select().from(siswaTable).where(eq(siswaTable.accountId, u.id)).then(rows => rows[0])
+
+                // Assign siswa to event
+                await ctx.tx.insert(agendaSiswaTable).values([{
+                    id: uuidv7(),
+                    agendaId,
+                    siswaId: siswa.id,
+                }]);
+            };
+        })
+    }
+
+    private async seedSoal(): Promise<string> {
+        const paketSoalId = uuidv7();
+
+        const materiAljabarId = uuidv7();
+        const materiGeometriId = uuidv7();
+        const materiAritmatikaId = uuidv7();
+
+        await this.txm.run(async ctx => {
             await ctx.tx.insert(paketSoalTable).values({
                 id: paketSoalId,
                 title: 'Ujian Matematika Dasar',
                 description: 'Ujian untuk mengukur pemahaman dasar matematika',
             });
-
-            /* =======================
-               MATERI SOAL
-            ======================= */
-            const materiAljabarId = uuidv7();
-            const materiGeometriId = uuidv7();
-            const materiAritmatikaId = uuidv7();
 
             await ctx.tx.insert(materiSoalTable).values([
                 {
@@ -195,47 +258,8 @@ export class Seeder {
                 '11',
                 ['5', '7', '11', '15'],
             );
+        })
 
-            /* =======================
-               AGENDA
-            ======================= */
-            const agendaId = uuidv7();
-
-            await ctx.tx.insert(agendaTable).values({
-                id: agendaId,
-                title: 'Ujian Tengah Semester',
-                startTime: new Date('2026-03-15T08:00:00'),
-                endTime: new Date('2026-03-15T09:30:00'),
-                description: 'UTS Semester Genap',
-            });
-
-            /* =======================
-               JADWAL
-            ======================= */
-            await ctx.tx.insert(jadwalTable).values({
-                id: uuidv7(),
-                agendaId,
-                paketSoalId,
-                attempts: 1,
-                timeLimit: 90,
-                token: "ABCD",
-                startTime: new Date('2026-03-15T08:00:00'),
-                endTime: new Date('2026-03-15T09:30:00'),
-
-            });
-
-            /* =======================
-               AGENDA ↔ SISWA
-            ======================= */
-            await ctx.tx.insert(agendaSiswaTable).values([{
-                id: uuidv7(),
-                agendaId,
-                siswaId: siswaIds[0],
-            }, {
-                id: uuidv7(),
-                agendaId,
-                siswaId: siswaIds[1],
-            }]);
-        });
+        return paketSoalId
     }
 }

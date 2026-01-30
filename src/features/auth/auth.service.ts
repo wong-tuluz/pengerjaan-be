@@ -1,11 +1,11 @@
 import { Injectable } from "@nestjs/common";
-import { SiswaQueryService } from "../siswa/siswa-query.service";
+import { SiswaService } from "../siswa/services/siswa.service";
 import { JwtService } from "@nestjs/jwt";
 
 @Injectable()
 export class AuthService {
     constructor(
-        private readonly siswaService: SiswaQueryService,
+        private readonly siswaService: SiswaService,
         private readonly jwtService: JwtService
     ) { }
 
@@ -19,11 +19,11 @@ export class AuthService {
 
             return user
         } else {
-            const user = await this.siswaService.getByUsername(username)
-            if (user && user.passwordHash === pass) {
-                const { passwordHash, ...result } = user
-                return result
-            }
+            // const user = await this.siswaService.getByUsername(username)
+            // if (user && user.passwordHash === pass) {
+            //     const { passwordHash, ...result } = user
+            //     return result
+            // }
         }
 
         return null

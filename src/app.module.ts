@@ -11,6 +11,7 @@ import { SeederController } from './features/seeder/seeder.controller';
 import { Seeder } from './features/seeder/seeder';
 import { AuthModule } from './features/auth/auth.module';
 import { ZodError } from 'zod';
+import { JadwalModule } from './features/event/jadwal/jadwal.module';
 
 
 const MyZodValidationPipe = createZodValidationPipe({
@@ -25,6 +26,7 @@ const MyZodValidationPipe = createZodValidationPipe({
         DrizzleModule,
         WorkSessionModule,
         AgendaModule,
+        JadwalModule,
         SiswaModule,
         SoalModule,
         AuthModule,

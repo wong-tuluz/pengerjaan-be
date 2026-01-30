@@ -5,19 +5,19 @@ import { WorkSession } from "../domain/session";
 import { PaketSoalQueryService } from "../../persoalan/paket/paket-soal-query.service";
 import { AppException } from "../../../common/exceptions/application.exception";
 import { SessionQueryService } from "./session-query.service";
-import { JadwalQueryService } from "../../event/jadwal/jadwal-query.service";
+import { JadwalService } from "../../event/jadwal/services/jadwal.service";
 
 @Injectable()
 export class SessionManagerService {
     constructor(
         private readonly txm: TransactionManager,
-        private readonly jadwalQuery: JadwalQueryService,
+        private readonly jadwalQuery: JadwalService,
         private readonly paketSoalQuery: PaketSoalQueryService,
         private readonly sessionQuery: SessionQueryService
     ) { }
 
     public async createSession(siswaId: string, jadwalId: string, token: string): Promise<{ id: string }> {
-        const jadwal = await this.jadwalQuery.getById(jadwalId);
+        const jadwal = await this.jadwalQuery.findById(jadwalId);
         if (!jadwal) {
             throw new AppException(`Jadwal ${jadwalId} tidak ditemukan.`)
         }

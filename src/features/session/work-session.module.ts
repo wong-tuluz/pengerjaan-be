@@ -6,13 +6,13 @@ import { SessionManagerService } from './services/session-manager.service';
 import { SubmitHandlerService } from './services/submit-handler.service';
 import { DrizzleModule } from '../../infra/drizzle/drizzle.module';
 import { SoalModule } from '../persoalan/soal/soal.module';
-import { AgendaModule } from '../event/agenda/agenda.module';
 import { SessionStateQueryService } from './services/session-state-query.service';
 import { WorkSessionQueryModule } from './work-session-query.module';
 import { SubmitService } from './services/submit.service';
+import { JadwalModule } from '../event/jadwal/jadwal.module';
 
 @Module({
-    imports: [RabbitMQModule, DrizzleModule, SoalModule, AgendaModule, WorkSessionQueryModule],
+    imports: [RabbitMQModule, DrizzleModule, SoalModule, JadwalModule, WorkSessionQueryModule],
     controllers: [WorkSessionController],
     providers: [SubmitConsumer, SessionManagerService, SubmitHandlerService, SessionStateQueryService, SubmitService],
 })
