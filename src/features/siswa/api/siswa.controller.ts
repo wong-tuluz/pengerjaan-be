@@ -12,6 +12,37 @@ import type { UserSession } from '@thallesp/nestjs-better-auth';
 import { Session, } from '@thallesp/nestjs-better-auth'
 import { SiswaSetPasswordDto } from './siswa.dto';
 
+@Controller()
+export class ProfileController {
+    constructor(private readonly siswaService: SiswaService) { }
+
+    @Get('me')
+    async fetchProfile(@Session() session: UserSession) {
+        // return session.user
+
+        if (session.user.role != 'admin') {
+            const user = session.user
+            const siswa = await this.siswaService.findByAccount(user.id)
+
+            return {
+                userId: user.id,
+                siswaId: siswa.id,
+                name: user.name,
+                role: user.role
+            }
+        } else {
+            const user = session.user
+            return {
+                userId: user.id,
+                siswaId: null,
+                name: user.name,
+                role: user.role
+            }
+        }
+
+    }
+}
+
 @Controller('siswa')
 export class SiswaController {
     constructor(readonly service: SiswaService) { }
@@ -25,6 +56,8 @@ export class SiswaController {
         if (session.user.role != 'admin') throw new UnauthorizedException()
         return await this.service.listAll({ kelas, agendaId })
     }
+
+
 
     @Get(':id')
     async findById(
@@ -57,4 +90,6 @@ export class SiswaController {
         await this.service.createAccount(siswaId)
         return { message: "Account set." };
     }
+
+
 }

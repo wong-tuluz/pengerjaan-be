@@ -2,7 +2,7 @@ import { Inject, Injectable, NotFoundException } from "@nestjs/common";
 import { MySql2Database } from "drizzle-orm/mysql2";
 import { READ_DB, WRITE_DB } from "../../../../common/config/db.constants";
 import { agendaSiswaTable, jadwalTable, materiSoalTable, soalTable, workSessionTable } from "../../../../infra/drizzle/schema";
-import { and, eq, exists } from "drizzle-orm";
+import { and, eq, exists, isNull } from "drizzle-orm";
 import { Jadwal } from "../domain/jadwal";
 import { AgendaService } from "../../agenda/service/agenda.service";
 import { Agenda } from "../../agenda/domain/agenda";
@@ -16,9 +16,10 @@ export class JadwalService {
     ) { }
 
     async listAll(filter?: {
-        siswaId: string,
-        agendaId: string,
-    }): Promise<(Jadwal & {
+        siswaId?: string,
+        agendaId?: string,
+    }): Promise<(Omit<Jadwal, 'id'> & {
+        jadwalId: string
         questionCount: number
         attemptsRemaining: number
         status: string
@@ -46,6 +47,7 @@ export class JadwalService {
             const agenda = await this.agendaService.findById(jadwal.agendaId)
 
             return Object.assign(jadwal, {
+                jadwalId: jadwal.id,
                 questionCount,
                 attemptsRemaining: jadwal.attempts - attemptCount,
                 status: attemptCount > 0 ? 'attempted' : 'no-attempts',
@@ -67,7 +69,8 @@ export class JadwalService {
         const rows = await this.rdb.select().from(workSessionTable)
             .where(and(
                 eq(workSessionTable.jadwalId, jadwalId),
-                eq(workSessionTable.siswaId, siswaId)
+                eq(workSessionTable.siswaId, siswaId),
+                isNull(workSessionTable.finishedAt)
             ))
 
         return rows.length

@@ -30,7 +30,6 @@ export class WorkSessionController {
     ) {}
 
     @Get()
-    @UseGuards(JwtAuthGuard)
     async getAllSessions(
         @Req() req: Request,
         @Query('siswaId') siswaId?,
@@ -44,7 +43,6 @@ export class WorkSessionController {
     }
 
     @Get(':id')
-    @UseGuards(JwtAuthGuard)
     async getSession(@Req() req: Request, @Param('id') sessionId: string) {
         const user = this.validateUser(req);
         return await this.sessionQuery.getSessionById(
@@ -54,7 +52,6 @@ export class WorkSessionController {
     }
 
     @Get(':id/state')
-    @UseGuards(JwtAuthGuard)
     async getSessionState(@Req() req: Request, @Param('id') sessionId: string) {
         const user = this.validateUser(req);
 
@@ -65,7 +62,6 @@ export class WorkSessionController {
     }
 
     @Get(':id/result')
-    @UseGuards(JwtAuthGuard)
     async getSessionResult(
         @Req() req: Request,
         @Param('id') sessionId: string,
@@ -79,7 +75,6 @@ export class WorkSessionController {
     }
 
     @Post(':id/finish')
-    @UseGuards(JwtAuthGuard)
     async finishSession(@Req() req: Request, @Param('id') sessionId: string) {
         const user = this.validateUser(req);
 
@@ -87,7 +82,6 @@ export class WorkSessionController {
     }
 
     @Post()
-    @UseGuards(JwtAuthGuard)
     async createSession(@Req() req: Request, @Body() body: CreateSessionDto) {
         const user = this.validateUser(req);
         if (user.proktor) {
@@ -102,7 +96,6 @@ export class WorkSessionController {
     }
 
     @Post(':id/submit')
-    @UseGuards(JwtAuthGuard)
     async submitAction(
         @Req() req: Request,
         @Param('id') sessionId: string,

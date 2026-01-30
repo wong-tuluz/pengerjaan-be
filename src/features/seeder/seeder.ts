@@ -49,7 +49,7 @@ export class Seeder {
             index++
 
             const res = await authClient.signUp.email({
-                username: name.split(' ')[0],
+                username: name.split(' ')[0].toLowerCase(),
                 email: name.replaceAll(' ', '').toLowerCase() + "@acme.com",
                 password: name.replaceAll(' ', '').toLowerCase(),
                 name

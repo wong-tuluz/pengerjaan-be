@@ -5,6 +5,8 @@ import z from 'zod';
 import { createZodDto } from 'nestjs-zod';
 import { AuthService } from './auth.service';
 import { JwtAuthGuard } from './strategies/jwt.guard';
+import type { UserSession } from '@thallesp/nestjs-better-auth'
+import { AllowAnonymous, OptionalAuth, Session } from '@thallesp/nestjs-better-auth'
 
 const LoginSchema = z.object({
     username: z.string(),
@@ -27,11 +29,5 @@ export class AuthController {
     @Post('auth/logout')
     async logout(@Request() req) {
         return req.logout();
-    }
-
-    @UseGuards(JwtAuthGuard)
-    @Get('profile')
-    async fetchProfile(@Request() req) {
-        return req.user
     }
 }
