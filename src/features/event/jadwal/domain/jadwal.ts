@@ -25,4 +25,19 @@ export class Jadwal {
         this.attempts = data.attempts
         this.token = data.token
     }
+
+    verifyToken(token: string) {
+        if (this.token != token)
+            throw new Error("Invalid token jadwal")
+    }
+
+    getTimeLimit(date: Date): number {
+        const expiresAt = date.getTime() + this.timeLimit * 60 * 1000
+
+        if (new Date(expiresAt) < this.endTime) {
+            return expiresAt
+        } else {
+            return (this.endTime.getTime() - new Date().getTime()) / 60 / 100
+        }
+    }
 }

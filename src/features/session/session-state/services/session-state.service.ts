@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import z from 'zod';
-import { READ_DB } from '../../../common/config/db.constants';
+import { READ_DB } from '../../../../common/config/db.constants';
 import { MySql2Database } from 'drizzle-orm/mysql2';
 import {
     jawabanSoalTable,
@@ -10,81 +10,21 @@ import {
     workSessionAnswerTable,
     workSessionMarkerTable,
     workSessionTable,
-} from '../../../infra/drizzle/schema';
+} from '../../../../infra/drizzle/schema';
 import { and, eq, inArray } from 'drizzle-orm';
-import { WorkSession } from '../domain/session';
-import { createZodDto } from 'nestjs-zod';
-import { SoalQueryService } from '../../persoalan/soal/soal-query.service';
-import { SessionQueryService } from './session-query.service';
-import { shuffle } from '../../../common/rng/seedrand';
-import { AppException } from '../../../common/exceptions/application.exception';
+import { shuffle } from '../../../../common/rng/seedrand';
+import { AppException } from '../../../../common/exceptions/application.exception';
+import { SessionDto, SessionQuestionState, SessionResultDto, SessionResultQuestionState } from './session-state.dto';
+import { Session } from '../../session/domain/session';
 
-const SessionQuestionAnswerSchema = z.object({
-    jawabanSoalId: z.uuid().optional(),
-    value: z.string(),
-    isSelected: z.boolean(),
-});
-
-const SessionQuestionSchema = z.object({
-    index: z.number(),
-    soalId: z.uuid(),
-    prompt: z.string(),
-    type: z.enum(['multiple-choice', 'essay', 'single-choice']),
-    isAnswered: z.boolean(),
-    isMarked: z.boolean(),
-    options: z.array(SessionQuestionAnswerSchema).optional(),
-});
-
-const SessionSchema = z.object({
-    id: z.uuid(),
-    status: z.enum(['active', 'completed', 'expired']),
-    questions: z.array(SessionQuestionSchema),
-});
-
-const SessionResultQuestionAnswerSchema = z.object({
-    jawabanSoalId: z.uuid().optional(),
-    value: z.string(),
-    isSelected: z.boolean(),
-    isCorrect: z.boolean(),
-});
-
-const SessionResultQuestionSchema = z.object({
-    index: z.number(),
-    soalId: z.uuid(),
-    prompt: z.string(),
-    type: z.enum(['multiple-choice', 'essay', 'single-choice']),
-    isAnswered: z.boolean(),
-    isMarked: z.boolean(),
-    options: z.array(SessionResultQuestionAnswerSchema).optional(),
-});
-
-const SessionResultSchema = z.object({
-    id: z.uuid(),
-    jadwalId: z.string(),
-    paketSoalId: z.string(),
-    status: z.enum(['in_progress', 'finished']),
-    startedAt: z.date(),
-    finishedAt: z.date().nullable(),
-    questions: z.array(SessionResultQuestionSchema),
-});
-
-class SessionQuestionState extends createZodDto(SessionQuestionSchema) { }
-
-class SessionDto extends createZodDto(SessionSchema) { }
-
-class SessionResultQuestionState extends createZodDto(SessionResultQuestionSchema) { }
-
-class SessionResultDto extends createZodDto(SessionResultSchema) { }
 
 @Injectable()
-export class SessionStateQueryService {
+export class SessionStateService {
     constructor(
         @Inject(READ_DB) private readonly db: MySql2Database,
-        private readonly soalQuery: SoalQueryService,
-        private readonly sessionQuery: SessionQueryService,
     ) { }
 
-    async getSessionState(sessionId: string, siswaId?: string): Promise<SessionDto> {
+    async getState(sessionId: string): Promise<SessionDto> {
         const sessionRow = await this.db
             .select()
             .from(workSessionTable)
@@ -96,12 +36,7 @@ export class SessionStateQueryService {
             throw new AppException('Session not found', 404);
         }
 
-        const session = new WorkSession();
-        session.map(sessionRow);
-
-        if (session.siswaId !== siswaId) {
-            throw new AppException("Bukan siswa yang mengerjakan", 403);
-        }
+        const session = new Session(sessionRow);
 
         const questionRows = await this.db
             .select({ soal: soalTable })
@@ -216,7 +151,7 @@ export class SessionStateQueryService {
         return obj;
     }
 
-    async getSessionResult(sessionId: string, siswaId?: string): Promise<SessionResultDto> {
+    async getResult(sessionId: string): Promise<SessionResultDto> {
         const sessionRow = await this.db
             .select()
             .from(workSessionTable)
@@ -228,8 +163,7 @@ export class SessionStateQueryService {
             throw new AppException('Session not found', 404);
         }
 
-        const session = new WorkSession();
-        session.map(sessionRow);
+        const session = new Session(sessionRow);
 
         const questionRows = await this.db
             .select({ soal: soalTable })
