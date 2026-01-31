@@ -1,4 +1,4 @@
-import { Inject, NotFoundException } from "@nestjs/common";
+import { BadRequestException, Inject, NotFoundException } from "@nestjs/common";
 import { MySql2Database } from "drizzle-orm/mysql2";
 import { READ_DB, WRITE_DB } from "../../../../common/config/db.constants";
 import { workSessionTable } from "../../../../infra/drizzle/schema";
@@ -15,7 +15,8 @@ export class SessionService {
 
     async hasAccess(sessionId: string, siswaId: string) {
         const session = await this.findById(sessionId)
-        return session.siswaId == siswaId
+        if (session.siswaId != siswaId)
+            throw new BadRequestException("Tidak ada akses")
     }
 
     async listAll(filter?: {

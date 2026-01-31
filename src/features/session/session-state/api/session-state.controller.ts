@@ -23,7 +23,7 @@ export class SessionStateController {
     ) {
         if (session.user.role != 'admin') {
             const siswa = await this.siswaService.findByAccount(session.user.id)
-            this.sessionService.hasAccess(sessionId, siswa.id)
+            await this.sessionService.hasAccess(sessionId, siswa.id)
         }
 
         return await this.stateService.getState(sessionId);
@@ -36,7 +36,7 @@ export class SessionStateController {
     ) {
         if (session.user.role != 'admin') {
             const siswa = await this.siswaService.findByAccount(session.user.id)
-            this.sessionService.hasAccess(sessionId, siswa.id)
+            await this.sessionService.hasAccess(sessionId, siswa.id)
         }
 
         return await this.stateService.getResult(sessionId);
@@ -50,7 +50,7 @@ export class SessionStateController {
     ) {
         if (session.user.role != 'admin') {
             const siswa = await this.siswaService.findByAccount(session.user.id)
-            this.sessionService.hasAccess(sessionId, siswa.id)
+            await this.sessionService.hasAccess(sessionId, siswa.id)
         }
 
         return await this.submitService.publishSubmit({

@@ -37,7 +37,7 @@ export class SessionController {
     ) {
         if (session.user.role != 'admin') {
             const siswa = await this.siwaService.findByAccount(session.user.id)
-            this.sessionService.hasAccess(sessionId, siswa.id)
+            await this.sessionService.hasAccess(sessionId, siswa.id)
         }
 
         return await this.sessionService.findById(sessionId);
@@ -50,7 +50,7 @@ export class SessionController {
     ) {
         if (session.user.role != 'admin') {
             const siswa = await this.siwaService.findByAccount(session.user.id)
-            this.sessionService.hasAccess(sessionId, siswa.id)
+            await this.sessionService.hasAccess(sessionId, siswa.id)
         }
 
         return await this.sessionService.finish(sessionId);
