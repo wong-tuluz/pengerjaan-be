@@ -3,7 +3,7 @@ import { createAuthClient } from "better-auth/client"
 import { usernameClient, adminClient } from "better-auth/client/plugins"
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { dbAuth } from "../../infra/drizzle/drizzle.providers";
-import { admin, jwt, username } from "better-auth/plugins"
+import { admin, username } from "better-auth/plugins"
 import * as schema from "../../infra/drizzle/schema";
 
 export const auth = betterAuth({
@@ -11,9 +11,6 @@ export const auth = betterAuth({
         provider: "mysql",
         schema
     }),
-    advanced: {
-        disableOriginCheck: true,
-    },
     emailAndPassword: {
         enabled: true,
     },
@@ -21,6 +18,13 @@ export const auth = betterAuth({
         username(),
         admin(),
     ],
+    trustedOrigins: [
+        "https://localhost:*/**",
+        "http://localhost:*/**"
+    ],
+    advanced: {
+        cookiePrefix: "lms-auth",
+    }
 });
 
 export const authClient = createAuthClient({
