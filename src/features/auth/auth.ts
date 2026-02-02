@@ -22,6 +22,13 @@ export const auth = betterAuth({
         "https://localhost:*/**",
         "http://localhost:*/**"
     ],
+    advanced: {
+        disableOriginCheck: true,
+    },
+    cookie: {
+        secure: false,
+        sameSite: "lax",
+    }
 });
 
 export const authClient = createAuthClient({
