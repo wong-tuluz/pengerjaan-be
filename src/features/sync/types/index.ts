@@ -18,5 +18,8 @@ export type Jadwal = {
 }
 
 export type PaketSoal = {
-    
+    id: string;
+    nama_paket_soal: string;
+    waktu: number; // in minutes
+    tipe_penge
 }
