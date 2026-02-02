@@ -22,9 +22,6 @@ export const auth = betterAuth({
         "https://localhost:*/**",
         "http://localhost:*/**"
     ],
-    advanced: {
-        cookiePrefix: "lms-auth",
-    }
 });
 
 export const authClient = createAuthClient({

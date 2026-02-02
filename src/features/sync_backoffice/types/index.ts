@@ -1,4 +1,4 @@
-export type Event = {
+export type Agenda = {
     id: string;
     nama_event: string;
     mulai: Date;

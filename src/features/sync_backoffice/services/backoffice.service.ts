@@ -1,7 +1,7 @@
 import { HttpService } from "@nestjs/axios";
 import { Injectable } from "@nestjs/common";
-import { AxiosResponse } from "axios";
-import { Observable } from "rxjs";
+import { firstValueFrom } from "rxjs";
+import { Agenda } from "../types";
 
 @Injectable()
 export class BackofficeService {
@@ -13,59 +13,67 @@ export class BackofficeService {
         id: process.env.LMS_BO_ID
     }
 
-    generateToken(): Observable<AxiosResponse<{
+    async generateToken(): Promise<{
         access_token: string,
         refresh_token: string,
         expire_in: string
-    }>> {
-        const res = this.httpService.get(`${this.config.url}/generate-token`, {
-            headers: {
-                "x-nexus-lms-bo": this.config.key,
-                "server-id": this.config.id
-            }
-        });
+    }> {
+        const res = await firstValueFrom(
+            this.httpService.get(`${this.config.url}/generate-token`, {
+                headers: {
+                    "x-nexus-lms-bo": this.config.key,
+                    "server-id": this.config.id
+                }
+            })
+        );
 
-        return res
+        return res.data;
     }
 
 
-    refreshToken(token: string): Observable<AxiosResponse<{
+    async refreshToken(token: string): Promise<{
         access_token: string,
         refresh_token: string,
         expire_in: string
-    }>> {
-        const res = this.httpService.get(`${this.config.url}/refresh-token`, {
-            headers: {
-                "x-nexus-lms-bo": this.config.key,
-                "server-id": this.config.id,
-                "refresh_token": token
-            }
-        });
+    }> {
+        const res = await firstValueFrom(
+            this.httpService.get(`${this.config.url}/refresh-token`, {
+                headers: {
+                    "x-nexus-lms-bo": this.config.key,
+                    "server-id": this.config.id,
+                    "refresh_token": token
+                }
+            })
+        );
 
-        return res
+        return res.data;
     }
 
-    listEvents(token: string): Observable<AxiosResponse<Omit<Event, 'jadwal'>[]>> {
-        const res = this.httpService.get(`${this.config.url}/masterEvent`, {
-            headers: {
-                "x-nexus-lms-bo": this.config.key,
-                "server-id": this.config.id,
-                "Authorization": `Bearer ${token}`
-            }
-        });
+    async listEvents(token: string): Promise<Omit<Agenda, 'jadwal'>[]> {
+        const res = await firstValueFrom(
+            this.httpService.get<Omit<Agenda, 'jadwal'>[]>(`${this.config.url}/masterEvent`, {
+                headers: {
+                    "x-nexus-lms-bo": this.config.key,
+                    "server-id": this.config.id,
+                    "Authorization": `Bearer ${token}`
+                }
+            })
+        );
 
-        return res
+        return res.data;
     }
 
-    fetchEventDetail(token: string, eventId: string): Observable<AxiosResponse<Event>> {
-        const res = this.httpService.get(`${this.config.url}/masterEvent/${eventId}`, {
-            headers: {
-                "x-nexus-lms-bo": this.config.key,
-                "server-id": this.config.id,
-                "Authorization": `Bearer ${token}`
-            }
-        });
+    async fetchEventDetail(token: string, eventId: string): Promise<Agenda> {
+        const res = await firstValueFrom(
+            this.httpService.get<Agenda>(`${this.config.url}/masterEvent/${eventId}`, {
+                headers: {
+                    "x-nexus-lms-bo": this.config.key,
+                    "server-id": this.config.id,
+                    Authorization: `Bearer ${token}`,
+                },
+            })
+        );
 
-        return res
+        return res.data;
     }
 }
