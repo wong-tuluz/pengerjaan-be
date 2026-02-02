@@ -9,7 +9,7 @@ import { HttpExceptionFilter } from './exception-filter';
 async function bootstrap() {
     const app = await NestFactory.create(AppModule, {
         cors: {
-            origin: '*',
+            origin: process.env.FE_URL,
         },
     });
 
