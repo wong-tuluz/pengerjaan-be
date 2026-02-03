@@ -1,5 +1,6 @@
 export class Jadwal {
     id: string;
+    title: string;
     agendaId: string;
     paketSoalId: string;
     startTime: Date;
@@ -10,6 +11,7 @@ export class Jadwal {
 
     constructor(data: {
         id: string;
+        title: string;
         agendaId: string;
         paketSoalId: string;
         startTime: Date;
@@ -18,6 +20,7 @@ export class Jadwal {
         token: string;
     }) {
         this.id = data.id
+        this.title = data.title
         this.agendaId = data.agendaId
         this.paketSoalId = data.paketSoalId
         this.startTime = data.startTime

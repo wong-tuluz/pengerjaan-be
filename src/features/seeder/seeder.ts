@@ -88,6 +88,7 @@ export class Seeder {
 
             await ctx.tx.insert(jadwalTable).values({
                 id: uuidv7(),
+                title: 'Matematika',
                 agendaId,
                 paketSoalId,
                 attempts: 1,

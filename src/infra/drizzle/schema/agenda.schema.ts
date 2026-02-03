@@ -31,6 +31,7 @@ export const jadwalTable = mysqlTable('jadwal', {
     id: varchar('id', { length: 36 }).primaryKey(),
     agendaId: varchar('agenda_id', { length: 36 }).notNull(),
     paketSoalId: varchar('paket_soal_id', { length: 36 }).notNull(),
+    title: varchar('title', { length: 255 }).notNull(),
     startTime: datetime('start_time').notNull(),
     endTime: datetime('end_time').notNull(),
     timeLimit: int('time_limit').notNull(),
