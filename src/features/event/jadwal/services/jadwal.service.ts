@@ -6,6 +6,8 @@ import { and, eq, exists, isNull } from "drizzle-orm";
 import { Jadwal } from "../domain/jadwal";
 import { AgendaService } from "../../agenda/service/agenda.service";
 import { Agenda } from "../../agenda/domain/agenda";
+import { PaketSoalService } from "../../../persoalan/paket/paket-soal.service";
+import { PaketSoalQueryService } from "../../../persoalan/paket/paket-soal-query.service";
 
 @Injectable()
 export class JadwalService {
@@ -13,6 +15,7 @@ export class JadwalService {
         @Inject(READ_DB) private readonly rdb: MySql2Database,
         @Inject(WRITE_DB) private readonly db: MySql2Database,
         private readonly agendaService: AgendaService,
+        private readonly paketsoalService: PaketSoalQueryService,
     ) { }
 
     async listAll(filter?: {
@@ -45,13 +48,15 @@ export class JadwalService {
             const questionCount = await this.getQuestionCount(row.paketSoalId)
             const attemptCount = filter?.siswaId ? await this.getAttemptedCount(filter.siswaId, jadwal.id) : 0
             const agenda = await this.agendaService.findById(jadwal.agendaId)
+            const paketsoal = await this.paketsoalService.getById(jadwal.paketSoalId)
 
             return Object.assign(jadwal, {
                 jadwalId: jadwal.id,
                 questionCount,
                 attemptsRemaining: jadwal.attempts - attemptCount,
                 status: attemptCount > 0 ? 'attempted' : 'no-attempts',
-                agenda: agenda
+                agenda: agenda,
+                paketSoal: paketsoal
             })
         }))
     }
@@ -70,7 +75,8 @@ export class JadwalService {
             .where(and(
                 eq(workSessionTable.jadwalId, jadwalId),
                 eq(workSessionTable.siswaId, siswaId),
-                isNull(workSessionTable.finishedAt)
+                eq(workSessionTable.status, 'finished'),
+                
             ))
 
         return rows.length

@@ -15,7 +15,7 @@ export class JadwalController {
     async getAll(
         @Session() session: UserSession,
         @Query('siswaId') siswaId?: string,
-        @Query('agendaId') agendaId?: string
+        @Query('agendaId') agendaId?: string,
     ) {
         const filterSiswa = session.user.role != 'admin' ?
             (await this.siswaService.findByAccount(session.user.id)).id :
@@ -23,7 +23,7 @@ export class JadwalController {
 
         return this.service.listAll({
             siswaId: filterSiswa,
-            agendaId: agendaId
+            agendaId: agendaId,
         })
     }
 
