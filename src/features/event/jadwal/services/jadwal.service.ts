@@ -1,7 +1,7 @@
 import { Inject, Injectable, NotFoundException } from "@nestjs/common";
 import { MySql2Database } from "drizzle-orm/mysql2";
 import { READ_DB, WRITE_DB } from "../../../../common/config/db.constants";
-import { agendaSiswaTable, jadwalTable, materiSoalTable, soalTable, workSessionTable } from "../../../../infra/drizzle/schema";
+import { agendaSiswaTable, jadwalTable, materiSoalTable, session, soalTable, workSessionTable } from "../../../../infra/drizzle/schema";
 import { and, eq, exists, isNull } from "drizzle-orm";
 import { Jadwal } from "../domain/jadwal";
 import { AgendaService } from "../../agenda/service/agenda.service";
@@ -88,4 +88,53 @@ export class JadwalService {
 
         return new Jadwal(row)
     }
+
+    async upsert(jadwal: Jadwal) {
+        await this.db
+            .insert(jadwalTable)
+            .values(jadwal)
+            .onDuplicateKeyUpdate({
+                set: {
+                    agendaId: jadwal.agendaId,
+                    paketSoalId: jadwal.paketSoalId,
+                    title: jadwal.title,
+                    startTime: jadwal.startTime,
+                    endTime: jadwal.endTime,
+                    timeLimit: jadwal.timeLimit,
+                    attempts: jadwal.attempts,
+                    token: jadwal.token,
+                    updatedAt: new Date()
+                }
+            });
+    }
+
+    async create(data: {
+        agendaId: string,
+        paketSoalId: string,
+        title: string,
+        startTime: Date,
+        endTime: Date,
+        timeLimit: number,
+        attempts: number,
+        token: string,
+    }) {
+        const jadwal = Jadwal.create({
+            agendaId: data.agendaId,
+            paketSoalId: data.paketSoalId,
+            title: data.title,
+            startTime: data.startTime,
+            endTime: data.endTime,
+            timeLimit: data.timeLimit,
+            attempts: data.attempts,
+            token: data.token,
+        })
+
+        await this.db.insert(jadwalTable).values(jadwal)
+    }
+
+    async delete(jadwalId: string) {
+        await this.db.delete(jadwalTable).where(eq(jadwalTable.id, jadwalId));
+    }
+
+
 }

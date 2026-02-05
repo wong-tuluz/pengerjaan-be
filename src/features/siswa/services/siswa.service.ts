@@ -30,6 +30,16 @@ export class SiswaService {
         return rows
     }
 
+    async findByUsername(username: string): Promise<Siswa | null> {
+        const row = await this.rdb.select()
+            .from(siswaTable)
+            .where(eq(siswaTable.username, username))
+            .then(rows => rows[0])
+
+        if (!row) return null
+        return new Siswa(row)
+    }
+
     async findById(siswaId: string): Promise<Siswa> {
         const row = await this.rdb.select()
             .from(siswaTable)
@@ -60,6 +70,36 @@ export class SiswaService {
         await this.upsert(siswa)
     }
 
+    async create(data: {
+        nis: string;
+        name: string;
+        birthDate: Date;
+        kelas: string;
+        username: string;
+        password: string;
+    }): Promise<Siswa> {
+        const existing = await this.findByUsername(data.username);
+
+        if (existing) {
+            return existing;
+        }
+
+        const siswa = new Siswa({
+            id: crypto.randomUUID(),
+            accountId: '',
+            nama: data.name,
+            nis: data.nis,
+            kelas: data.kelas,
+            username: data.username,
+            password: data.password,
+        });
+        await this.upsert(siswa);
+
+        this.createAccount(siswa.id);
+
+        return siswa;
+    }
+
     async createAccount(siswaId) {
         const siswa = await this.findById(siswaId)
 
@@ -68,7 +108,7 @@ export class SiswaService {
             name: siswa.nama,
             email: siswa.nama.replaceAll(' ', '').toLowerCase() + "@acme.com",
             password: siswa.password,
-            username: siswa.nama.split(' ')[0],
+            username: siswa.username,
         })
 
         siswa.setAccount(res.id)
