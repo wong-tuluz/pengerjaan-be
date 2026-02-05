@@ -57,6 +57,7 @@ export class SessionService {
 
         const session = Session.create(siswaId, jadwalId, jadwal.paketSoalId, null, timeLimit)
         await this.upsert(session)
+        return session;
     }
 
     async finish(sessionId: string) {

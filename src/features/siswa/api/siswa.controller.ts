@@ -27,6 +27,7 @@ export class ProfileController {
             return {
                 userId: user.id,
                 siswaId: siswa.id,
+                nis: siswa.nis,
                 name: user.name,
                 role: user.role
             }
