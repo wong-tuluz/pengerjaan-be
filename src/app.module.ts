@@ -6,12 +6,13 @@ import { createZodValidationPipe, ZodSerializerInterceptor, ZodValidationPipe } 
 import { DrizzleModule } from './infra/drizzle/drizzle.module';
 import { AgendaModule } from './features/event/agenda/agenda.module';
 import { SiswaModule } from './features/siswa/siswa.module';
-import { SoalModule } from './features/persoalan/soal/soal.module';
+import { SoalModule } from './features/persoalan/soal.module';
 import { SeederController } from './features/seeder/seeder.controller';
 import { Seeder } from './features/seeder/seeder';
 import { AuthModule } from './features/auth/auth.module';
 import { ZodError } from 'zod';
 import { JadwalModule } from './features/event/jadwal/jadwal.module';
+import { SyncModule } from './features/sync_backoffice/sync.module';
 
 
 const MyZodValidationPipe = createZodValidationPipe({
@@ -30,6 +31,7 @@ const MyZodValidationPipe = createZodValidationPipe({
         SiswaModule,
         SoalModule,
         AuthModule,
+        SyncModule,
         ConfigModule.forRoot({
             isGlobal: true,
         }),

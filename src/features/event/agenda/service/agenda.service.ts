@@ -44,4 +44,31 @@ export class AgendaService {
 
         return row
     }
+
+    async create(data: {
+        title: string;
+        startTime: Date;
+        endTime: Date;
+        description?: string;
+    }): Promise<Agenda> {
+        const agenda = new Agenda({
+            id: crypto.randomUUID(),
+            title: data.title,
+            description: data.description || '',
+            startTime: data.startTime,
+            endTime: data.endTime,
+        })
+
+        await this.db.insert(agendaTable).values(agenda)
+
+        return agenda
+    }
+
+    async addSiswa(agendaId: string, siswaId: string) {
+        await this.db.insert(agendaSiswaTable).values({
+            id: crypto.randomUUID(),
+            agendaId,
+            siswaId,
+        })
+    }
 }

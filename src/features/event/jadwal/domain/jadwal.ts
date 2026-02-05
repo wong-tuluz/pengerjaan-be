@@ -16,6 +16,7 @@ export class Jadwal {
         paketSoalId: string;
         startTime: Date;
         endTime: Date;
+        timeLimit: number;
         attempts: number;
         token: string;
     }) {
@@ -25,8 +26,22 @@ export class Jadwal {
         this.paketSoalId = data.paketSoalId
         this.startTime = data.startTime
         this.endTime = data.endTime
+        this.timeLimit = data.timeLimit
         this.attempts = data.attempts
         this.token = data.token
+    }
+
+    static create(data: {
+        title: string;
+        agendaId: string;
+        paketSoalId: string;
+        startTime: Date;
+        endTime: Date;
+        timeLimit: number;
+        attempts: number;
+        token: string;
+    }) {
+        return new Jadwal({id: crypto.randomUUID(), ...data})
     }
 
     verifyToken(token: string) {
