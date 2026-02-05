@@ -19,7 +19,7 @@ services:
             MARIADB_ROOT_PASSWORD: rootpassword
             MARIADB_DATABASE: app_db
             MARIADB_USER: app_user
-            MARIADB_PASSWORD: app_password
+            MARIADB_PASSWORD: x3Oczsty60LguEvxDR0KxYEVFrhcRT1V
         ports:
             - '3306:3306'
         volumes:
