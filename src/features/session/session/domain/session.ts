@@ -60,5 +60,16 @@ export class Session {
         this.finishedAt = new Date()
         this.status = 'finished'
     }
+
+        async reset(sessionId: string) {
+            const session = await this.findById(sessionId);
+    
+            session.reset()
+            await this.upsert(session)
+        }
+
+    reset() {
+        this.status = 'in_progress'
+    }
 }
 

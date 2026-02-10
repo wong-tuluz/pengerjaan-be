@@ -56,6 +56,18 @@ export class SessionController {
         return await this.sessionService.finish(sessionId);
     }
 
+    @Post(':id/reset')
+    async reset(
+        @Session() session: UserSession,
+        @Param('id') sessionId: string
+    ) {
+        if (session.user.role != 'admin') {
+            throw new UnauthorizedException();
+        }
+
+        return await this.sessionService.reset(sessionId);
+    }
+
     @Post()
     async create(
         @Session() session: UserSession,
