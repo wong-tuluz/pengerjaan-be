@@ -44,7 +44,7 @@ export class EventSyncHandler {
                     paketSoalId: paketSoal.id,
                     title: materi.nama_materi,
                     order: materi.urutan,
-                    timeLimit: 0
+                    timeLimit: materi.waktu || 0
                 });
 
                 for (const soal of materi.soal) {
@@ -72,8 +72,7 @@ export class EventSyncHandler {
                 token: jadwal.token,
                 startTime: this.parseMysqlDatetime(jadwal.mulai.toString()),
                 endTime: this.parseMysqlDatetime(jadwal.selesai.toString()),
-                // timeLimit: (jadwal.selesai.getTime() - jadwal.mulai.getTime()) / 1000 / 60,
-                timeLimit: 0,
+                timeLimit: jadwal.paket_soal.waktu,
                 attempts: 1
             });
         }

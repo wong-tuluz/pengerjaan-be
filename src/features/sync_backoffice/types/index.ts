@@ -34,7 +34,7 @@ export type Materi = {
     id: string;
     nama_materi: string;
     urutan: number;
-    waktu: Date | null;
+    waktu: number | null;
     tampilkan_hasil_langsung: boolean | null
     tampilkan_hasil_langsung_text: string | null;
     soal: Soal[];
