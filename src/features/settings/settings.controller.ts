@@ -15,6 +15,6 @@ export class SettingController {
 
     @Get()
     async fetch() {
-        return await this.db.select().from(settingTable).then(rows => rows[0].data)
+        return await this.db.select().from(settingTable).then(rows => JSON.parse(rows[0].data as string))
     }
 }
