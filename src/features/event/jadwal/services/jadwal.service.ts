@@ -49,6 +49,7 @@ export class JadwalService {
             const attemptCount = filter?.siswaId ? await this.getAttemptedCount(filter.siswaId, jadwal.id) : 0
             const agenda = await this.agendaService.findById(jadwal.agendaId)
             const paketsoal = await this.paketsoalService.getById(jadwal.paketSoalId)
+            const hasil = true
 
             return Object.assign(jadwal, {
                 jadwalId: jadwal.id,
@@ -56,7 +57,8 @@ export class JadwalService {
                 attemptsRemaining: jadwal.attempts - attemptCount,
                 status: attemptCount > 0 ? 'attempted' : 'no-attempts',
                 agenda: agenda,
-                paketSoal: paketsoal
+                paketSoal: paketsoal,
+                viewHasil: hasil,
             })
         }))
     }

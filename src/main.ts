@@ -9,14 +9,17 @@ import { HttpExceptionFilter } from './exception-filter';
 async function bootstrap() {
     const app = await NestFactory.create(AppModule, {
         cors: {
-            origin: (origin, callback) => {
-                if (!origin) return callback(null, true);
+            // origin: (origin, callback) => {
+            //     if (!origin) return callback(null, true);
 
-                if (origin.startsWith("http://localhost:")) {
-                    callback(null, origin);
-                } else {
-                    callback(new Error("Not allowed by CORS"), false);
-                }
+            //     if (origin.startsWith("http://localhost:")) {
+            //         callback(null, origin);
+            //     } else {
+            //         callback(new Error("Not allowed by CORS"), false);
+            //     }
+            // },
+            origin: (origin, callback) => {
+                callback(null, origin);
             },
             credentials: true,
         },
