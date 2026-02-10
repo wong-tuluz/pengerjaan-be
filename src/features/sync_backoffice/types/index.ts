@@ -23,7 +23,7 @@ export type PaketSoal = {
     id: string;
     nama_paket_soal: string;
     waktu: number; // in minutes
-    tipe_pengerjaan: 'Perjenis' | 'Paralel';
+    tipe_pengerjaan: 'Perjenis' | 'Permateri';
     tampilkan_hasil_langsung: boolean | null
     tampilkan_hasil_langsung_text: string | null;
     createdAt: Date;
@@ -43,7 +43,7 @@ export type Materi = {
 export type Soal = {
     id: string;
     soal: string;
-    tipe_jawaban: 'tunggal' | 'ganda' | 'esai';
+    tipe_jawaban: TipeSoal,
     bobot_benar: number,
     bobot_salah: number,
     kunci_jawaban: "C",
@@ -75,18 +75,4 @@ export type Peserta = {
     nama_kelas: string,
 }
 
-//             "id_peserta_perevent": "58712444-2c6b-44ed-a6dd-c46d82536e44",
-//         "id_event": "74a97ff6-2ded-488b-b6d4-60d4028aa9b8",
-//         "id_siswa": "a489754c-f74f-49b1-b935-594da103918e",
-//         "id_siswa_perkelas": "35947fc8-3414-486a-8e12-f084a1e8eaf5",
-//         "created_at": "2026-01-26T04:38:42.000000Z",
-//         "updated_at": "2026-01-26T04:38:42.000000Z",
-//         "nis": "101",
-//         "nama_siswa": "Riyan",
-//         "tgl_lahir": "2026-01-14",
-//         "username": "101",
-//         "password": "17a540a9be7d82ba31a439e855d6db70",
-//         "nama_event": "Kenaikan Kelas",
-//         "id_kelas": "3997defa-ed0f-4c13-b400-66e5420953a4",
-//         "nama_kelas": "Kelas 1"
-// }
+export type TipeSoal = 'tunggal' | 'multi';
