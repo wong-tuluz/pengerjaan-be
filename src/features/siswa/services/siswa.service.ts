@@ -103,15 +103,16 @@ export class SiswaService {
     async createAccount(siswaId) {
         const siswa = await this.findById(siswaId)
 
-        const ctx = await (auth.$context)
-        const res = await ctx.internalAdapter.createUser({
-            name: siswa.nama,
-            email: siswa.nama.replaceAll(' ', '').toLowerCase() + "@acme.com",
-            password: siswa.password,
-            username: siswa.username,
+        const res = await auth.api.signUpEmail({
+            body: {
+                name: siswa.nama,
+                email: siswa.nama.replaceAll(' ', '').toLowerCase() + "@acme.com",
+                password: siswa.password,
+                username: siswa.username,
+            }
         })
 
-        siswa.setAccount(res.id)
+        siswa.setAccount(res.user.id)
         await this.upsert(siswa)
     }
 

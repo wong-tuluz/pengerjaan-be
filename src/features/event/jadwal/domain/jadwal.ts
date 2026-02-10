@@ -41,7 +41,7 @@ export class Jadwal {
         attempts: number;
         token: string;
     }) {
-        return new Jadwal({id: crypto.randomUUID(), ...data})
+        return new Jadwal({ id: crypto.randomUUID(), ...data })
     }
 
     verifyToken(token: string) {
@@ -52,10 +52,13 @@ export class Jadwal {
     getTimeLimit(date: Date): number {
         const expiresAt = date.getTime() + this.timeLimit * 60 * 1000
 
+        let res = 0
         if (new Date(expiresAt) < this.endTime) {
-            return expiresAt
+            res = (expiresAt - new Date().getTime()) / 1000 / 60
         } else {
-            return (this.endTime.getTime() - new Date().getTime()) / 60 / 100
+            res = (this.endTime.getTime() - new Date().getTime()) / 1000 / 60
         }
+
+        return res
     }
 }
