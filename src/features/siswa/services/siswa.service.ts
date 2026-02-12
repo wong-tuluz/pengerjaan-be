@@ -65,7 +65,7 @@ export class SiswaService {
         siswa.setPassword(password)
 
         const ctx = await (auth.$context)
-        ctx.internalAdapter.updatePassword(siswa.accountId, password)
+        ctx.internalAdapter.updatePassword(siswa.accountId, await ctx.password.hash(password))
 
         await this.upsert(siswa)
     }
