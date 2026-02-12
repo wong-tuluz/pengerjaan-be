@@ -19,7 +19,7 @@ const SessionQuestionSchema = z.object({
 
 const SessionSchema = z.object({
     id: z.uuid(),
-    status: z.enum(['active', 'completed', 'expired']),
+    status: z.enum(['in_progress', 'finished']),
     questions: z.array(SessionQuestionSchema),
 });
 

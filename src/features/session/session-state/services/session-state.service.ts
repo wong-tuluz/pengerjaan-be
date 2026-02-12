@@ -60,7 +60,7 @@ export class SessionStateService {
         if (soalIds.length === 0) {
             const obj = new SessionDto();
             obj.id = session.id;
-            obj.status = session.finishedAt ? 'completed' : 'active';
+            obj.status = session.status
             obj.questions = [];
             return obj;
         }
@@ -145,7 +145,7 @@ export class SessionStateService {
 
         const obj = new SessionDto();
         obj.id = session.id;
-        obj.status = session.finishedAt ? 'completed' : 'active';
+        obj.status = session.status;
         obj.questions = questions;
 
         return obj;
