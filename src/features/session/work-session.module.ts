@@ -9,11 +9,13 @@ import { SessionStateController } from './session-state/api/session-state.contro
 import { SessionService } from './session/services/session.service';
 import { SiswaModule } from '../siswa/siswa.module';
 import { SubmitService } from './session-state/services/submit.service';
+import { SessionDetailController } from './session-detail/session-query.controller';
+import { SessionDetailService } from './session-detail/session-query.service';
 
 @Module({
     imports: [RabbitMQModule, DrizzleModule, SoalModule, JadwalModule, SiswaModule],
-    controllers: [SessionController, SessionStateController],
-    providers: [SessionService, SessionStateService, SubmitService],
+    controllers: [SessionController, SessionStateController, SessionDetailController],
+    providers: [SessionService, SessionStateService, SubmitService, SessionDetailService],
 })
 export class WorkSessionModule { }
 
