@@ -5,9 +5,10 @@ import { JadwalService } from './services/jadwal.service';
 import { SiswaModule } from '../../siswa/siswa.module';
 import { AgendaModule } from '../agenda/agenda.module';
 import { SoalModule } from '../../persoalan/soal.module';
+import { SettingsModule } from '../../settings/settings.module';
 
 @Module({
-    imports: [DrizzleModule, SiswaModule, AgendaModule, SoalModule],
+    imports: [DrizzleModule, SiswaModule, AgendaModule, SoalModule, SettingsModule],
     providers: [JadwalService],
     controllers: [JadwalController],
     exports: [JadwalService],

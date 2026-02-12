@@ -6,8 +6,8 @@ import { and, eq, exists, isNull } from "drizzle-orm";
 import { Jadwal } from "../domain/jadwal";
 import { AgendaService } from "../../agenda/service/agenda.service";
 import { Agenda } from "../../agenda/domain/agenda";
-import { PaketSoalService } from "../../../persoalan/paket/paket-soal.service";
 import { PaketSoalQueryService } from "../../../persoalan/paket/paket-soal-query.service";
+import { SettingService } from "../../../settings/settings.controller";
 
 @Injectable()
 export class JadwalService {
@@ -16,6 +16,7 @@ export class JadwalService {
         @Inject(WRITE_DB) private readonly db: MySql2Database,
         private readonly agendaService: AgendaService,
         private readonly paketsoalService: PaketSoalQueryService,
+        private readonly settings: SettingService
     ) { }
 
     async listAll(filter?: {
@@ -49,18 +50,22 @@ export class JadwalService {
             const attemptCount = filter?.siswaId ? await this.getAttemptedCount(filter.siswaId, jadwal.id) : 0
             const agenda = await this.agendaService.findById(jadwal.agendaId)
             const paketsoal = await this.paketsoalService.getById(jadwal.paketSoalId)
-            const hasil = true
+            const hasil = await this.showHasil()
 
             return Object.assign(jadwal, {
                 jadwalId: jadwal.id,
                 questionCount,
                 attemptsRemaining: jadwal.attempts - attemptCount,
                 status: attemptCount > 0 ? 'attempted' : 'no-attempts',
+                viewHasil: hasil,
                 agenda: agenda,
                 paketSoal: paketsoal,
-                viewHasil: hasil,
             })
         }))
+    }
+
+    private async showHasil(): Promise<boolean> {
+        return (await this.settings.fetch<{ showHasil: boolean }>())?.showHasil ?? false
     }
 
     private async getQuestionCount(paketSoalId: string) {
@@ -78,7 +83,7 @@ export class JadwalService {
                 eq(workSessionTable.jadwalId, jadwalId),
                 eq(workSessionTable.siswaId, siswaId),
                 eq(workSessionTable.status, 'finished'),
-                
+
             ))
 
         return rows.length
