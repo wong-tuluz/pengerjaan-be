@@ -1,4 +1,4 @@
-import { Inject, Injectable } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
 import { AgendaService } from "../../../event/agenda/service/agenda.service";
 import { JadwalService } from "../../../event/jadwal/services/jadwal.service";
 import { MateriSoalService } from "../../../persoalan/materi/materi-soal.service";
@@ -10,7 +10,7 @@ import { SiswaService } from "../../../siswa/services/siswa.service";
 @Injectable()
 export class EventSyncHandler {
     constructor(
-        private readonly syncService: BackofficeService,
+        private readonly service: BackofficeService,
         private readonly agendaService: AgendaService,
         private readonly jadwalService: JadwalService,
         private readonly paketSoalService: PaketSoalService,
@@ -19,8 +19,8 @@ export class EventSyncHandler {
         private readonly siswaService: SiswaService
     ) { }
 
-    async handle(eventId: string, token: string) {
-        const event = await this.syncService.fetchEventDetail(token, eventId);
+    async handle(eventId: string) {
+        const event = await this.service.fetchEventDetail(eventId);
 
         console.log(event);
 

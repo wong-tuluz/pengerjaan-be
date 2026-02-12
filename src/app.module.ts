@@ -14,6 +14,7 @@ import { ZodError } from 'zod';
 import { JadwalModule } from './features/event/jadwal/jadwal.module';
 import { SyncModule } from './features/sync_backoffice/sync.module';
 import { SettingController } from './features/settings/settings.controller';
+import { SettingsModule } from './features/settings/settings.module';
 
 
 const MyZodValidationPipe = createZodValidationPipe({
@@ -33,13 +34,13 @@ const MyZodValidationPipe = createZodValidationPipe({
         SoalModule,
         AuthModule,
         SyncModule,
+        SettingsModule,
         ConfigModule.forRoot({
             isGlobal: true,
         }),
     ],
     controllers: [
         SeederController,
-        SettingController
     ],
     providers: [
         Seeder,

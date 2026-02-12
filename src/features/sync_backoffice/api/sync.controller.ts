@@ -5,19 +5,17 @@ import { EventSyncHandler } from "../services/handlers/event.sync";
 @Controller('sync')
 export class SyncController {
     constructor(
-        private readonly syncService: BackofficeService,
+        private readonly service: BackofficeService,
         private readonly handler: EventSyncHandler,
     ) { }
 
     @Get('events')
     async listEvents() {
-        await this.syncService.generateToken();
-        return this.syncService.listEvents(BackofficeService.tokenData);
+        return this.service.listEvents();
     }
 
     @Post('events/:eventId/sync')
     async syncEvent(@Param('eventId') eventId: string) {
-        await this.syncService.generateToken();
-        await this.handler.handle(eventId, BackofficeService.tokenData);
+        await this.handler.handle(eventId);
     }
 }
