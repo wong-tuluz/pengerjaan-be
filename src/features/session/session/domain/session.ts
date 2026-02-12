@@ -9,6 +9,7 @@ export class Session {
     paketSoalId: string;
     materiSoalId?: string | null;
     timeLimit: number;
+    strike: number;
     startedAt: Date;
     finishedAt?: Date | null;
     status: SessionStatus;
@@ -64,6 +65,14 @@ export class Session {
     reset() {
         this.status = 'in_progress'
         this.finishedAt = null;
+    }
+
+    warn() {
+        this.strike += 1
+    }
+
+    unwarn() {
+        this.strike = 0
     }
 }
 

@@ -68,6 +68,20 @@ export class SessionController {
         return await this.sessionService.reset(sessionId);
     }
 
+    @Post(':id/warn')
+    async warn(
+        @Param('id') sessionId: string
+    ) {
+        return await this.sessionService.warn(sessionId);
+    }
+
+    @Post(':id/unwarn')
+    async unwarn(
+        @Param('id') sessionId: string
+    ) {
+        return await this.sessionService.warn(sessionId);
+    }
+
     @Post()
     async create(
         @Session() session: UserSession,

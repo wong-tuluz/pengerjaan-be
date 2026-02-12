@@ -14,6 +14,8 @@ export const workSessionTable = mysqlTable('work_sessions', {
         'finished',
     ]).notNull(),
 
+    strike: int('strike').notNull().default(0),
+
     timeLimit: int('time_limit').notNull(),
     startedAt: datetime('started_at').notNull(),
     finishedAt: datetime('finished_at'),

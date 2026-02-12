@@ -74,6 +74,20 @@ export class SessionService {
         await this.upsert(session)
     }
 
+    async warn(sessionId: string) {
+        const session = await this.findById(sessionId);
+
+        session.warn()
+        await this.upsert(session)
+    }
+
+    async unwarn(sessionId: string) {
+        const session = await this.findById(sessionId);
+
+        session.unwarn()
+        await this.upsert(session)
+    }
+
     private async upsert(session: Session) {
         await this.db
             .insert(workSessionTable)

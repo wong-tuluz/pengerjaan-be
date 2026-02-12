@@ -10,19 +10,9 @@ import { SoalModule } from './features/persoalan/soal.module';
 import { SeederController } from './features/seeder/seeder.controller';
 import { Seeder } from './features/seeder/seeder';
 import { AuthModule } from './features/auth/auth.module';
-import { ZodError } from 'zod';
 import { JadwalModule } from './features/event/jadwal/jadwal.module';
 import { SyncModule } from './features/sync_backoffice/sync.module';
-import { SettingController } from './features/settings/settings.controller';
 import { SettingsModule } from './features/settings/settings.module';
-
-
-const MyZodValidationPipe = createZodValidationPipe({
-    // provide custom validation exception factory
-    createValidationException: (error: ZodError) =>
-        new BadRequestException('Ooops'),
-})
-
 
 @Module({
     imports: [
