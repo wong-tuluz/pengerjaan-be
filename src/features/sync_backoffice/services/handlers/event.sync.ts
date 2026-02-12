@@ -6,6 +6,9 @@ import { PaketSoalService } from "../../../persoalan/paket/paket-soal.service";
 import { SoalService } from "../../../persoalan/soal/soal.service";
 import { BackofficeService } from "../backoffice.service";
 import { SiswaService } from "../../../siswa/services/siswa.service";
+import { SettingService } from "../../../settings/settings.controller";
+
+const SYNC_KEY = "event_sync"
 
 @Injectable()
 export class EventSyncHandler {
@@ -16,13 +19,17 @@ export class EventSyncHandler {
         private readonly paketSoalService: PaketSoalService,
         private readonly materiService: MateriSoalService,
         private readonly soalService: SoalService,
-        private readonly siswaService: SiswaService
+        private readonly siswaService: SiswaService,
+        private readonly storage: SettingService
     ) { }
 
     async handle(eventId: string) {
         const event = await this.service.fetchEventDetail(eventId);
 
-        console.log(event);
+        const syncedEvent = await this.storage.fetch<string[]>(SYNC_KEY) || []
+        syncedEvent.push(event.id)
+
+        await this.storage.store<string[]>(syncedEvent, SYNC_KEY)
 
         const agenda = await this.agendaService.create({
             title: event.nama_event,
