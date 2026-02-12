@@ -1,7 +1,7 @@
 {
   "version": "5",
   "dialect": "mysql",
-  "id": "9a6d1e05-3201-42c7-a86a-ddfc16421974",
+  "id": "ee390b47-dacb-4ef0-86d9-2d5e83a0f7c2",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "agenda_siswa": {
@@ -1366,6 +1366,13 @@
     "settings": {
       "name": "settings",
       "columns": {
+        "key": {
+          "name": "key",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
         "data": {
           "name": "data",
           "type": "json",
@@ -1376,7 +1383,14 @@
       },
       "indexes": {},
       "foreignKeys": {},
-      "compositePrimaryKeys": {},
+      "compositePrimaryKeys": {
+        "settings_key": {
+          "name": "settings_key",
+          "columns": [
+            "key"
+          ]
+        }
+      },
       "uniqueConstraints": {},
       "checkConstraint": {}
     }

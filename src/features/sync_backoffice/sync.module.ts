@@ -1,5 +1,5 @@
 import { HttpModule } from "@nestjs/axios";
-import { BackofficeService} from "./services/backoffice.service";
+import { BackofficeService } from "./services/backoffice.service";
 import { EventSyncHandler } from "./services/handlers/event.sync";
 import { Module } from "@nestjs/common";
 import { AgendaModule } from "../event/agenda/agenda.module";

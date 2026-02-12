@@ -31,7 +31,7 @@ export class BackofficeService {
             })
         );
 
-        const result = res.data.data.map(x => ({ ...x , synced: syncedEvent.includes(x.id)}))
+        const result = res.data.data.map(x => ({ ...x, synced: syncedEvent.includes(x.id) }))
 
         return result;
     }
