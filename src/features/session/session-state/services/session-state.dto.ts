@@ -21,6 +21,7 @@ const SessionSchema = z.object({
     id: z.uuid(),
     status: z.enum(['in_progress', 'finished']),
     questions: z.array(SessionQuestionSchema),
+    session: z.any()
 });
 
 const SessionResultQuestionAnswerSchema = z.object({

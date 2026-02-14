@@ -99,6 +99,7 @@ export class SessionService {
                     paketSoalId: session.paketSoalId,
                     timeLimit: session.timeLimit,
                     status: session.status,
+                    strike: session.strike,
                     updatedAt: new Date()
                 }
             });

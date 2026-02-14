@@ -8,8 +8,8 @@ export class Session {
     jadwalId: string;
     paketSoalId: string;
     materiSoalId?: string | null;
-    timeLimit: number;
     strike: number;
+    timeLimit: number;
     startedAt: Date;
     finishedAt?: Date | null;
     status: SessionStatus;
@@ -20,6 +20,7 @@ export class Session {
         jadwalId: string;
         paketSoalId: string;
         materiSoalId?: string | null;
+        strike: number;
         timeLimit: number;
         startedAt: Date;
         finishedAt?: Date | null;
@@ -30,6 +31,7 @@ export class Session {
         this.jadwalId = data.jadwalId
         this.paketSoalId = data.paketSoalId
         this.materiSoalId = data.materiSoalId
+        this.strike = data.strike
         this.timeLimit = data.timeLimit
         this.startedAt = data.startedAt
         this.finishedAt = data.finishedAt
@@ -43,6 +45,7 @@ export class Session {
             jadwalId,
             paketSoalId,
             materiSoalId,
+            strike: 0,
             timeLimit,
             status: 'in_progress',
             startedAt: new Date(),
@@ -68,7 +71,7 @@ export class Session {
     }
 
     warn() {
-        this.strike += 1
+        this.strike = this.strike + 1
     }
 
     unwarn() {
