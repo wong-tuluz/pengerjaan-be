@@ -32,7 +32,6 @@ export const auth = betterAuth({
 });
 
 export const authClient = createAuthClient({
-    baseURL: "http://localhost:3000",
     plugins: [
         usernameClient(),
         adminClient()
