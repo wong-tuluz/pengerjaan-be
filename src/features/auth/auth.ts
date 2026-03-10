@@ -18,10 +18,9 @@ export const auth = betterAuth({
         username(),
         admin(),
     ],
-    trustedOrigins: [
-        "https://localhost:*/**",
-        "http://localhost:*/**"
-    ],
+    trustedOrigins: async (request) => {
+        return [request?.headers.get("origin") ?? ""];
+    },
     advanced: {
         disableOriginCheck: true,
     },
