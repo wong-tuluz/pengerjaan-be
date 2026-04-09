@@ -21,8 +21,9 @@ export const auth = betterAuth({
     trustedOrigins: ["*"],
     disableTrustedOriginsCors: true,
     cookie: {
-        secure: false,
+        secure: true,
         sameSite: "lax",
+        domain: ".antz.biz.id"
     }
 });
 
