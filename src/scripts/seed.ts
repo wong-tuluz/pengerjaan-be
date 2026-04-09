@@ -39,7 +39,7 @@ async function seedAdmin() {
     }
 
     await db.update(user)
-        .set({ role: "admin" })
+        .set({ role: "admin", username: "administrator" })
         .where(eq(user.id, newUser.user.id));
 
     console.log("Admin user created successfully!");
