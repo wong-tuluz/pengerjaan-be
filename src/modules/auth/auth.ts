@@ -21,10 +21,11 @@ export const auth = betterAuth({
     trustedOrigins: ["*"],
     disableTrustedOriginsCors: true,
     advanced: {
-        crossSubDomainCookies: {
-            enabled: true,
-            domain: "antz.biz.id",
-        },
+        defaultCookieAttributes: {
+            sameSite: "none",
+            secure: true,
+            partitioned: true
+        }
     },
 });
 
