@@ -189,15 +189,13 @@ export class CoreSyncService {
                 }
 
                 results.push({
-                    jawaban: {
-                        id_jawaban: session.id,
-                        id_jadwal: jadwal.id,
-                        id_peserta_per_event: participation.id,
-                        id_paket_soal: session.paketSoalId,
-                        id_materi: idMateri || null,
-                        waktu_mulai: session.startedAt.toISOString().replace('T', ' ').substring(0, 19),
-                        waktu_selesai: session.finishedAt?.toISOString().replace('T', ' ').substring(0, 19),
-                    },
+                    id_jawaban: session.id,
+                    id_jadwal: jadwal.id,
+                    id_peserta_per_event: participation.remoteId,
+                    id_paket_soal: session.paketSoalId,
+                    id_materi: idMateri || null,
+                    waktu_mulai: session.startedAt.toISOString().replace('T', ' ').substring(0, 19),
+                    waktu_selesai: session.finishedAt?.toISOString().replace('T', ' ').substring(0, 19),
                     detail: answers.map(ans => {
                         const isCorrect = ans.isCorrect ?? false;
                         return {
@@ -228,11 +226,6 @@ export class CoreSyncService {
             .where(eq(jadwalTable.agendaId, agendaId));
 
         const payload = {
-            meta: {
-                event_id: agenda.id,
-                total_peserta: results.length,
-                total_soal: [...new Set(totalSoalRows.map(r => r.id))].length,
-            },
             jawaban: results
         };
 

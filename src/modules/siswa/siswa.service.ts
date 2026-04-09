@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
 import { db, DbTransaction, siswaTable, agendaSiswaTable, user as userTable } from "src/common/db";
-import { eq, and, exists, or } from "drizzle-orm";
+import { eq, and, exists, or, count, asc } from "drizzle-orm";
 import { auth } from "../auth/auth";
 
 @Injectable()
@@ -8,28 +8,32 @@ export class SiswaService {
     constructor() { }
 
     async listAll(filter?: { kelas?: string, agendaId?: string }, pagination?: { limit?: number, offset?: number }) {
-        const filters = [
-            filter?.kelas ? eq(siswaTable.kelas, filter.kelas) : undefined,
-            filter?.agendaId ? exists(
+        const filters: any[] = [];
+        if (filter?.kelas) filters.push(eq(siswaTable.kelas, filter.kelas));
+        if (filter?.agendaId) {
+            filters.push(exists(
                 db.select().from(agendaSiswaTable)
                     .where(and(
                         eq(agendaSiswaTable.siswaId, siswaTable.id),
                         eq(agendaSiswaTable.agendaId, filter.agendaId),
                     )),
-            ) : undefined
-        ]
+            ));
+        }
+
+        const whereClause = filters.length > 0 ? and(...filters) : undefined;
 
         const rows = await db.select()
             .from(siswaTable)
-            .where(and(...filters))
+            .where(whereClause)
             .limit(pagination?.limit ?? 100)
-            .offset(pagination?.offset ?? 0);
+            .offset(pagination?.offset ?? 0)
+            .orderBy(asc(siswaTable.nama));
 
-        const totalRows = await db.select()
+        const totalResult = await db.select({ count: count() })
             .from(siswaTable)
-            .where(and(...filters))
-            .then(res => res.length);
+            .where(whereClause);
 
+        const totalRows = totalResult[0]?.count ?? 0;
 
         return { rows, metadata: { count: totalRows } };
     }

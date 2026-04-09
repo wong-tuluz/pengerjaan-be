@@ -5,6 +5,7 @@ import {
     Param,
     Post,
     Query,
+    ParseIntPipe,
     UnauthorizedException,
 } from '@nestjs/common';
 import { SiswaService } from './siswa.service';
@@ -58,8 +59,8 @@ export class SiswaController {
         @Session() session: UserSession,
         @Query("kelas") kelas?: string,
         @Query("agendaId") agendaId?: string,
-        @Query("limit") limit?: number,
-        @Query("offset") offset?: number,
+        @Query("limit", new ParseIntPipe({ optional: true })) limit?: number,
+        @Query("offset", new ParseIntPipe({ optional: true })) offset?: number,
     ) {
         if (session.user.role != 'admin') throw new UnauthorizedException()
         return await this.service.listAll({ kelas, agendaId }, { limit, offset })
