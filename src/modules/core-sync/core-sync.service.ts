@@ -62,7 +62,7 @@ export class CoreSyncService {
             await this.storage.store<string[]>(syncedEvent, SYNC_KEY);
         }
 
-        const agenda = await this.agendaService.create({
+        const agenda = await this.agendaService.save({
             id: event.id,
             title: event.nama_event,
             startTime: this.parseMysqlDatetime(event.mulai.toString()),
@@ -71,7 +71,7 @@ export class CoreSyncService {
         });
 
         for (const jadwal of event.jadwal) {
-            const paketSoal = await this.paketSoalService.create({
+            const paketSoal = await this.paketSoalService.save({
                 id: jadwal.paket_soal.id,
                 title: jadwal.paket_soal.nama_paket_soal,
                 description: '',
@@ -79,7 +79,7 @@ export class CoreSyncService {
             });
 
             for (const materi of jadwal.paket_soal.materi) {
-                const materiSoal = await this.materiService.create({
+                const materiSoal = await this.materiService.save({
                     id: materi.id,
                     paketSoalId: paketSoal.id,
                     title: materi.nama_materi,
@@ -89,7 +89,7 @@ export class CoreSyncService {
                 });
 
                 for (const soal of materi.soal) {
-                    await this.soalService.create({
+                    await this.soalService.save({
                         id: soal.id,
                         materiSoalId: materiSoal.id,
                         prompt: soal.soal,
@@ -108,7 +108,7 @@ export class CoreSyncService {
                 }
             }
 
-            await this.jadwalService.create({
+            await this.jadwalService.save({
                 id: jadwal.id,
                 agendaId: agenda.id,
                 paketSoalId: paketSoal.id,

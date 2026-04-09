@@ -81,7 +81,7 @@ export class JadwalService {
         return row;
     }
 
-    async create(data: {
+    async save(data: {
         id?: string,
         agendaId: string,
         paketSoalId: string,
@@ -94,13 +94,27 @@ export class JadwalService {
         remoteId?: string,
     }) {
         const id = data.id ?? crypto.randomUUID();
-        const jadwal = {
+        const payload = {
             id,
             ...data,
         };
 
-        await db.insert(jadwalTable).values(jadwal);
-        return jadwal;
+        await db.insert(jadwalTable).values(payload).onDuplicateKeyUpdate({
+            set: {
+                agendaId: payload.agendaId,
+                paketSoalId: payload.paketSoalId,
+                title: payload.title,
+                startTime: payload.startTime,
+                endTime: payload.endTime,
+                timeLimit: payload.timeLimit,
+                attempts: payload.attempts,
+                token: payload.token,
+                remoteId: payload.remoteId,
+                updatedAt: new Date(),
+            }
+        });
+        
+        return payload;
     }
 
     async delete(jadwalId: string) {

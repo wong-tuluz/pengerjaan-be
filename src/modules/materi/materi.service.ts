@@ -6,7 +6,7 @@ import { eq, asc } from 'drizzle-orm';
 export class MateriService {
     constructor() { }
 
-    async create(input: {
+    async save(input: {
         id?: string;
         paketSoalId: string;
         title: string;
@@ -16,8 +16,7 @@ export class MateriService {
         remoteId?: string;
     }) {
         const id = input.id ?? crypto.randomUUID();
-
-        await db.insert(materiSoalTable).values({
+        const payload = {
             id,
             remoteId: input.remoteId,
             paketSoalId: input.paketSoalId,
@@ -25,33 +24,21 @@ export class MateriService {
             description: input.description ?? null,
             order: input.order,
             timeLimit: input.timeLimit,
+        };
+
+        await db.insert(materiSoalTable).values(payload).onDuplicateKeyUpdate({
+            set: {
+                remoteId: payload.remoteId,
+                paketSoalId: payload.paketSoalId,
+                title: payload.title,
+                description: payload.description,
+                order: payload.order,
+                timeLimit: payload.timeLimit,
+                updatedAt: new Date(),
+            }
         });
 
         return { id };
-    }
-
-    async update(
-        id: string,
-        input: {
-            title?: string;
-            description?: string | null;
-            order?: number;
-            timeLimit?: number;
-        },
-    ) {
-        await db
-            .update(materiSoalTable)
-            .set({
-                ...(input.title && { title: input.title }),
-                ...(input.description !== undefined && {
-                    description: input.description,
-                }),
-                ...(input.order !== undefined && { order: input.order }),
-                ...(input.timeLimit !== undefined && {
-                    timeLimit: input.timeLimit,
-                }),
-            })
-            .where(eq(materiSoalTable.id, id));
     }
 
     async delete(id: string) {

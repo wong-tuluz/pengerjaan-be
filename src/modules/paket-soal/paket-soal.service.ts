@@ -6,40 +6,30 @@ import { eq, count } from 'drizzle-orm';
 export class PaketSoalService {
     constructor() { }
 
-    async create(input: {
+    async save(input: {
         id?: string;
         title: string;
         description?: string | null;
         remoteId?: string;
     }) {
         const id = input.id ?? crypto.randomUUID();
-
-        await db.insert(paketSoalTable).values({
+        const payload = {
             id,
             remoteId: input.remoteId,
             title: input.title,
             description: input.description ?? null,
+        };
+
+        await db.insert(paketSoalTable).values(payload).onDuplicateKeyUpdate({
+            set: {
+                remoteId: payload.remoteId,
+                title: payload.title,
+                description: payload.description,
+                updatedAt: new Date(),
+            }
         });
 
         return { id };
-    }
-
-    async update(
-        id: string,
-        input: {
-            title?: string;
-            description?: string | null;
-        },
-    ) {
-        await db
-            .update(paketSoalTable)
-            .set({
-                ...(input.title && { title: input.title }),
-                ...(input.description !== undefined && {
-                    description: input.description,
-                }),
-            })
-            .where(eq(paketSoalTable.id, id));
     }
 
     async delete(id: string) {

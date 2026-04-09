@@ -40,7 +40,7 @@ export class AgendaService {
         return rows;
     }
 
-    async create(data: {
+    async save(data: {
         id?: string;
         title: string;
         startTime: Date;
@@ -49,7 +49,7 @@ export class AgendaService {
         remoteId?: string;
     }) {
         const id = data.id ?? crypto.randomUUID();
-        const agenda = {
+        const payload = {
             id,
             remoteId: data.remoteId,
             title: data.title,
@@ -58,9 +58,18 @@ export class AgendaService {
             endTime: data.endTime,
         };
 
-        await db.insert(agendaTable).values(agenda);
+        await db.insert(agendaTable).values(payload).onDuplicateKeyUpdate({
+            set: {
+                remoteId: payload.remoteId,
+                title: payload.title,
+                description: payload.description,
+                startTime: payload.startTime,
+                endTime: payload.endTime,
+                updatedAt: new Date(),
+            }
+        });
 
-        return agenda;
+        return payload;
     }
 
     async addSiswa(agendaId: string, siswaId: string, remoteId?: string, id?: string) {

@@ -8,7 +8,7 @@ export type SoalType = 'multiple-choice' | 'essay' | 'single-choice';
 export class SoalService {
     constructor() { }
 
-    async create(input: {
+    async save(input: {
         id?: string;
         materiSoalId: string;
         type: SoalType;
@@ -29,73 +29,48 @@ export class SoalService {
         }
 
         const soalId = input.id ?? crypto.randomUUID();
+        const payload = {
+            id: soalId,
+            remoteId: input.remoteId,
+            materiSoalId: input.materiSoalId,
+            type: input.type,
+            prompt: input.prompt,
+            order: input.order,
+            weightCorrect: input.weightCorrect,
+            weightWrong: input.weightWrong,
+        };
 
         await db.transaction(async (tx) => {
-            await tx.insert(soalTable).values({
-                id: soalId,
-                remoteId: input.remoteId,
-                materiSoalId: input.materiSoalId,
-                type: input.type,
-                prompt: input.prompt,
-                order: input.order,
-                weightCorrect: input.weightCorrect,
-                weightWrong: input.weightWrong,
+            await tx.insert(soalTable).values(payload).onDuplicateKeyUpdate({
+                set: {
+                    remoteId: payload.remoteId,
+                    materiSoalId: payload.materiSoalId,
+                    type: payload.type,
+                    prompt: payload.prompt,
+                    order: payload.order,
+                    weightCorrect: payload.weightCorrect,
+                    weightWrong: payload.weightWrong,
+                    updatedAt: new Date(),
+                }
             });
 
-            if (input.jawaban?.length) {
-                await tx.insert(jawabanSoalTable).values(
-                    input.jawaban.map((j) => ({
-                        id: j.id ?? crypto.randomUUID(),
-                        soalId,
-                        value: j.value,
-                        isCorrect: j.isCorrect,
-                        order: j.order,
-                    })),
-                );
-            }
-        });
-
-        return { id: soalId };
-    }
-
-    async update(
-        soalId: string,
-        input: {
-            prompt?: string;
-            order?: number;
-            weightCorrect?: number;
-            weightWrong?: number;
-            jawaban?: Array<{
-                value: string;
-                isCorrect: boolean;
-                order: number;
-            }>;
-        },
-    ) {
-        await db.transaction(async (tx) => {
-            await tx
-                .update(soalTable)
-                .set({
-                    ...(input.prompt && { prompt: input.prompt }),
-                    ...(input.order !== undefined && { order: input.order }),
-                    ...(input.weightCorrect !== undefined && {
-                        weightCorrect: input.weightCorrect,
-                    }),
-                    ...(input.weightWrong !== undefined && {
-                        weightWrong: input.weightWrong,
-                    }),
-                })
-                .where(eq(soalTable.id, soalId));
-
             if (input.jawaban) {
-                await tx
-                    .delete(jawabanSoalTable)
-                    .where(eq(jawabanSoalTable.soalId, soalId));
-
+                // For simplified sync, we often replace siblings or update them if IDs are provided.
+                // To keep it simple and consistent with previous "update" logic:
+                // If we have IDs for jawaban, we CAN upsert them too.
+                // But typically for a "save" of a parent with children, we want the children list to match exactly.
+                
+                // If we use IDs from remote, we should probably NOT delete all first if we want to preserve them.
+                // However, the previous "update" deleted all. 
+                // Let's use a more robust "delete ones not in list" or just "delete all and re-insert" if no IDs are provided.
+                
+                // Given we are syncing and provide IDs:
+                await tx.delete(jawabanSoalTable).where(eq(jawabanSoalTable.soalId, soalId));
+                
                 if (input.jawaban.length > 0) {
                     await tx.insert(jawabanSoalTable).values(
                         input.jawaban.map((j) => ({
-                            id: crypto.randomUUID(),
+                            id: j.id ?? crypto.randomUUID(),
                             soalId,
                             value: j.value,
                             isCorrect: j.isCorrect,
@@ -105,6 +80,8 @@ export class SoalService {
                 }
             }
         });
+
+        return { id: soalId };
     }
 
     async delete(soalId: string) {
