@@ -20,6 +20,12 @@ export const auth = betterAuth({
     ],
     trustedOrigins: ["*"],
     disableTrustedOriginsCors: true,
+    advanced: {
+        crossSubDomainCookies: {
+            enabled: true,
+            domain: "antz.biz.id",
+        },
+    },
 });
 
 export const authClient = createAuthClient({
