@@ -7,11 +7,12 @@ export class PaketSoalService {
     constructor() { }
 
     async create(input: {
+        id?: string;
         title: string;
         description?: string | null;
         remoteId?: string;
     }) {
-        const id = crypto.randomUUID();
+        const id = input.id ?? crypto.randomUUID();
 
         await db.insert(paketSoalTable).values({
             id,

@@ -2,8 +2,8 @@ import { mysqlTable, varchar, datetime } from 'drizzle-orm/mysql-core';
 import { sql } from 'drizzle-orm';
 
 export const siswaTable = mysqlTable('siswa', {
-    id: varchar('id', { length: 36 }).primaryKey(),
-    accountId: varchar('account_id', { length: 36 }),
+    id: varchar('id', { length: 255 }).primaryKey(),
+    accountId: varchar('account_id', { length: 255 }),
     nama: varchar('nama', { length: 255 }).notNull(),
     nis: varchar('nis', { length: 50 }).notNull(),
     kelas: varchar('kelas', { length: 50 }).notNull(),

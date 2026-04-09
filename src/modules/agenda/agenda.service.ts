@@ -41,13 +41,14 @@ export class AgendaService {
     }
 
     async create(data: {
+        id?: string;
         title: string;
         startTime: Date;
         endTime: Date;
         description?: string;
         remoteId?: string;
     }) {
-        const id = crypto.randomUUID();
+        const id = data.id ?? crypto.randomUUID();
         const agenda = {
             id,
             remoteId: data.remoteId,
@@ -62,9 +63,9 @@ export class AgendaService {
         return agenda;
     }
 
-    async addSiswa(agendaId: string, siswaId: string, remoteId?: string) {
+    async addSiswa(agendaId: string, siswaId: string, remoteId?: string, id?: string) {
         await db.insert(agendaSiswaTable).values({
-            id: crypto.randomUUID(),
+            id: id ?? crypto.randomUUID(),
             agendaId,
             siswaId,
             remoteId,

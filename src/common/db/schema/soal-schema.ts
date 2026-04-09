@@ -15,7 +15,7 @@ import { longtext } from 'drizzle-orm/mysql-core';
    Paket Soal
    ======================= */
 export const paketSoalTable = mysqlTable('paket_soal', {
-    id: varchar('id', { length: 36 }).primaryKey(),
+    id: varchar('id', { length: 255 }).primaryKey(),
     remoteId: varchar('remote_id', { length: 255 }),
     title: varchar('title', { length: 255 }).notNull(),
     description: text('description'),
@@ -31,9 +31,9 @@ export const paketSoalTable = mysqlTable('paket_soal', {
    Materi Soal
    ======================= */
 export const materiSoalTable = mysqlTable('materi_soal', {
-    id: varchar('id', { length: 36 }).primaryKey(),
+    id: varchar('id', { length: 255 }).primaryKey(),
     remoteId: varchar('remote_id', { length: 255 }),
-    paketSoalId: varchar('paket_soal_id', { length: 36 }).notNull(),
+    paketSoalId: varchar('paket_soal_id', { length: 255 }).notNull(),
     title: varchar('title', { length: 255 }).notNull(),
     description: text('description'),
     order: int('order').notNull(),
@@ -51,9 +51,9 @@ export const materiSoalTable = mysqlTable('materi_soal', {
    Soal
    ======================= */
 export const soalTable = mysqlTable('soal', {
-    id: varchar('id', { length: 36 }).primaryKey(),
+    id: varchar('id', { length: 255 }).primaryKey(),
     remoteId: varchar('remote_id', { length: 255 }),
-    materiSoalId: varchar('materi_soal_id', { length: 36 }).notNull(),
+    materiSoalId: varchar('materi_soal_id', { length: 255 }).notNull(),
     type: mysqlEnum('type', [
         'single-choice',
         'multiple-choice',
@@ -76,8 +76,8 @@ export const soalTable = mysqlTable('soal', {
    Jawaban Soal
    ======================= */
 export const jawabanSoalTable = mysqlTable('jawaban_soal', {
-    id: varchar('id', { length: 36 }).primaryKey(),
-    soalId: varchar('soal_id', { length: 36 }).notNull(),
+    id: varchar('id', { length: 255 }).primaryKey(),
+    soalId: varchar('soal_id', { length: 255 }).notNull(),
     value: longtext('value').notNull(),
     isCorrect: boolean('is_correct').notNull(),
     order: int('order').notNull(),

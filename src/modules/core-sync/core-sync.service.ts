@@ -63,6 +63,7 @@ export class CoreSyncService {
         }
 
         const agenda = await this.agendaService.create({
+            id: event.id,
             title: event.nama_event,
             startTime: this.parseMysqlDatetime(event.mulai.toString()),
             endTime: this.parseMysqlDatetime(event.selesai.toString()),
@@ -71,6 +72,7 @@ export class CoreSyncService {
 
         for (const jadwal of event.jadwal) {
             const paketSoal = await this.paketSoalService.create({
+                id: jadwal.paket_soal.id,
                 title: jadwal.paket_soal.nama_paket_soal,
                 description: '',
                 remoteId: jadwal.paket_soal.id,
@@ -78,6 +80,7 @@ export class CoreSyncService {
 
             for (const materi of jadwal.paket_soal.materi) {
                 const materiSoal = await this.materiService.create({
+                    id: materi.id,
                     paketSoalId: paketSoal.id,
                     title: materi.nama_materi,
                     order: materi.urutan,
@@ -87,6 +90,7 @@ export class CoreSyncService {
 
                 for (const soal of materi.soal) {
                     await this.soalService.create({
+                        id: soal.id,
                         materiSoalId: materiSoal.id,
                         prompt: soal.soal,
                         type: "single-choice",
@@ -95,6 +99,7 @@ export class CoreSyncService {
                         weightWrong: soal.bobot_salah,
                         remoteId: soal.id,
                         jawaban: soal.pilihan_jawaban.map(jw => ({
+                            id: (jw as any).id,
                             value: jw.isi_opsi,
                             isCorrect: jw.kunci_opsi == soal.kunci_jawaban,
                             order: this.letterToNumber(jw.nama_opsi),
@@ -104,6 +109,7 @@ export class CoreSyncService {
             }
 
             await this.jadwalService.create({
+                id: jadwal.id,
                 agendaId: agenda.id,
                 paketSoalId: paketSoal.id,
                 title: jadwal.nama_jadwal,
@@ -128,7 +134,7 @@ export class CoreSyncService {
                     password: peserta.password,
                 });
 
-                await this.agendaService.addSiswa(agenda.id, siswa.id, peserta.id_peserta_perevent);
+                await this.agendaService.addSiswa(agenda.id, siswa.id, peserta.id_peserta_perevent, peserta.id_peserta_perevent);
             } catch (e) {
                 this.logger.error(`Failed to sync student ${peserta.username}: ${e.message}`, e.stack);
             }
@@ -158,15 +164,13 @@ export class CoreSyncService {
                         eq(agendaSiswaTable.siswaId, session.siswaId)
                     )).limit(1).then(res => res[0]);
 
-                if (!participation?.remoteId) continue;
-
-                const paket = await this.paketSoalService.findById(session.paketSoalId);
-                const materi = session.materiSoalId ? await this.materiService.findById(session.materiSoalId) : null;
+                if (!participation) continue;
 
                 const answers = await db.select({
                     id: workSessionAnswerTable.id,
                     soalId: workSessionAnswerTable.soalId,
-                    soalRemoteId: soalTable.remoteId,
+                    soalRemoteId: soalTable.id, // Now same as id
+                    materiSoalId: soalTable.materiSoalId,
                     soalOrder: soalTable.order,
                     value: workSessionAnswerTable.value,
                     jawabanSoalId: workSessionAnswerTable.jawabanSoalId,
@@ -179,13 +183,18 @@ export class CoreSyncService {
                     .leftJoin(jawabanSoalTable, eq(workSessionAnswerTable.jawabanSoalId, jawabanSoalTable.id))
                     .where(eq(workSessionAnswerTable.workSessionId, session.id));
 
+                let idMateri = session.materiSoalId;
+                if (!idMateri && answers.length > 0) {
+                    idMateri = answers[0].materiSoalId;
+                }
+
                 results.push({
                     jawaban: {
                         id_jawaban: session.id,
-                        id_jadwal: jadwal.remoteId,
-                        id_peserta_per_event: participation.remoteId,
-                        id_paket_soal: (paket as any).remoteId,
-                        id_materi: (materi as any)?.remoteId || null,
+                        id_jadwal: jadwal.id,
+                        id_peserta_per_event: participation.id,
+                        id_paket_soal: session.paketSoalId,
+                        id_materi: idMateri || null,
                         waktu_mulai: session.startedAt.toISOString().replace('T', ' ').substring(0, 19),
                         waktu_selesai: session.finishedAt?.toISOString().replace('T', ' ').substring(0, 19),
                     },
@@ -196,7 +205,7 @@ export class CoreSyncService {
                             id_jawaban: session.id,
                             id_soal: ans.soalRemoteId,
                             no_soal: ans.soalOrder,
-                            jawaban: ans.value ?? "",
+                            jawaban: ans.jawabanSoalId || ans.value || "",
                             benar: isCorrect ? 1 : 0,
                             salah: isCorrect ? 0 : 1,
                             nilai: isCorrect ? ans.weightCorrect : ans.weightWrong,
@@ -220,7 +229,7 @@ export class CoreSyncService {
 
         const payload = {
             meta: {
-                event_id: agenda.remoteId,
+                event_id: agenda.id,
                 total_peserta: results.length,
                 total_soal: [...new Set(totalSoalRows.map(r => r.id))].length,
             },

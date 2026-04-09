@@ -9,6 +9,7 @@ export class SoalService {
     constructor() { }
 
     async create(input: {
+        id?: string;
         materiSoalId: string;
         type: SoalType;
         prompt: string;
@@ -17,6 +18,7 @@ export class SoalService {
         weightWrong: number;
         remoteId?: string;
         jawaban?: Array<{
+            id?: string;
             value: string;
             isCorrect: boolean;
             order: number;
@@ -26,7 +28,7 @@ export class SoalService {
             throw new BadRequestException('Essay soal must not have jawaban');
         }
 
-        const soalId = crypto.randomUUID();
+        const soalId = input.id ?? crypto.randomUUID();
 
         await db.transaction(async (tx) => {
             await tx.insert(soalTable).values({
@@ -43,7 +45,7 @@ export class SoalService {
             if (input.jawaban?.length) {
                 await tx.insert(jawabanSoalTable).values(
                     input.jawaban.map((j) => ({
-                        id: crypto.randomUUID(),
+                        id: j.id ?? crypto.randomUUID(),
                         soalId,
                         value: j.value,
                         isCorrect: j.isCorrect,

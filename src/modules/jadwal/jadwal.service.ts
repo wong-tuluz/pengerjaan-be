@@ -82,6 +82,7 @@ export class JadwalService {
     }
 
     async create(data: {
+        id?: string,
         agendaId: string,
         paketSoalId: string,
         title: string,
@@ -92,7 +93,7 @@ export class JadwalService {
         token: string,
         remoteId?: string,
     }) {
-        const id = crypto.randomUUID();
+        const id = data.id ?? crypto.randomUUID();
         const jadwal = {
             id,
             ...data,

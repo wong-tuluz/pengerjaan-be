@@ -8,7 +8,7 @@ import { PengerjaanService } from './pengerjaan.service';
 import type { SessionStatus } from './pengerjaan.service';
 
 const CreatePengerjaanSchema = z.object({
-    jadwalId: z.string().uuid(),
+    jadwalId: z.string(),
     token: z.string()
 });
 export class CreatePengerjaanDto extends createZodDto(CreatePengerjaanSchema) { }

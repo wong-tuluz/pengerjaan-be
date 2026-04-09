@@ -3,7 +3,7 @@ import { sql } from 'drizzle-orm';
 import { int } from 'drizzle-orm/mysql-core';
 
 export const agendaTable = mysqlTable('agenda', {
-    id: varchar('id', { length: 36 }).primaryKey(),
+    id: varchar('id', { length: 255 }).primaryKey(),
     remoteId: varchar('remote_id', { length: 255 }), // Backoffice Event ID
     title: varchar('title', { length: 255 }).notNull(),
     startTime: datetime('start_time').notNull(),
@@ -16,10 +16,10 @@ export const agendaTable = mysqlTable('agenda', {
 });
 
 export const agendaSiswaTable = mysqlTable('agenda_siswa', {
-    id: varchar('id', { length: 36 }).primaryKey(),
+    id: varchar('id', { length: 255 }).primaryKey(),
     remoteId: varchar('remote_id', { length: 255 }), // Backoffice id_peserta_perevent
-    agendaId: varchar('agenda_id', { length: 36 }).notNull(),
-    siswaId: varchar('siswa_id', { length: 36 }).notNull(),
+    agendaId: varchar('agenda_id', { length: 255 }).notNull(),
+    siswaId: varchar('siswa_id', { length: 255 }).notNull(),
     createdAt: datetime('created_at')
         .notNull()
         .default(sql`now()`),
@@ -31,10 +31,10 @@ export const agendaSiswaTable = mysqlTable('agenda_siswa', {
 ]);
 
 export const jadwalTable = mysqlTable('jadwal', {
-    id: varchar('id', { length: 36 }).primaryKey(),
+    id: varchar('id', { length: 255 }).primaryKey(),
     remoteId: varchar('remote_id', { length: 255 }), // Backoffice Jadwal ID
-    agendaId: varchar('agenda_id', { length: 36 }).notNull(),
-    paketSoalId: varchar('paket_soal_id', { length: 36 }).notNull(),
+    agendaId: varchar('agenda_id', { length: 255 }).notNull(),
+    paketSoalId: varchar('paket_soal_id', { length: 255 }).notNull(),
     title: varchar('title', { length: 255 }).notNull(),
     startTime: datetime('start_time').notNull(),
     endTime: datetime('end_time').notNull(),

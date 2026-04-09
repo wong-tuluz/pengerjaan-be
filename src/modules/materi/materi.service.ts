@@ -7,6 +7,7 @@ export class MateriService {
     constructor() { }
 
     async create(input: {
+        id?: string;
         paketSoalId: string;
         title: string;
         description?: string | null;
@@ -14,7 +15,7 @@ export class MateriService {
         timeLimit: number;
         remoteId?: string;
     }) {
-        const id = crypto.randomUUID();
+        const id = input.id ?? crypto.randomUUID();
 
         await db.insert(materiSoalTable).values({
             id,

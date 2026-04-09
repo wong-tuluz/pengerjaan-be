@@ -3,12 +3,12 @@ import { sql } from 'drizzle-orm';
 import { int } from 'drizzle-orm/mysql-core';
 
 export const workSessionTable = mysqlTable('work_sessions', {
-    id: varchar('id', { length: 36 }).primaryKey(),
-    siswaId: varchar('siswa_id', { length: 36 }).notNull(),
-    jadwalId: varchar('jadwal_id', { length: 36 }).notNull(),
+    id: varchar('id', { length: 255 }).primaryKey(),
+    siswaId: varchar('siswa_id', { length: 255 }).notNull(),
+    jadwalId: varchar('jadwal_id', { length: 255 }).notNull(),
 
-    paketSoalId: varchar('paket_soal_id', { length: 36 }).notNull(),
-    materiSoalId: varchar('materi_soal_id', { length: 36 }),
+    paketSoalId: varchar('paket_soal_id', { length: 255 }).notNull(),
+    materiSoalId: varchar('materi_soal_id', { length: 255 }),
     status: mysqlEnum('status', [
         'in_progress',
         'finished',
@@ -30,10 +30,10 @@ export const workSessionTable = mysqlTable('work_sessions', {
 ]);
 
 export const workSessionAnswerTable = mysqlTable('work_session_answers', {
-    id: varchar('id', { length: 36 }).primaryKey(),
-    workSessionId: varchar('work_session_id', { length: 36 }).notNull(),
-    soalId: varchar('soal_id', { length: 36 }).notNull(),
-    jawabanSoalId: varchar('jawaban_soal_id', { length: 36 }),
+    id: varchar('id', { length: 255 }).primaryKey(),
+    workSessionId: varchar('work_session_id', { length: 255 }).notNull(),
+    soalId: varchar('soal_id', { length: 255 }).notNull(),
+    jawabanSoalId: varchar('jawaban_soal_id', { length: 255 }),
     value: varchar('value', { length: 4096 }),
     createdAt: datetime('created_at')
         .notNull()
@@ -45,9 +45,9 @@ export const workSessionAnswerTable = mysqlTable('work_session_answers', {
 ]);
 
 export const workSessionMarkerTable = mysqlTable('work_session_markers', {
-    id: varchar('id', { length: 36 }).primaryKey(),
-    workSessionId: varchar('work_session_id', { length: 36 }).notNull(),
-    soalId: varchar('soal_id', { length: 36 }).notNull(),
+    id: varchar('id', { length: 255 }).primaryKey(),
+    workSessionId: varchar('work_session_id', { length: 255 }).notNull(),
+    soalId: varchar('soal_id', { length: 255 }).notNull(),
     isMarked: boolean('is_marked').notNull().default(false),
 }, (table) => [
     index('work_session_idx').on(table.workSessionId),
