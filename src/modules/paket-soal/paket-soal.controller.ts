@@ -33,12 +33,13 @@ export class PaketSoalController {
 
     @Post()
     async create(@Body() body: CreatePaketSoalDto) {
-        return this.paketSoalService.create(body);
+        return this.paketSoalService.save(body);
     }
 
     @Patch(':id')
     async update(@Param('id') id: string, @Body() body: UpdatePaketSoalDto) {
-        await this.paketSoalService.update(id, body);
+        const existing = await this.paketSoalService.findById(id);
+        await this.paketSoalService.save({ ...existing, ...body });
         return { success: true };
     }
 

@@ -39,12 +39,13 @@ export class MateriController {
 
     @Post()
     async create(@Body() body: CreateMateriSoalDto) {
-        return this.materiService.create(body);
+        return this.materiService.save(body);
     }
 
     @Patch(':id')
     async update(@Param('id') id: string, @Body() body: UpdateMateriSoalDto) {
-        await this.materiService.update(id, body);
+        const existing = await this.materiService.findById(id);
+        await this.materiService.save({ ...existing, ...body });
         return { success: true };
     }
 

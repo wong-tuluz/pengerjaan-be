@@ -65,12 +65,16 @@ export class SoalController {
 
     @Post()
     async create(@Body() body: CreateSoalDto) {
-        return this.soalService.create(body);
+        return this.soalService.save(body);
     }
 
     @Patch(':id')
     async update(@Param('id') id: string, @Body() body: UpdateSoalDto) {
-        await this.soalService.update(id, body);
+        const existing = await this.soalService.findByIdWithJawaban(id);
+        if (!existing) {
+            throw new NotFoundException('Soal not found');
+        }
+        await this.soalService.save({ ...existing, ...body });
         return { success: true };
     }
 

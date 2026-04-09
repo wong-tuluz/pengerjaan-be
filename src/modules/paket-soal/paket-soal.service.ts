@@ -10,7 +10,7 @@ export class PaketSoalService {
         id?: string;
         title: string;
         description?: string | null;
-        remoteId?: string;
+        remoteId?: string | null;
     }) {
         const id = input.id ?? crypto.randomUUID();
         const payload = {

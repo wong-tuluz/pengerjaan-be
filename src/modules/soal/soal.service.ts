@@ -16,7 +16,7 @@ export class SoalService {
         order: number;
         weightCorrect: number;
         weightWrong: number;
-        remoteId?: string;
+        remoteId?: string | null;
         jawaban?: Array<{
             id?: string;
             value: string;

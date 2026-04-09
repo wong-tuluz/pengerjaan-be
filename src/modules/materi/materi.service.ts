@@ -13,7 +13,7 @@ export class MateriService {
         description?: string | null;
         order: number;
         timeLimit: number;
-        remoteId?: string;
+        remoteId?: string | null;
     }) {
         const id = input.id ?? crypto.randomUUID();
         const payload = {
