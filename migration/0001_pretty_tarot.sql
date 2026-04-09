@@ -1,1 +1,0 @@
-ALTER TABLE `work_sessions` ADD `strike` int DEFAULT 0 NOT NULL;
