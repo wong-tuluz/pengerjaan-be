@@ -58,8 +58,8 @@ async function seedSettings() {
 }
 
 async function seed() {
-    seedAdmin()
-    seedSettings()
+    await seedAdmin()
+    await seedSettings()
 }
 
 seed().catch(err => {
