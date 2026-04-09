@@ -1,7 +1,7 @@
 {
   "version": "5",
   "dialect": "mysql",
-  "id": "ba81b3a5-4038-4ca3-940a-d7a4e1e1bacc",
+  "id": "08224cc1-94e7-447a-9aaa-f5900bc1ba30",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "work_session_answers": {
@@ -9,28 +9,28 @@
       "columns": {
         "id": {
           "name": "id",
-          "type": "varchar(36)",
+          "type": "varchar(255)",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
         },
         "work_session_id": {
           "name": "work_session_id",
-          "type": "varchar(36)",
+          "type": "varchar(255)",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
         },
         "soal_id": {
           "name": "soal_id",
-          "type": "varchar(36)",
+          "type": "varchar(255)",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
         },
         "jawaban_soal_id": {
           "name": "jawaban_soal_id",
-          "type": "varchar(36)",
+          "type": "varchar(255)",
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false
@@ -91,21 +91,21 @@
       "columns": {
         "id": {
           "name": "id",
-          "type": "varchar(36)",
+          "type": "varchar(255)",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
         },
         "work_session_id": {
           "name": "work_session_id",
-          "type": "varchar(36)",
+          "type": "varchar(255)",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
         },
         "soal_id": {
           "name": "soal_id",
-          "type": "varchar(36)",
+          "type": "varchar(255)",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
@@ -152,35 +152,35 @@
       "columns": {
         "id": {
           "name": "id",
-          "type": "varchar(36)",
+          "type": "varchar(255)",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
         },
         "siswa_id": {
           "name": "siswa_id",
-          "type": "varchar(36)",
+          "type": "varchar(255)",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
         },
         "jadwal_id": {
           "name": "jadwal_id",
-          "type": "varchar(36)",
+          "type": "varchar(255)",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
         },
         "paket_soal_id": {
           "name": "paket_soal_id",
-          "type": "varchar(36)",
+          "type": "varchar(255)",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
         },
         "materi_soal_id": {
           "name": "materi_soal_id",
-          "type": "varchar(36)",
+          "type": "varchar(255)",
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false
@@ -270,14 +270,14 @@
       "columns": {
         "id": {
           "name": "id",
-          "type": "varchar(36)",
+          "type": "varchar(255)",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
         },
         "account_id": {
           "name": "account_id",
-          "type": "varchar(36)",
+          "type": "varchar(255)",
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false
@@ -351,21 +351,21 @@
       "columns": {
         "id": {
           "name": "id",
-          "type": "varchar(36)",
+          "type": "varchar(255)",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
         },
         "soal_id": {
           "name": "soal_id",
-          "type": "varchar(36)",
+          "type": "varchar(255)",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
         },
         "value": {
           "name": "value",
-          "type": "text",
+          "type": "longtext",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
@@ -426,14 +426,21 @@
       "columns": {
         "id": {
           "name": "id",
-          "type": "varchar(36)",
+          "type": "varchar(255)",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
         },
+        "remote_id": {
+          "name": "remote_id",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
         "paket_soal_id": {
           "name": "paket_soal_id",
-          "type": "varchar(36)",
+          "type": "varchar(255)",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
@@ -489,6 +496,13 @@
             "paket_soal_id"
           ],
           "isUnique": false
+        },
+        "remote_idx": {
+          "name": "remote_idx",
+          "columns": [
+            "remote_id"
+          ],
+          "isUnique": false
         }
       },
       "foreignKeys": {},
@@ -508,9 +522,16 @@
       "columns": {
         "id": {
           "name": "id",
-          "type": "varchar(36)",
+          "type": "varchar(255)",
           "primaryKey": false,
           "notNull": true,
+          "autoincrement": false
+        },
+        "remote_id": {
+          "name": "remote_id",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false,
           "autoincrement": false
         },
         "title": {
@@ -543,7 +564,15 @@
           "autoincrement": false
         }
       },
-      "indexes": {},
+      "indexes": {
+        "remote_idx": {
+          "name": "remote_idx",
+          "columns": [
+            "remote_id"
+          ],
+          "isUnique": false
+        }
+      },
       "foreignKeys": {},
       "compositePrimaryKeys": {
         "paket_soal_id": {
@@ -561,14 +590,21 @@
       "columns": {
         "id": {
           "name": "id",
-          "type": "varchar(36)",
+          "type": "varchar(255)",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
         },
+        "remote_id": {
+          "name": "remote_id",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
         "materi_soal_id": {
           "name": "materi_soal_id",
-          "type": "varchar(36)",
+          "type": "varchar(255)",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
@@ -582,7 +618,7 @@
         },
         "prompt": {
           "name": "prompt",
-          "type": "text",
+          "type": "longtext",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
@@ -631,6 +667,13 @@
             "materi_soal_id"
           ],
           "isUnique": false
+        },
+        "remote_idx": {
+          "name": "remote_idx",
+          "columns": [
+            "remote_id"
+          ],
+          "isUnique": false
         }
       },
       "foreignKeys": {},
@@ -650,21 +693,28 @@
       "columns": {
         "id": {
           "name": "id",
-          "type": "varchar(36)",
+          "type": "varchar(255)",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
         },
+        "remote_id": {
+          "name": "remote_id",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
         "agenda_id": {
           "name": "agenda_id",
-          "type": "varchar(36)",
+          "type": "varchar(255)",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
         },
         "siswa_id": {
           "name": "siswa_id",
-          "type": "varchar(36)",
+          "type": "varchar(255)",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
@@ -699,6 +749,13 @@
             "siswa_id"
           ],
           "isUnique": false
+        },
+        "remote_idx": {
+          "name": "remote_idx",
+          "columns": [
+            "remote_id"
+          ],
+          "isUnique": false
         }
       },
       "foreignKeys": {},
@@ -718,9 +775,16 @@
       "columns": {
         "id": {
           "name": "id",
-          "type": "varchar(36)",
+          "type": "varchar(255)",
           "primaryKey": false,
           "notNull": true,
+          "autoincrement": false
+        },
+        "remote_id": {
+          "name": "remote_id",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false,
           "autoincrement": false
         },
         "title": {
@@ -786,21 +850,28 @@
       "columns": {
         "id": {
           "name": "id",
-          "type": "varchar(36)",
+          "type": "varchar(255)",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
         },
+        "remote_id": {
+          "name": "remote_id",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
         "agenda_id": {
           "name": "agenda_id",
-          "type": "varchar(36)",
+          "type": "varchar(255)",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
         },
         "paket_soal_id": {
           "name": "paket_soal_id",
-          "type": "varchar(36)",
+          "type": "varchar(255)",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
@@ -868,6 +939,13 @@
           "name": "agenda_idx",
           "columns": [
             "agenda_id"
+          ],
+          "isUnique": false
+        },
+        "remote_idx": {
+          "name": "remote_idx",
+          "columns": [
+            "remote_id"
           ],
           "isUnique": false
         }

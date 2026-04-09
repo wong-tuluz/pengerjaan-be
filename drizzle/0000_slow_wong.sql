@@ -1,8 +1,8 @@
 CREATE TABLE `work_session_answers` (
-	`id` varchar(36) NOT NULL,
-	`work_session_id` varchar(36) NOT NULL,
-	`soal_id` varchar(36) NOT NULL,
-	`jawaban_soal_id` varchar(36),
+	`id` varchar(255) NOT NULL,
+	`work_session_id` varchar(255) NOT NULL,
+	`soal_id` varchar(255) NOT NULL,
+	`jawaban_soal_id` varchar(255),
 	`value` varchar(4096),
 	`created_at` datetime NOT NULL DEFAULT now(),
 	`updated_at` datetime,
@@ -10,19 +10,19 @@ CREATE TABLE `work_session_answers` (
 );
 --> statement-breakpoint
 CREATE TABLE `work_session_markers` (
-	`id` varchar(36) NOT NULL,
-	`work_session_id` varchar(36) NOT NULL,
-	`soal_id` varchar(36) NOT NULL,
+	`id` varchar(255) NOT NULL,
+	`work_session_id` varchar(255) NOT NULL,
+	`soal_id` varchar(255) NOT NULL,
 	`is_marked` boolean NOT NULL DEFAULT false,
 	CONSTRAINT `work_session_markers_id` PRIMARY KEY(`id`)
 );
 --> statement-breakpoint
 CREATE TABLE `work_sessions` (
-	`id` varchar(36) NOT NULL,
-	`siswa_id` varchar(36) NOT NULL,
-	`jadwal_id` varchar(36) NOT NULL,
-	`paket_soal_id` varchar(36) NOT NULL,
-	`materi_soal_id` varchar(36),
+	`id` varchar(255) NOT NULL,
+	`siswa_id` varchar(255) NOT NULL,
+	`jadwal_id` varchar(255) NOT NULL,
+	`paket_soal_id` varchar(255) NOT NULL,
+	`materi_soal_id` varchar(255),
 	`status` enum('in_progress','finished') NOT NULL,
 	`strike` int NOT NULL DEFAULT 0,
 	`time_limit` int NOT NULL,
@@ -34,8 +34,8 @@ CREATE TABLE `work_sessions` (
 );
 --> statement-breakpoint
 CREATE TABLE `siswa` (
-	`id` varchar(36) NOT NULL,
-	`account_id` varchar(36),
+	`id` varchar(255) NOT NULL,
+	`account_id` varchar(255),
 	`nama` varchar(255) NOT NULL,
 	`nis` varchar(50) NOT NULL,
 	`kelas` varchar(50) NOT NULL,
@@ -47,9 +47,9 @@ CREATE TABLE `siswa` (
 );
 --> statement-breakpoint
 CREATE TABLE `jawaban_soal` (
-	`id` varchar(36) NOT NULL,
-	`soal_id` varchar(36) NOT NULL,
-	`value` text NOT NULL,
+	`id` varchar(255) NOT NULL,
+	`soal_id` varchar(255) NOT NULL,
+	`value` longtext NOT NULL,
 	`is_correct` boolean NOT NULL,
 	`order` int NOT NULL,
 	`created_at` datetime NOT NULL DEFAULT now(),
@@ -58,8 +58,9 @@ CREATE TABLE `jawaban_soal` (
 );
 --> statement-breakpoint
 CREATE TABLE `materi_soal` (
-	`id` varchar(36) NOT NULL,
-	`paket_soal_id` varchar(36) NOT NULL,
+	`id` varchar(255) NOT NULL,
+	`remote_id` varchar(255),
+	`paket_soal_id` varchar(255) NOT NULL,
 	`title` varchar(255) NOT NULL,
 	`description` text,
 	`order` int NOT NULL,
@@ -70,7 +71,8 @@ CREATE TABLE `materi_soal` (
 );
 --> statement-breakpoint
 CREATE TABLE `paket_soal` (
-	`id` varchar(36) NOT NULL,
+	`id` varchar(255) NOT NULL,
+	`remote_id` varchar(255),
 	`title` varchar(255) NOT NULL,
 	`description` text,
 	`created_at` datetime NOT NULL DEFAULT now(),
@@ -79,10 +81,11 @@ CREATE TABLE `paket_soal` (
 );
 --> statement-breakpoint
 CREATE TABLE `soal` (
-	`id` varchar(36) NOT NULL,
-	`materi_soal_id` varchar(36) NOT NULL,
+	`id` varchar(255) NOT NULL,
+	`remote_id` varchar(255),
+	`materi_soal_id` varchar(255) NOT NULL,
 	`type` enum('single-choice','multiple-choice','essay') NOT NULL,
-	`prompt` text NOT NULL,
+	`prompt` longtext NOT NULL,
 	`order` int NOT NULL,
 	`weight_correct` int NOT NULL,
 	`weight_wrong` int NOT NULL,
@@ -92,16 +95,18 @@ CREATE TABLE `soal` (
 );
 --> statement-breakpoint
 CREATE TABLE `agenda_siswa` (
-	`id` varchar(36) NOT NULL,
-	`agenda_id` varchar(36) NOT NULL,
-	`siswa_id` varchar(36) NOT NULL,
+	`id` varchar(255) NOT NULL,
+	`remote_id` varchar(255),
+	`agenda_id` varchar(255) NOT NULL,
+	`siswa_id` varchar(255) NOT NULL,
 	`created_at` datetime NOT NULL DEFAULT now(),
 	`updated_at` datetime,
 	CONSTRAINT `agenda_siswa_id` PRIMARY KEY(`id`)
 );
 --> statement-breakpoint
 CREATE TABLE `agenda` (
-	`id` varchar(36) NOT NULL,
+	`id` varchar(255) NOT NULL,
+	`remote_id` varchar(255),
 	`title` varchar(255) NOT NULL,
 	`start_time` datetime NOT NULL,
 	`end_time` datetime NOT NULL,
@@ -112,9 +117,10 @@ CREATE TABLE `agenda` (
 );
 --> statement-breakpoint
 CREATE TABLE `jadwal` (
-	`id` varchar(36) NOT NULL,
-	`agenda_id` varchar(36) NOT NULL,
-	`paket_soal_id` varchar(36) NOT NULL,
+	`id` varchar(255) NOT NULL,
+	`remote_id` varchar(255),
+	`agenda_id` varchar(255) NOT NULL,
+	`paket_soal_id` varchar(255) NOT NULL,
 	`title` varchar(255) NOT NULL,
 	`start_time` datetime NOT NULL,
 	`end_time` datetime NOT NULL,
@@ -211,10 +217,15 @@ CREATE INDEX `siswa_idx` ON `work_sessions` (`siswa_id`);--> statement-breakpoin
 CREATE INDEX `jadwal_idx` ON `work_sessions` (`jadwal_id`);--> statement-breakpoint
 CREATE INDEX `soal_idx` ON `jawaban_soal` (`soal_id`);--> statement-breakpoint
 CREATE INDEX `paket_soal_idx` ON `materi_soal` (`paket_soal_id`);--> statement-breakpoint
+CREATE INDEX `remote_idx` ON `materi_soal` (`remote_id`);--> statement-breakpoint
+CREATE INDEX `remote_idx` ON `paket_soal` (`remote_id`);--> statement-breakpoint
 CREATE INDEX `materi_soal_idx` ON `soal` (`materi_soal_id`);--> statement-breakpoint
+CREATE INDEX `remote_idx` ON `soal` (`remote_id`);--> statement-breakpoint
 CREATE INDEX `agenda_idx` ON `agenda_siswa` (`agenda_id`);--> statement-breakpoint
 CREATE INDEX `siswa_idx` ON `agenda_siswa` (`siswa_id`);--> statement-breakpoint
+CREATE INDEX `remote_idx` ON `agenda_siswa` (`remote_id`);--> statement-breakpoint
 CREATE INDEX `agenda_idx` ON `jadwal` (`agenda_id`);--> statement-breakpoint
+CREATE INDEX `remote_idx` ON `jadwal` (`remote_id`);--> statement-breakpoint
 CREATE INDEX `account_userId_idx` ON `account` (`user_id`);--> statement-breakpoint
 CREATE INDEX `session_userId_idx` ON `session` (`user_id`);--> statement-breakpoint
 CREATE INDEX `verification_identifier_idx` ON `verification` (`identifier`);
