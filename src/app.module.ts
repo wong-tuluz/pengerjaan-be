@@ -13,9 +13,11 @@ import { PengerjaanDetailModule } from './modules/pengerjaan-detail/pengerjaan-d
 import { CoreSyncModule } from './modules/core-sync/core-sync.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { RedisModule } from './modules/redis/redis.module';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
+    ScheduleModule.forRoot(),
     AuthModule,
     MateriModule,
     SoalModule,
