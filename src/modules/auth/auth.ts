@@ -20,6 +20,7 @@ export const auth = betterAuth({
     ],
     trustedOrigins: [
         "https://cbt-mupa.antz.biz.id",
+        "https://api-cbt-mupa.antz.biz.id",
         "https://antz.biz.id"
     ],
     disableTrustedOriginsCors: false,
