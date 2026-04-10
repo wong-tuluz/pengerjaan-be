@@ -23,17 +23,17 @@ services:
         volumes:
             - pengerjaan_data:/var/lib/mysql
 
-    # redis:
-    #     image: redis:7.2
-    #     container_name: pengerjaan-redis
-    #     restart: unless-stopped
+    redis:
+        image: redis:7.2
+        container_name: pengerjaan-redis
+        restart: unless-stopped
 
-    #     ports:
-    #         - '6379:6379'
+        ports:
+            - '6379:6379'
 
-    #     command: redis-server --appendonly yes
-    #     volumes:
-    #         - redis_data:/data
+        command: redis-server --appendonly yes
+        volumes:
+            - redis_data:/data
 
     # rabbitmq:
     #     image: rabbitmq:3.13-management
@@ -52,5 +52,5 @@ services:
 
 volumes:
     pengerjaan_data:
-    # redis_data:
+    redis_data:
     # rabbitmq_data:

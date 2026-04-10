@@ -5,6 +5,7 @@ import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { admin, username } from "better-auth/plugins"
 import * as schema from "../../common/db/schema";
 import { db } from "../../common/db/drizzle";
+import { redisInstance as redis } from "../redis/redis.provider";
 
 export const auth = betterAuth({
     database: drizzleAdapter(db, {
@@ -18,6 +19,27 @@ export const auth = betterAuth({
         username(),
         admin(),
     ],
+    session: {
+        cookieCache: {
+            enabled: true,
+            maxAge: 5 * 60,
+            strategy: 'jwt'
+        }
+    },
+    secondaryStorage: {
+        get: async (key) => await redis.get(key),
+        set: async (key, value, ttl) => {
+            if (ttl) {
+                await redis.set(key, value, "EX", ttl as number);
+            } else {
+                await redis.set(key, value);
+            }
+        },
+        delete: async (key) => {
+            await redis.del(key);
+            return;
+        }
+    },
     trustedOrigins: [
         "https://cbt-mupa.antz.biz.id",
         "https://api-cbt-mupa.antz.biz.id",

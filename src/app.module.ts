@@ -12,6 +12,7 @@ import { PengerjaanStateModule } from './modules/pengerjaan-state/pengerjaan-sta
 import { PengerjaanDetailModule } from './modules/pengerjaan-detail/pengerjaan-detail.module';
 import { CoreSyncModule } from './modules/core-sync/core-sync.module';
 import { AuthModule } from './modules/auth/auth.module';
+import { RedisModule } from './modules/redis/redis.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { AuthModule } from './modules/auth/auth.module';
     PengerjaanStateModule,
     PengerjaanDetailModule,
     CoreSyncModule,
+    RedisModule,
   ],
   controllers: [],
   providers: [

@@ -110,9 +110,15 @@ export class SiswaService {
                     name: siswa.nama,
                     email: email,
                     password: siswa.password,
-                    username: siswa.username,
                 }
             })
+
+            await tx.update(userTable)
+                .set({
+                    username: siswa.username,
+                })
+                .where(eq(userTable.id, res.user.id));
+
             accountId = res.user.id;
         }
 
