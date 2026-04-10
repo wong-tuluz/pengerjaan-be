@@ -29,7 +29,7 @@ export const auth = betterAuth({
             domain: "antz.biz.id",
         },
         defaultCookieAttributes: {
-            sameSite: "none",
+            sameSite: "lax",
             secure: true,
         }
     },
