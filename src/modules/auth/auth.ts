@@ -18,8 +18,11 @@ export const auth = betterAuth({
         username(),
         admin(),
     ],
-    trustedOrigins: ["*"],
-    disableTrustedOriginsCors: true,
+    trustedOrigins: [
+        "https://cbt-mupa.antz.biz.id",
+        "https://antz.biz.id"
+    ],
+    disableTrustedOriginsCors: false,
     advanced: {
         crossSubDomainCookies: {
             enabled: true,
