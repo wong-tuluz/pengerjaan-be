@@ -58,13 +58,17 @@ async function seedSettings() {
 }
 
 async function seed() {
-    await seedAdmin()
-    await seedSettings()
+    await seedAdmin();
+    await seedSettings();
 }
 
-seed().catch(err => {
-    console.error("Seeding failed:", err);
-    process.exit(1);
-}).then(() => {
-    process.exit(0);
-});
+seed()
+    .catch(err => {
+        console.error("Seeding failed:", err);
+        process.exit(1);
+    })
+    .finally(async () => {
+        if (db.$client?.end) {
+            await db.$client.end();
+        }
+    });

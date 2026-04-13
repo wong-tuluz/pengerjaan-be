@@ -50,8 +50,6 @@ async function reset() {
     } finally {
         await connection.end();
     }
-
-    process.exit(0);
 }
 
 reset();
