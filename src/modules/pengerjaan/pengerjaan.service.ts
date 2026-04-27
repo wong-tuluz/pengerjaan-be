@@ -83,7 +83,7 @@ export class PengerjaanService {
 
     async reset(sessionId: string) {
         await db.update(workSessionTable)
-            .set({ status: 'in_progress', finishedAt: null, updatedAt: new Date() })
+            .set({ status: 'in_progress', strike: 0, finishedAt: null, updatedAt: new Date() })
             .where(eq(workSessionTable.id, sessionId));
     }
 
