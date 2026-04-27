@@ -32,6 +32,7 @@ export class PengerjaanDetailService {
                 finishedAt: x.finishedAt,
                 questionCount: state.questions.length,
                 questionAnswered: state.questions.filter((q: any) => q.isAnswered).length,
+                strike: state.strike,
                 jadwal,
                 siswa
             }
