@@ -44,12 +44,14 @@ export const auth = betterAuth({
     trustedOrigins: [
         "https://cbt-mupa.antz.biz.id",
         "https://api-cbt-mupa.antz.biz.id",
-        "https://antz.biz.id"
+        "https://antz.biz.id",
+        "http://localhost:5173",
+        "https://localhost"
     ],
     disableTrustedOriginsCors: false,
     advanced: {
         crossSubDomainCookies: {
-            enabled: true,
+            enabled: false,
             domain: "antz.biz.id",
         },
         defaultCookieAttributes: {

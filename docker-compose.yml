@@ -24,7 +24,7 @@ services:
             - pengerjaan_data:/var/lib/mysql
 
     redis:
-        image: redis:7.2
+        image: redis:8.6
         container_name: pengerjaan-redis
         restart: unless-stopped
 

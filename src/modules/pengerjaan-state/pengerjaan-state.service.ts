@@ -121,6 +121,7 @@ export class PengerjaanStateService {
         return {
             id: session.id,
             status: session.status,
+            strike: session.strike,
             questions,
         };
     }
@@ -268,7 +269,7 @@ export class PengerjaanStateService {
                 eq(workSessionAnswerTable.workSessionId, data.workSessionId),
                 eq(workSessionAnswerTable.soalId, data.soalId)
             ));
-            
+
             await tx.delete(workSessionMarkerTable).where(and(
                 eq(workSessionMarkerTable.workSessionId, data.workSessionId),
                 eq(workSessionMarkerTable.soalId, data.soalId)
