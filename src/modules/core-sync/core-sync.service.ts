@@ -7,7 +7,7 @@ import { AgendaService } from "../agenda/agenda.service";
 import { JadwalService } from "../jadwal/jadwal.service";
 import { MateriService } from "../materi/materi.service";
 import { PaketSoalService } from "../paket-soal/paket-soal.service";
-import { SoalService } from "../soal/soal.service";
+import { SoalService, SoalType } from "../soal/soal.service";
 import { SiswaService } from "../siswa/siswa.service";
 import { agendaSiswaTable, agendaTable, db, jadwalTable, jawabanSoalTable, materiSoalTable, paketSoalTable, soalTable, workSessionAnswerTable, workSessionTable } from "src/common/db";
 import { eq, and } from "drizzle-orm";
@@ -56,6 +56,16 @@ export class CoreSyncService {
     async syncEvent(eventId: string) {
         const event = await this.fetchEventDetail(eventId);
 
+        // console.log(event)
+
+        // appendFileSync(
+        //     "/home/arta/pengerjaan/nexus-lms-be/events.log",
+        //     JSON.stringify(event, null, 2) + "\n---\n",
+        //     "utf8"
+        // );
+
+        // return;
+
         const syncedEvent = await this.storage.fetch<string[]>(SYNC_KEY) || [];
         if (!syncedEvent.includes(event.id)) {
             syncedEvent.push(event.id);
@@ -89,22 +99,26 @@ export class CoreSyncService {
                 });
 
                 for (const soal of materi.soal) {
-                    await this.soalService.save({
+                    const payload = {
                         id: soal.id,
                         materiSoalId: materiSoal.id,
                         prompt: soal.soal,
-                        type: "single-choice",
+                        type: "single-choice" as SoalType,
                         order: soal.nomor_soal,
                         weightCorrect: soal.bobot_benar,
                         weightWrong: soal.bobot_salah,
                         remoteId: soal.id,
-                        jawaban: soal.pilihan_jawaban.map(jw => ({
-                            id: (jw as any).id,
-                            value: jw.isi_opsi,
-                            isCorrect: jw.kunci_opsi == soal.kunci_jawaban,
-                            order: this.letterToNumber(jw.nama_opsi),
-                        })),
-                    });
+                        jawaban: soal.pilihan_jawaban.map(jw => {
+                            return {
+                                id: (jw as any).id,
+                                value: jw.isi_opsi,
+                                isCorrect: jw.nama_opsi == soal.kunci_jawaban,
+                                order: this.letterToNumber(jw.nama_opsi),
+                            }
+                        }),
+                    }
+
+                    await this.soalService.save(payload);
                 }
             }
 
