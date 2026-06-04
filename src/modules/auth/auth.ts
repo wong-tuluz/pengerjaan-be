@@ -14,9 +14,7 @@ export const auth = betterAuth({
     }),
     emailAndPassword: {
         enabled: true,
-        password: {
-            minLength: 1,
-        },
+        minPasswordLength: 1
     },
     plugins: [
         username(),
