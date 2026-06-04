@@ -52,7 +52,7 @@ async function seedSettings() {
         key: "default",
         data: {
             safe_mode: true,
-            show_hasil: false,
+            showHasil: false,
         }
     }).onDuplicateKeyUpdate({
         set: { key: "default" },
