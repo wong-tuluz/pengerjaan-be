@@ -78,6 +78,8 @@ export class AgendaService {
             agendaId,
             siswaId,
             remoteId,
+        }).onDuplicateKeyUpdate({
+            set: { agendaId, siswaId, remoteId, updatedAt: new Date() },
         });
     }
 }
