@@ -81,6 +81,11 @@ export class CoreSyncService {
         });
 
         for (const jadwal of event.jadwal) {
+            if (!jadwal.paket_soal) {
+                this.logger.warn(`Jadwal ${jadwal.id} has no paket_soal, skipping`);
+                continue;
+            }
+
             const paketSoal = await this.paketSoalService.save({
                 id: jadwal.paket_soal.id,
                 title: jadwal.paket_soal.nama_paket_soal,
@@ -93,7 +98,7 @@ export class CoreSyncService {
                     id: materi.id,
                     paketSoalId: paketSoal.id,
                     title: materi.nama_materi,
-                    order: materi.urutan,
+                    order: materi.urutan ?? 0,
                     timeLimit: materi.waktu || 0,
                     remoteId: materi.id,
                 });

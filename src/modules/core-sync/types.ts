@@ -21,7 +21,7 @@ export type Jadwal = {
     token: string;
     batas_mulai_mengerjakan: Date;
     selesai_tepat_waktu: boolean;
-    paket_soal: PaketSoal
+    paket_soal: PaketSoal | null
 }
 
 export type PaketSoal = {
@@ -38,7 +38,7 @@ export type PaketSoal = {
 export type Materi = {
     id: string;
     nama_materi: string;
-    urutan: number;
+    urutan: number | null;
     waktu: number | null;
     tampilkan_hasil_langsung: boolean | null
     tampilkan_hasil_langsung_text: string | null;
