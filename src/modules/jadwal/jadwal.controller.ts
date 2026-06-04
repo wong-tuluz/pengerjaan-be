@@ -17,9 +17,10 @@ export class JadwalController {
         @Query('siswaId') siswaId?: string,
         @Query('agendaId') agendaId?: string,
     ) {
-        const filterSiswa = session.user.role != 'admin' ?
-            (await this.siswaService.findByAccount(session.user.id)).id :
-            siswaId
+        const isPrivileged = session.user.role === 'admin' || session.user.role === 'proktor';
+        const filterSiswa = isPrivileged ?
+            siswaId :
+            (await this.siswaService.findByAccount(session.user.id)).id
 
         return this.service.listAll({
             siswaId: filterSiswa,
