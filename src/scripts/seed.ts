@@ -72,4 +72,5 @@ seed()
         if (db.$client?.end) {
             await db.$client.end();
         }
+        process.exit(0);
     });
