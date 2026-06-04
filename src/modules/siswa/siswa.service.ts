@@ -135,7 +135,12 @@ export class SiswaService {
         password: string;
     }) {
         const existing = await this.findByUsername(data.username);
-        if (existing) return existing;
+        if (existing) {
+            if (existing.accountId && existing.password !== data.password) {
+                await this.setPassword(existing.id, data.password);
+            }
+            return existing;
+        }
 
         return await db.transaction(async (tx) => {
             const id = crypto.randomUUID();
